@@ -1,0 +1,93 @@
+body {
+    background-color: #222;
+    color: white;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+#plateau {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+    width: fit-content;
+    margin: 20px auto;
+}
+
+button {
+    width: 140px;
+    height: 140px;
+    margin: 5px;
+    border-radius: 10px;
+    border: 2px solid #333;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    font-size: 18px;
+}
+
+button img {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+}
+
+button:hover {
+    transform: scale(1.05);
+    transition: 0.2s;
+}
+
+.joueur1 {
+    color: red;
+}
+
+.joueur2 {
+    color: deepskyblue;
+}
+
+.joueur3 {
+    color: limegreen;
+}
+
+.joueur4 {
+    color: gold;
+}
+
+#finPartie {
+    display: none;
+    background-color: #333;
+    border: 3px solid gold;
+    border-radius: 20px;
+    width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    text-align: center;
+    color: white;
+}
+
+#finPartie h2 {
+    color: gold;
+}
+#finPartie {
+    animation: apparition 0.8s ease;
+}
+
+@keyframes apparition {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+button:hover {
+    transform: scale(1.1) rotate(2deg);
+    transition: 0.2s;
+}
+button {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+button:hover {
+    box-shadow: 0 0 20px gold;
+}
