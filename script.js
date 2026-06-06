@@ -44,6 +44,8 @@ const affichageTour = document.getElementById("tour");
 const affichageTimer =
     document.getElementById("timer");
 const affichageScore = document.getElementById("score");
+const affichageCouleurs =
+    document.getElementById("etatCouleurs");
 const affichageScoresJoueurs = document.getElementById("scores");
 const classement = document.getElementById("classement");
 
@@ -296,6 +298,92 @@ async function gererExpirationTimer() {
     }
 
 }
+function afficherEtatCouleurs(cartesTrouvees, cartes) {
+
+    let bleu = 0;
+let rouge = 0;
+let jaune = 0;
+let vert = 0;
+
+    for (let index in cartesTrouvees) {
+
+        if (
+            cartesTrouvees[index] !== true
+        ) {
+            continue;
+        }
+
+        const carte =
+            cartes[index];
+
+        if (
+            carte.includes("bleu")
+        ) {
+            bleu++;
+        }
+
+        if (
+            carte.includes("rouge")
+        ) {
+            rouge++;
+        }
+
+        if (
+            carte.includes("jaune")
+        ) {
+            jaune++;
+        }
+
+        if (
+            carte.includes("vert")
+        ) {
+            vert++;
+        }
+
+    }
+
+   const restantBleu =
+    3 - bleu / 2;
+
+const restantRouge =
+    3 - rouge / 2;
+
+const restantJaune =
+    3 - jaune / 2;
+
+const restantVert =
+    3 - vert / 2;
+
+affichageCouleurs.innerHTML =
+
+    (restantBleu > 0
+        ? "🔵 Bleu : " + restantBleu
+        : "🙈 Bleu : NAKED")
+
+    +
+
+    " | " +
+
+    (restantRouge > 0
+        ? "🔴 Rouge : " + restantRouge
+        : "🙈 Rouge : NAKED")
+
+    +
+
+    " | " +
+
+    (restantJaune > 0
+        ? "🟡 Jaune : " + restantJaune
+        : "🙈 Jaune : NAKED")
+
+    +
+
+    " | " +
+
+    (restantVert > 0
+        ? "🟢 Vert : " + restantVert
+        : "🙈 Vert : NAKED");
+}
 function dessinerPlateau(partie) {
     partieActuelle = partie;
     timerTraite = false;
@@ -343,6 +431,10 @@ affichageTimer.innerHTML =
 
     affichageScore.innerHTML = "Score : " + pairesTrouvees;
     afficherScores(scores);
+    afficherEtatCouleurs(
+    cartesTrouvees,
+    cartes
+);
 
     for (let i = 0; i < cartes.length; i++) {
         const bouton = document.createElement("button");
@@ -367,10 +459,136 @@ affichageTimer.innerHTML =
         plateau.appendChild(bouton);
     }
 
-    if (pairesTrouvees === cartes.length / 2) {
-        afficherFinPartie(scores);
-    }
+    const victoireBattle =
+    verifierVictoireBattle(
+        cartesTrouvees,
+        cartes,
+        partie.joueurs
+    );
+
+if (
+    victoireBattle === false &&
+    pairesTrouvees === cartes.length / 2
+) {
+    afficherFinPartie(scores);
 }
+}
+function joueurEstNaked(
+    numeroJoueur,
+    cartesTrouvees,
+    cartes
+) {
+
+    const couleursJoueurs = {
+        1: "bleu",
+        2: "rouge",
+        3: "jaune",
+        4: "vert"
+    };
+
+    const couleur =
+        couleursJoueurs[numeroJoueur];
+
+    let cartesTrouveesCouleur = 0;
+
+    for (let index in cartesTrouvees) {
+
+        if (
+            cartesTrouvees[index] !== true
+        ) {
+            continue;
+        }
+
+        if (
+            cartes[index].includes(couleur)
+        ) {
+            cartesTrouveesCouleur++;
+        }
+
+    }
+
+    return cartesTrouveesCouleur >= 6;
+
+}
+
+function trouverProchainJoueur(
+    joueurActuel,
+    cartesTrouvees,
+    cartes
+) {
+
+    let prochainJoueur =
+        joueurActuel;
+
+    do {
+
+        prochainJoueur++;
+
+        if (prochainJoueur > 4) {
+            prochainJoueur = 1;
+        }
+
+    }
+
+    while (
+        joueurEstNaked(
+            prochainJoueur,
+            cartesTrouvees,
+            cartes
+        )
+    );
+
+    return prochainJoueur;
+
+}
+function verifierVictoireBattle(
+    cartesTrouvees,
+    cartes,
+    joueurs
+) {
+
+    let joueursEncoreHabilles = [];
+
+    for (let pseudo in joueurs) {
+
+        const numero =
+            joueurs[pseudo].numero;
+
+        if (
+            joueurEstNaked(
+                numero,
+                cartesTrouvees,
+                cartes
+            ) === false
+        ) {
+
+            joueursEncoreHabilles.push(
+                pseudo
+            );
+
+        }
+
+    }
+
+    if (joueursEncoreHabilles.length === 1) {
+
+        classement.innerHTML =
+            "🏆 VICTOIRE DE " +
+            joueursEncoreHabilles[0] +
+            " !<br><br>" +
+            "Les autres joueurs sont NAKED 🙈";
+
+        jeu.style.display = "none";
+        finPartie.style.display = "block";
+
+        return true;
+
+    }
+
+    return false;
+
+}
+
 
 async function jouerCarte(indexCarte) {
     if (codePartieActuelle === "") {
@@ -387,6 +605,18 @@ async function jouerCarte(indexCarte) {
     const partie = snapshot.val();
     const cartes = partie.plateau;
     const game = partie.game;
+    const cartesTrouvees =
+    game.cartesTrouvees || {};
+
+if (
+    joueurEstNaked(
+        monNumero,
+        cartesTrouvees,
+        cartes
+    )
+) {
+    return;
+}
     if (monNumero !== game.joueurActuel) {
     return;
 }
@@ -396,7 +626,7 @@ async function jouerCarte(indexCarte) {
     }
 
     const cartesVisibles = game.cartesVisibles || {};
-    const cartesTrouvees = game.cartesTrouvees || {};
+    
     const selection = game.selection || [];
     const scores = game.scores || [0, 0, 0, 0];
 
@@ -467,12 +697,12 @@ async function jouerCarte(indexCarte) {
         nouvellesCartesVisibles[premiereIndex] = false;
         nouvellesCartesVisibles[deuxiemeIndex] = false;
 
-        let prochainJoueur = nouveauGame.joueurActuel + 1;
-
-        if (prochainJoueur > 4) {
-            prochainJoueur = 1;
-        }
-
+       let prochainJoueur =
+    trouverProchainJoueur(
+        nouveauGame.joueurActuel,
+        nouveauGame.cartesTrouvees || {},
+        cartes
+    );
         await update(partieRef, {
     "game/cartesVisibles": nouvellesCartesVisibles,
     "game/selection": [],
