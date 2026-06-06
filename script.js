@@ -41,6 +41,8 @@ const listeJoueurs = document.getElementById("listeJoueurs");
 
 const plateau = document.getElementById("plateau");
 const affichageTour = document.getElementById("tour");
+const affichageTimer =
+    document.getElementById("timer");
 const affichageScore = document.getElementById("score");
 const affichageScoresJoueurs = document.getElementById("scores");
 const classement = document.getElementById("classement");
@@ -48,6 +50,9 @@ const classement = document.getElementById("classement");
 let codePartieActuelle = "";
 let pseudoActuel = "";
 let monNumero = 0;
+let partieActuelle = null;
+let intervalTimer = null;
+let timerTraite = false;
 
 const cartesDeBase = [
     "images/basbleu.png", "images/basbleu.png",
@@ -65,6 +70,24 @@ const cartesDeBase = [
     "images/tshirtrouge.png", "images/tshirtrouge.png",
     "images/tshirtvert.png", "images/tshirtvert.png"
 ];
+function prechargerImages() {
+
+    const images =
+        [...new Set(cartesDeBase)];
+
+    images.push("images/dos.png");
+
+    for (let chemin of images) {
+
+        const image =
+            new Image();
+
+        image.src =
+            chemin;
+
+    }
+
+}
 
 function genererCode() {
     const lettres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -88,12 +111,30 @@ function melangerCartes(tableau) {
 }
 
 function afficherScores(scores) {
+
+    let texte = "🏆 Scores<br><br>";
+
+    const joueurs =
+        partieActuelle.joueurs;
+
+    for (let pseudo in joueurs) {
+
+        const numero =
+            joueurs[pseudo].numero;
+
+        texte +=
+            pseudo +
+            " : " +
+            scores[numero - 1] +
+            "<br>";
+
+    }
+
     affichageScoresJoueurs.innerHTML =
-        "J1 : " + scores[0] +
-        " | J2 : " + scores[1] +
-        " | J3 : " + scores[2] +
-        " | J4 : " + scores[3];
+        texte;
+
 }
+
 
 function afficherFinPartie(scores) {
     let meilleurScore = Math.max(...scores);
@@ -127,8 +168,138 @@ function afficherDos(bouton) {
 function afficherCarte(bouton, carte) {
     bouton.innerHTML = "<img src='" + carte + "'>";
 }
+function lancerTimer() {
 
+    if (intervalTimer !== null) {
+        clearInterval(intervalTimer);
+    }
+
+    intervalTimer = setInterval(async function () {
+
+        if (
+            !partieActuelle ||
+            !partieActuelle.game
+        ) {
+            return;
+        }
+
+        const tempsRestant = Math.max(
+            0,
+            Math.ceil(
+                (
+                    partieActuelle.game.timerFin -
+                    Date.now()
+                ) / 1000
+            )
+        );
+
+        affichageTimer.innerHTML =
+            "⏱️ " +
+            tempsRestant;
+
+        if (
+            tempsRestant <= 0 &&
+            timerTraite === false
+        ) {
+
+            timerTraite = true;
+
+            if (
+                monNumero !==
+                partieActuelle.game.joueurActuel
+            ) {
+                return;
+            }
+
+            await gererExpirationTimer();
+
+        }
+
+    }, 200);
+
+}
+async function gererExpirationTimer() {
+
+    const partieRef =
+        ref(
+            db,
+            "parties/" +
+            codePartieActuelle
+        );
+
+    const snapshot =
+        await get(partieRef);
+
+    if (!snapshot.exists()) {
+        return;
+    }
+
+    const partie =
+        snapshot.val();
+
+    const game =
+        partie.game;
+
+    const selection =
+        game.selection || [];
+        console.log(
+    "Expiration timer, selection =",
+    selection.length
+);
+
+    const cartesVisibles =
+        game.cartesVisibles || {};
+
+    let prochainJoueur =
+        game.joueurActuel + 1;
+
+    if (prochainJoueur > 4) {
+        prochainJoueur = 1;
+    }
+
+    if (selection.length === 1) {
+
+        const indexCarte =
+            selection[0];
+
+        cartesVisibles[indexCarte] =
+            false;
+
+    }
+
+    if (selection.length < 2) {
+
+        console.log(
+    "Passage au joueur",
+    prochainJoueur
+);
+
+        await update(partieRef, {
+
+            "game/cartesVisibles":
+                cartesVisibles,
+
+            "game/selection":
+                [],
+
+    "game/verrouille":
+        false,
+
+            "game/joueurActuel":
+                prochainJoueur,
+
+            "game/timerFin":
+                Date.now() + 20000
+
+        });
+
+    }
+
+}
 function dessinerPlateau(partie) {
+    partieActuelle = partie;
+    timerTraite = false;
+    lancerTimer();
     const cartes = partie.plateau;
     const game = partie.game;
 
@@ -137,10 +308,37 @@ function dessinerPlateau(partie) {
     const scores = game.scores || [0, 0, 0, 0];
     const joueurActuel = game.joueurActuel || 1;
     const pairesTrouvees = game.pairesTrouvees || 0;
+    let pseudoTour = "Joueur " + joueurActuel;
+
+for (let pseudo in partie.joueurs) {
+
+    if (
+        partie.joueurs[pseudo].numero ===
+        joueurActuel
+    ) {
+
+        pseudoTour = pseudo;
+        break;
+
+    }
+
+}
 
     plateau.innerHTML = "";
 
-    affichageTour.innerHTML = "🔴 Tour du joueur " + joueurActuel;
+    affichageTour.innerHTML =
+    "🔴 Tour de " +
+    pseudoTour;
+    const tempsRestant = Math.max(
+    0,
+    Math.ceil(
+        (game.timerFin - Date.now()) / 1000
+    )
+);
+
+affichageTimer.innerHTML =
+    "⏱️ " +
+    tempsRestant;
     affichageTour.className = "joueur" + joueurActuel;
 
     affichageScore.innerHTML = "Score : " + pairesTrouvees;
@@ -240,7 +438,8 @@ async function jouerCarte(indexCarte) {
             "game/cartesTrouvees": cartesTrouvees,
             "game/selection": [],
             "game/scores": scores,
-            "game/pairesTrouvees": game.pairesTrouvees + 1
+            "game/pairesTrouvees": game.pairesTrouvees + 1, 
+            "game/timerFin": Date.now() + 20000
         });
 
         return;
@@ -275,11 +474,12 @@ async function jouerCarte(indexCarte) {
         }
 
         await update(partieRef, {
-            "game/cartesVisibles": nouvellesCartesVisibles,
-            "game/selection": [],
-            "game/verrouille": false,
-            "game/joueurActuel": prochainJoueur
-        });
+    "game/cartesVisibles": nouvellesCartesVisibles,
+    "game/selection": [],
+    "game/verrouille": false,
+    "game/joueurActuel": prochainJoueur,
+    "game/timerFin": Date.now() + 20000
+});
 
     }, 1000);
 }
@@ -421,18 +621,19 @@ boutonCommencer.addEventListener("click", async function () {
         etat: "jeu",
         plateau: plateauMelange,
         game: {
-            cartesVisibles: {},
-            cartesTrouvees: {},
-            selection: [],
-            verrouille: false,
-            joueurActuel: 1,
-            scores: [0, 0, 0, 0],
-            pairesTrouvees: 0
-        }
+    cartesVisibles: {},
+    cartesTrouvees: {},
+    selection: [],
+    verrouille: false,
+    joueurActuel: 1,
+    scores: [0, 0, 0, 0],
+    pairesTrouvees: 0,
+    timerFin: Date.now() + 20000
+}
     });
 });
 
 boutonNouvellePartie.addEventListener("click", nouvellePartie);
 boutonRejouer.addEventListener("click", nouvellePartie);
-
+prechargerImages();
 console.log("script.js multijoueur synchronisé chargé");
