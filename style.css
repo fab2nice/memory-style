@@ -1,5 +1,8 @@
 body {
-    background-color: #222;
+    background: linear-gradient(
+    #3a3a3a,
+    #222222
+);
     color: white;
     text-align: center;
     font-family: Arial, sans-serif;
@@ -14,19 +17,20 @@ body {
 }
 
 button {
-    width: 140px;
+    width: 90px;
     height: 140px;
-    margin: 5px;
+    margin: 8px;
     border-radius: 10px;
-    border: 2px solid #333;
+    border: none;
+    Padding: 0; 
     cursor: pointer;
-    background-color: #f0f0f0;
+    background: transparent;
     font-size: 18px;
 }
 
 button img {
-    width: 130px;
-    height: 130px;
+    width: 90px;
+    height: 140px;
     object-fit: contain;
 }
 
