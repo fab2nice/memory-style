@@ -17,8 +17,8 @@ body {
 }
 
 button {
-    width: 90px;
-    height: 140px;
+    width: 110px;
+    height: 170px;
     margin: 8px;
     border-radius: 10px;
     border: none;
@@ -26,11 +26,14 @@ button {
     cursor: pointer;
     background: transparent;
     font-size: 18px;
+    color: #ffd700;
+font-weight: bold;
+text-shadow: 0 0 5px rgba(255,215,0,0.6);
 }
 
 button img {
-    width: 90px;
-    height: 140px;
+    width: 110px;
+    height: 170px;
     object-fit: contain;
 }
 
