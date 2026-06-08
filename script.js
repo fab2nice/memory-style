@@ -6,7 +6,9 @@ import {
     set,
     get,
     update,
-    onValue
+    onValue,
+    remove,
+    runTransaction
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -23,6 +25,10 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 const accueil = document.getElementById("accueil");
+const compteurParties =
+    document.getElementById(
+        "compteurParties"
+    );
 const lobby = document.getElementById("lobby");
 const jeu = document.getElementById("jeu");
 const finPartie = document.getElementById("finPartie");
@@ -296,6 +302,12 @@ async function gererExpirationTimer() {
         });
 
     }
+    await runTransaction(
+    ref(db, "stats/partiesJouees"),
+    function(valeur) {
+        return (valeur || 0) + 1;
+    }
+);
 
 }
 function afficherEtatCouleurs(cartesTrouvees, cartes) {
@@ -594,13 +606,20 @@ async function jouerCarte(indexCarte) {
     if (codePartieActuelle === "") {
         return;
     }
+const partieRef =
+    ref(
+        db,
+        "parties/" +
+        codePartieActuelle
+    );
 
-    const partieRef = ref(db, "parties/" + codePartieActuelle);
-    const snapshot = await get(partieRef);
+const snapshot =
+    await get(partieRef);
 
-    if (!snapshot.exists()) {
-        return;
-    }
+if (!snapshot.exists()) {
+    return;
+}
+
 
     const partie = snapshot.val();
     const cartes = partie.plateau;
@@ -713,12 +732,39 @@ if (
 
     }, 1000);
 }
+window.exclureJoueur =
+async function (nom) {
 
+    if (
+        confirm(
+            "Exclure " +
+            nom +
+            " ?"
+        ) === false
+    ) {
+        return;
+    }
+
+    await remove(
+        ref(
+            db,
+            "parties/" +
+            codePartieActuelle +
+            "/joueurs/" +
+            nom
+        )
+    );
+
+}
 function surveillerJoueurs(code) {
-    const joueursRef = ref(db, "parties/" + code + "/joueurs");
+
+    const joueursRef =
+        ref(db, "parties/" + code + "/joueurs");
 
     onValue(joueursRef, function (snapshot) {
-        const joueurs = snapshot.val();
+
+        const joueurs =
+            snapshot.val();
 
         listeJoueurs.innerHTML = "";
 
@@ -727,9 +773,31 @@ function surveillerJoueurs(code) {
         }
 
         for (let nom in joueurs) {
-            listeJoueurs.innerHTML += "<li>" + nom + "</li>";
+
+            let ligne =
+                "<li>" + nom;
+
+            if (
+                partieActuelle &&
+                partieActuelle.createur === pseudoActuel &&
+                nom !== pseudoActuel
+            ) {
+
+                ligne +=
+                    ' <button onclick="exclureJoueur(\'' +
+                    nom +
+                    '\')">❌</button>';
+
+            }
+
+            ligne += "</li>";
+
+            listeJoueurs.innerHTML += ligne;
+
         }
+
     });
+
 }
 
 function surveillerPartie(code) {
@@ -808,9 +876,17 @@ boutonRejoindre.addEventListener("click", async function () {
     }
 
     const partie = snapshot.val();
+    if (partie.etat === "enCours") {
+    alert("La partie a déjà commencé");
+    return;
+}
 
 const nbJoueurs =
     Object.keys(partie.joueurs).length;
+    if (nbJoueurs >= 4) {
+    alert("Partie complète");
+    return;
+}
 
 monNumero = nbJoueurs + 1;
 
@@ -822,6 +898,7 @@ await update(
         "/joueurs"
     ),
     {
+
         [pseudoActuel]: {
             numero: monNumero
         }
@@ -840,30 +917,71 @@ await update(
 });
 
 boutonCommencer.addEventListener("click", async function () {
+
     if (codePartieActuelle === "") {
         alert("Aucune partie en cours");
         return;
     }
 
-    const plateauMelange = melangerCartes(cartesDeBase);
+    const partieRef =
+        ref(db, "parties/" + codePartieActuelle);
 
-    await update(ref(db, "parties/" + codePartieActuelle), {
+    const snapshot =
+        await get(partieRef);
+
+    if (!snapshot.exists()) {
+        return;
+    }
+
+    const partie =
+        snapshot.val();
+
+    const nbJoueurs =
+        Object.keys(partie.joueurs).length;
+
+    if (nbJoueurs < 4) {
+        alert("Il faut 4 joueurs pour commencer");
+        return;
+    }
+
+    const plateauMelange =
+        melangerCartes(cartesDeBase);
+
+        await update(partieRef, {
         etat: "jeu",
         plateau: plateauMelange,
         game: {
-    cartesVisibles: {},
-    cartesTrouvees: {},
-    selection: [],
-    verrouille: false,
-    joueurActuel: 1,
-    scores: [0, 0, 0, 0],
-    pairesTrouvees: 0,
-    timerFin: Date.now() + 20000
-}
+            cartesVisibles: {},
+            cartesTrouvees: {},
+            selection: [],
+            verrouille: false,
+            joueurActuel: 1,
+            scores: [0, 0, 0, 0],
+            pairesTrouvees: 0,
+            timerFin: Date.now() + 20000
+        }
     });
+
+    await runTransaction(
+        ref(db, "stats/partiesJouees"),
+        function(valeur) {
+            return (valeur || 0) + 1;
+        }
+    );
+
 });
 
 boutonNouvellePartie.addEventListener("click", nouvellePartie);
 boutonRejouer.addEventListener("click", nouvellePartie);
+onValue(
+    ref(db, "stats/partiesJouees"),
+    function(snapshot) {
+
+        compteurParties.innerHTML =
+            "🎮 Parties jouées : " +
+            (snapshot.val() || 0);
+
+    }
+);
 prechargerImages();
-console.log("script.js multijoueur synchronisé chargé");
+console.log("VERSION PLAYBATTLE V1.01 - compteur + verrouillage");
