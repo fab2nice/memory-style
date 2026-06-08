@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Memory à 4 joueurs</title>
+    <title>PlayBattle</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -14,6 +14,9 @@
     <div id="accueil">
 
         <h2>Battle Memory Online</h2>
+        <p id="compteurParties">
+    🎮 Parties jouées : 0
+</p>
 
         <input
             type="text"
@@ -22,9 +25,9 @@
 
         <br><br>
 
-        <button id="creerPartie">
-            Créer une partie
-        </button>
+        <button id="creerPartie" class="boutonMenu">
+    Créer une partie
+</button>
 
         <br><br>
 
@@ -33,9 +36,9 @@
             id="codePartie"
             placeholder="Code partie">
 
-        <button id="rejoindrePartie">
-            Rejoindre
-        </button>
+        <button id="boutonRejoindre" class="boutonMenu">
+    Rejoindre
+</button>
 
     </div>
 
