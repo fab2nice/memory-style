@@ -98,3 +98,8 @@ button {
 button:hover {
     box-shadow: 0 0 20px gold;
 }
+.boutonMenu {
+    color: gold;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+}

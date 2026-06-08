@@ -61,6 +61,7 @@ let monNumero = 0;
 let partieActuelle = null;
 let intervalTimer = null;
 let timerTraite = false;
+let joueurExcluDetecte = false;
 
 const cartesDeBase = [
     "images/basbleu.png", "images/basbleu.png",
@@ -131,10 +132,21 @@ function afficherScores(scores) {
             joueurs[pseudo].numero;
 
         texte +=
-            pseudo +
-            " : " +
-            scores[numero - 1] +
-            "<br>";
+    pseudo +
+    " : " +
+    scores[numero - 1];
+
+if (
+    partieActuelle.createur === pseudoActuel &&
+    pseudo !== pseudoActuel
+) {
+    texte +=
+    ' <span style="cursor:pointer;color:red;font-weight:bold;" onclick="exclureJoueur(\'' +
+    pseudo +
+    '\')"> ❌</span>';
+}
+
+texte += "<br>";
 
     }
 
@@ -163,6 +175,7 @@ function afficherFinPartie(scores) {
 
     jeu.style.display = "none";
     finPartie.style.display = "block";
+    boutonNouvellePartie.style.display = "block";
 }
 
 function nouvellePartie() {
@@ -177,6 +190,13 @@ function afficherCarte(bouton, carte) {
     bouton.innerHTML = "<img src='" + carte + "'>";
 }
 function lancerTimer() {
+    
+
+if (affichageTimer) {
+        affichageTimer.style.display = "none";
+    }
+
+    return;
 
     if (intervalTimer !== null) {
         clearInterval(intervalTimer);
@@ -281,7 +301,12 @@ async function gererExpirationTimer() {
     "Passage au joueur",
     prochainJoueur
 );
-
+console.log(
+    "EXCLUSION",
+    numeroExclu,
+    "->",
+    prochainJoueur
+);
         await update(partieRef, {
 
             "game/cartesVisibles":
@@ -592,6 +617,7 @@ function verifierVictoireBattle(
 
         jeu.style.display = "none";
         finPartie.style.display = "block";
+        boutonNouvellePartie.style.display = "block";
 
         return true;
 
@@ -745,6 +771,37 @@ async function (nom) {
         return;
     }
 
+    const partieRef =
+        ref(
+            db,
+            "parties/" +
+            codePartieActuelle
+        );
+
+    const snapshot =
+        await get(partieRef);
+
+    if (!snapshot.exists()) {
+        return;
+    }
+
+    const partie =
+        snapshot.val();
+
+    const joueurs =
+        partie.joueurs || {};
+
+    const joueurExclu =
+        joueurs[nom];
+
+    if (!joueurExclu) {
+        return;
+    }
+
+    const numeroExclu =
+        joueurExclu.numero;
+        
+
     await remove(
         ref(
             db,
@@ -754,6 +811,30 @@ async function (nom) {
             nom
         )
     );
+
+    if (
+        partie.game &&
+        partie.game.joueurActuel === numeroExclu
+    ) {
+
+        let prochainJoueur =
+    numeroExclu + 1;
+    
+if (prochainJoueur > 4) {
+    prochainJoueur = 1;
+}
+
+await update(partieRef, {
+    "game/joueurActuel":
+        prochainJoueur,
+
+    "game/verrouille":
+        false,
+
+    "game/selection":
+        []
+});
+    }
 
 }
 function surveillerJoueurs(code) {
@@ -804,17 +885,30 @@ function surveillerPartie(code) {
     const partieRef = ref(db, "parties/" + code);
 
     onValue(partieRef, function (snapshot) {
-        const partie = snapshot.val();
+    const partie = snapshot.val();
 
-        if (!partie) {
-            return;
-        }
+    if (!partie) {
+        return;
+    }
 
-        if (partie.etat === "jeu" && partie.plateau && partie.game) {
+    if (
+        pseudoActuel &&
+        partie.joueurs &&
+        !partie.joueurs[pseudoActuel] &&
+        joueurExcluDetecte === false
+    ) {
+        joueurExcluDetecte = true;
+        alert("Tu as été exclu de la partie.");
+        location.reload();
+        return;
+    }
+
+    if (partie.etat === "jeu" && partie.plateau && partie.game) {
             accueil.style.display = "none";
             lobby.style.display = "none";
             finPartie.style.display = "none";
             jeu.style.display = "block";
+            boutonNouvellePartie.style.display = "none";
 
             dessinerPlateau(partie);
         }
