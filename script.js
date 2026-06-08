@@ -37,7 +37,7 @@ const champPseudo = document.getElementById("pseudo");
 const champCode = document.getElementById("codePartie");
 
 const boutonCreer = document.getElementById("creerPartie");
-const boutonRejoindre = document.getElementById("rejoindrePartie");
+const boutonRejoindre = document.getElementById("boutonRejoindre");
 const boutonCommencer = document.getElementById("commencer");
 const boutonNouvellePartie = document.getElementById("nouvellePartie");
 const boutonRejouer = document.getElementById("rejouer");
@@ -976,6 +976,10 @@ boutonRejouer.addEventListener("click", nouvellePartie);
 onValue(
     ref(db, "stats/partiesJouees"),
     function(snapshot) {
+
+        if (!compteurParties) {
+            return;
+        }
 
         compteurParties.innerHTML =
             "🎮 Parties jouées : " +
