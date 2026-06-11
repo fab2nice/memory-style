@@ -43,19 +43,19 @@ button:hover {
 }
 
 .joueur1 {
-    color: red;
-}
-
-.joueur2 {
     color: deepskyblue;
 }
 
+.joueur2 {
+    color: red;
+}
+
 .joueur3 {
-    color: limegreen;
+    color: gold;
 }
 
 .joueur4 {
-    color: gold;
+    color: limegreen;
 }
 
 #finPartie {

@@ -133,9 +133,10 @@ function afficherScores(scores) {
 
         texte +=
     pseudo +
-    " : " +
+    " (J" +
+    numero +
+    ") : " +
     scores[numero - 1];
-
 if (
     partieActuelle.createur === pseudoActuel &&
     pseudo !== pseudoActuel
@@ -391,35 +392,7 @@ const restantJaune =
 const restantVert =
     3 - vert / 2;
 
-affichageCouleurs.innerHTML =
-
-    (restantBleu > 0
-        ? "🔵 Bleu : " + restantBleu
-        : "🙈 Bleu : NAKED")
-
-    +
-
-    " | " +
-
-    (restantRouge > 0
-        ? "🔴 Rouge : " + restantRouge
-        : "🙈 Rouge : NAKED")
-
-    +
-
-    " | " +
-
-    (restantJaune > 0
-        ? "🟡 Jaune : " + restantJaune
-        : "🙈 Jaune : NAKED")
-
-    +
-
-    " | " +
-
-    (restantVert > 0
-        ? "🟢 Vert : " + restantVert
-        : "🙈 Vert : NAKED");
+affichageCouleurs.innerHTML = "";
 }
 function dessinerPlateau(partie) {
     partieActuelle = partie;
@@ -898,7 +871,7 @@ function surveillerPartie(code) {
         joueurExcluDetecte === false
     ) {
         joueurExcluDetecte = true;
-        alert("Tu as été exclu de la partie.");
+        alert("You have been excluded.");
         location.reload();
         return;
     }
@@ -919,7 +892,7 @@ boutonCreer.addEventListener("click", async function () {
     pseudoActuel = champPseudo.value.trim();
 
     if (pseudoActuel === "") {
-        alert("Choisis un pseudo");
+        alert("Choose nickname");
         return;
     }
 
@@ -952,12 +925,12 @@ boutonRejoindre.addEventListener("click", async function () {
     codePartieActuelle = champCode.value.trim().toUpperCase();
 
     if (pseudoActuel === "") {
-        alert("Choisis un pseudo");
+        alert("Choose nickname");
         return;
     }
 
     if (codePartieActuelle === "") {
-        alert("Entre un code de partie");
+        alert("Enter game code");
         return;
     }
 
@@ -965,20 +938,20 @@ boutonRejoindre.addEventListener("click", async function () {
     const snapshot = await get(partieRef);
 
     if (!snapshot.exists()) {
-        alert("Partie introuvable");
+        alert("part not found");
         return;
     }
 
     const partie = snapshot.val();
     if (partie.etat === "enCours") {
-    alert("La partie a déjà commencé");
+    alert("The game has already begun");
     return;
 }
 
 const nbJoueurs =
     Object.keys(partie.joueurs).length;
     if (nbJoueurs >= 4) {
-    alert("Partie complète");
+    alert("the game is complete");
     return;
 }
 
@@ -1013,7 +986,7 @@ await update(
 boutonCommencer.addEventListener("click", async function () {
 
     if (codePartieActuelle === "") {
-        alert("Aucune partie en cours");
+        alert("no game in progress");
         return;
     }
 
@@ -1034,7 +1007,7 @@ boutonCommencer.addEventListener("click", async function () {
         Object.keys(partie.joueurs).length;
 
     if (nbJoueurs < 4) {
-        alert("Il faut 4 joueurs pour commencer");
+        alert("You need 4 players to start");
         return;
     }
 

@@ -9,24 +9,24 @@
 
 <body>
 
-    <h1>Memory Style</h1>
+    <h1>Strip Memory Battle</h1>
 
     <div id="accueil">
 
         <h2>Battle Memory Online</h2>
         <p id="compteurParties">
-    🎮 Parties jouées : 0
+    🎮 Games Played : 0
 </p>
 
         <input
             type="text"
             id="pseudo"
-            placeholder="Votre pseudo">
+            placeholder="Nickname">
 
         <br><br>
 
         <button id="creerPartie" class="boutonMenu">
-    Créer une partie
+    Create Game
 </button>
 
         <br><br>
@@ -34,10 +34,10 @@
         <input
             type="text"
             id="codePartie"
-            placeholder="Code partie">
+            placeholder="Game Code">
 
         <button id="boutonRejoindre" class="boutonMenu">
-    Rejoindre
+    Join Game
 </button>
 
     </div>
@@ -51,12 +51,12 @@
             <span id="codeLobby"></span>
         </p>
 
-        <h3>Joueurs connectés</h3>
+        <h3>Players</h3>
 
         <ul id="listeJoueurs"></ul>
 
         <button id="commencer">
-            Commencer
+            Start Game
         </button>
 
     </div>
@@ -64,7 +64,7 @@
     <div id="jeu" style="display:none;">
 
         <h2 id="tour" class="joueur1">
-    🔴 Tour du joueur 1
+    🔴 Turn player 1
 </h2>
 
 <h3 id="timer">
@@ -82,7 +82,7 @@
         </p>
 
         <button id="nouvellePartie">
-            Nouvelle partie
+            New Game
         </button>
 
         <div id="plateau"></div>
@@ -91,12 +91,12 @@
 
     <div id="finPartie" style="display:none;">
 
-        <h2>🏆 FIN DE PARTIE</h2>
+        <h2>🏆 Game Over</h2>
 
         <p id="classement"></p>a
 
         <button id="rejouer">
-            Nouvelle partie
+            New Game
         </button>
 
     </div>
