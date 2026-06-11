@@ -130,8 +130,27 @@ function afficherScores(scores) {
 
         const numero =
             joueurs[pseudo].numero;
+            let icone = "";
+
+if (numero === 1) {
+    icone = "🔵";
+}
+
+if (numero === 2) {
+    icone = "🔴";
+}
+
+if (numero === 3) {
+    icone = "🟡";
+}
+
+if (numero === 4) {
+    icone = "🟢";
+}
 
         texte +=
+    icone +
+    " " +
     pseudo +
     " : " +
     scores[numero - 1];
@@ -728,7 +747,7 @@ if (
     "game/timerFin": Date.now() + 20000
 });
 
-    }, 1000);
+    }, 1200);
 }
 window.exclureJoueur =
 async function (nom) {
