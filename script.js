@@ -133,9 +133,7 @@ function afficherScores(scores) {
 
         texte +=
     pseudo +
-    " (J" +
-    numero +
-    ") : " +
+    " : " +
     scores[numero - 1];
 if (
     partieActuelle.createur === pseudoActuel &&
@@ -425,8 +423,9 @@ for (let pseudo in partie.joueurs) {
     plateau.innerHTML = "";
 
     affichageTour.innerHTML =
-    "🔴 Tour de " +
-    pseudoTour;
+    "▶ " +
+    pseudoTour.toUpperCase() +
+    "'S TURN ◀";
     const tempsRestant = Math.max(
     0,
     Math.ceil(
