@@ -754,9 +754,9 @@ async function (nom) {
 
     if (
         confirm(
-            "Exclure " +
+            "Remove " +
             nom +
-            " ?"
+            " from the game?"
         ) === false
     ) {
         return;
@@ -791,7 +791,6 @@ async function (nom) {
 
     const numeroExclu =
         joueurExclu.numero;
-        
 
     await remove(
         ref(
@@ -809,25 +808,44 @@ async function (nom) {
     ) {
 
         let prochainJoueur =
-    numeroExclu + 1;
-    
-if (prochainJoueur > 4) {
-    prochainJoueur = 1;
-}
+            numeroExclu;
 
-await update(partieRef, {
-    "game/joueurActuel":
-        prochainJoueur,
+        for (let i = 0; i < 4; i++) {
 
-    "game/verrouille":
-        false,
+            prochainJoueur++;
 
-    "game/selection":
-        []
-});
+            if (prochainJoueur > 4) {
+                prochainJoueur = 1;
+            }
+
+            let joueurExiste = false;
+
+            for (let pseudo in joueurs) {
+
+                if (
+                    pseudo !== nom &&
+                    joueurs[pseudo].numero === prochainJoueur
+                ) {
+                    joueurExiste = true;
+                }
+
+            }
+
+            if (joueurExiste) {
+                break;
+            }
+
+        }
+
+        await update(partieRef, {
+            "game/joueurActuel": prochainJoueur,
+            "game/verrouille": false,
+            "game/selection": []
+        });
+
     }
 
-}
+};
 function surveillerJoueurs(code) {
 
     const joueursRef =
