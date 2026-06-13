@@ -1,3 +1,4 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
 
 import {
@@ -319,12 +320,7 @@ async function gererExpirationTimer() {
     "Passage au joueur",
     prochainJoueur
 );
-console.log(
-    "EXCLUSION",
-    numeroExclu,
-    "->",
-    prochainJoueur
-);
+
         await update(partieRef, {
 
             "game/cartesVisibles":
@@ -542,13 +538,14 @@ function joueurEstNaked(
 function trouverProchainJoueur(
     joueurActuel,
     cartesTrouvees,
-    cartes
+    cartes,
+    joueurs
 ) {
 
     let prochainJoueur =
         joueurActuel;
 
-    do {
+    for (let i = 0; i < 4; i++) {
 
         prochainJoueur++;
 
@@ -556,19 +553,40 @@ function trouverProchainJoueur(
             prochainJoueur = 1;
         }
 
+        let joueurExiste =
+            false;
+
+        for (let pseudo in joueurs) {
+
+            if (
+                joueurs[pseudo].numero ===
+                prochainJoueur
+            ) {
+                joueurExiste = true;
+            }
+
+        }
+
+        if (
+            joueurExiste === true &&
+            joueurEstNaked(
+                prochainJoueur,
+                cartesTrouvees,
+                cartes
+            ) === false
+        ) {
+
+            return prochainJoueur;
+
+        }
+
     }
 
-    while (
-        joueurEstNaked(
-            prochainJoueur,
-            cartesTrouvees,
-            cartes
-        )
-    );
-
-    return prochainJoueur;
+    return joueurActuel;
 
 }
+
+
 function verifierVictoireBattle(
     cartesTrouvees,
     cartes,
@@ -737,7 +755,8 @@ if (
     trouverProchainJoueur(
         nouveauGame.joueurActuel,
         nouveauGame.cartesTrouvees || {},
-        cartes
+        cartes,
+        nouvellePartie.joueurs
     );
         await update(partieRef, {
     "game/cartesVisibles": nouvellesCartesVisibles,
@@ -789,9 +808,6 @@ async function (nom) {
         return;
     }
 
-    const numeroExclu =
-        joueurExclu.numero;
-
     await remove(
         ref(
             db,
@@ -802,46 +818,62 @@ async function (nom) {
         )
     );
 
-    if (
-        partie.game &&
-        partie.game.joueurActuel === numeroExclu
-    ) {
+    delete joueurs[nom];
 
-        let prochainJoueur =
-            numeroExclu;
+    if (!partie.game) {
+        return;
+    }
 
-        for (let i = 0; i < 4; i++) {
+    const joueurActuel =
+        partie.game.joueurActuel;
 
-            prochainJoueur++;
+    let joueurActuelExiste =
+        false;
 
-            if (prochainJoueur > 4) {
-                prochainJoueur = 1;
-            }
+    for (let pseudo in joueurs) {
 
-            let joueurExiste = false;
+        if (
+            joueurs[pseudo].numero ===
+            joueurActuel
+        ) {
+            joueurActuelExiste = true;
+        }
 
-            for (let pseudo in joueurs) {
+    }
 
-                if (
-                    pseudo !== nom &&
-                    joueurs[pseudo].numero === prochainJoueur
-                ) {
-                    joueurExiste = true;
-                }
+    if (joueurActuelExiste) {
+        return;
+    }
 
-            }
+    let prochainJoueur =
+        joueurActuel;
 
-            if (joueurExiste) {
-                break;
+    for (let i = 0; i < 4; i++) {
+
+        prochainJoueur++;
+
+        if (prochainJoueur > 4) {
+            prochainJoueur = 1;
+        }
+
+        for (let pseudo in joueurs) {
+
+            if (
+                joueurs[pseudo].numero ===
+                prochainJoueur
+            ) {
+
+                await update(partieRef, {
+                    "game/joueurActuel": prochainJoueur,
+                    "game/verrouille": false,
+                    "game/selection": []
+                });
+
+                return;
+
             }
 
         }
-
-        await update(partieRef, {
-            "game/joueurActuel": prochainJoueur,
-            "game/verrouille": false,
-            "game/selection": []
-        });
 
     }
 
