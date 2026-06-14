@@ -14,7 +14,7 @@
     <div id="accueil">
 
         <h2>Battle Memory Online</h2>
-        <p id="compteurParties">
+        
     🎮 Games Played : 0
 </p>
 
@@ -24,7 +24,31 @@
             placeholder="Nickname">
 
         <br><br>
+        <label>
+    <input
+        type="radio"
+        name="modeJoueurs"
+        value="2">
+    Duel
+</label>
+<label>
+    <input
+        type="radio"
+        name="modeJoueurs"
+        value="3">
+    3 Players
+</label>
 
+<label>
+    <input
+        type="radio"
+        name="modeJoueurs"
+        value="4"
+        checked>
+    4 Players
+</label>
+
+<br><br>
         <button id="creerPartie" class="boutonMenu">
     Create Game
 </button>
@@ -84,6 +108,31 @@
         <button id="nouvellePartie">
             New Game
         </button>
+        <div id="reglesDuel" style="display:none;">
+
+    <h3>🎮 DUEL CARDS</h3>
+
+    <p>
+        🍆<br>
+        Masturbate 30s
+    </p>
+
+    <p>
+        🍑<br>
+        10 spankings 
+    </p>
+
+    <p>
+        🛡️ Shield<br>
+        Block one action.
+    </p>
+
+    <p>
+        🎁 Gift<br>
+        Ask anything you want.
+    </p>
+
+</div>
 
         <div id="plateau"></div>
 
@@ -104,5 +153,6 @@
     <script type="module" src="script.js"></script>
 
 </body>
+
 
 </html>

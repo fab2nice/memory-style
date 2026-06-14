@@ -55,6 +55,8 @@ const affichageCouleurs =
     document.getElementById("etatCouleurs");
 const affichageScoresJoueurs = document.getElementById("scores");
 const classement = document.getElementById("classement");
+const reglesDuel =
+    document.getElementById("reglesDuel");
 
 let codePartieActuelle = "";
 let pseudoActuel = "";
@@ -79,6 +81,45 @@ const cartesDeBase = [
     "images/tshirtjaune.png", "images/tshirtjaune.png",
     "images/tshirtrouge.png", "images/tshirtrouge.png",
     "images/tshirtvert.png", "images/tshirtvert.png"
+];
+const cartesDeBase3Joueurs = [
+    "images/basbleu.png", "images/basbleu.png",
+"images/basjaune.png", "images/basjaune.png",
+"images/basrouge.png", "images/basrouge.png",
+
+"images/pantbleu.png", "images/pantbleu.png",
+"images/pantjaune.png", "images/pantjaune.png",
+"images/pantrouge.png", "images/pantrouge.png",
+
+"images/tshirtbleu.png", "images/tshirtbleu.png",
+"images/tshirtjaune.png", "images/tshirtjaune.png",
+"images/tshirtrouge.png", "images/tshirtrouge.png",
+
+"images/chaussettesbleues.png", "images/chaussettesbleues.png",
+"images/chaussettesjaunes.png", "images/chaussettesjaunes.png",
+"images/chaussettesrouges.png", "images/chaussettesrouges.png"
+];
+const cartesDeBaseDuel = [
+
+    "images/basbleu.png", "images/basbleu.png",
+    "images/pantbleu.png", "images/pantbleu.png",
+    "images/tshirtbleu.png", "images/tshirtbleu.png",
+    "images/chaussettesbleues.png", "images/chaussettesbleues.png",
+
+    "images/basrouge.png", "images/basrouge.png",
+    "images/pantrouge.png", "images/pantrouge.png",
+    "images/tshirtrouge.png", "images/tshirtrouge.png",
+    "images/chaussettesrouges.png", "images/chaussettesrouges.png",
+
+    "images/auberginebleue.png", "images/auberginebleue.png",
+    "images/abricotbleu.png", "images/abricotbleu.png",
+
+    "images/auberginerouge.png", "images/auberginerouge.png",
+    "images/abricotrouge.png", "images/abricotrouge.png",
+
+    "images/bouclier.png", "images/bouclier.png",
+    "images/cadeau.png", "images/cadeau.png"
+
 ];
 function prechargerImages() {
 
@@ -531,7 +572,25 @@ function joueurEstNaked(
 
     }
 
-    return cartesTrouveesCouleur >= 6;
+    let seuilNaked = 6;
+
+if (
+    partieActuelle &&
+    partieActuelle.mode === 2
+) {
+
+    seuilNaked = 12;
+
+} else if (
+    partieActuelle &&
+    partieActuelle.mode === 3
+) {
+
+    seuilNaked = 8;
+
+}
+
+return cartesTrouveesCouleur >= seuilNaked;
 
 }
 
@@ -949,6 +1008,15 @@ function surveillerPartie(code) {
             lobby.style.display = "none";
             finPartie.style.display = "none";
             jeu.style.display = "block";
+            if (partie.mode === 2) {
+
+    reglesDuel.style.display = "block";
+
+} else {
+
+    reglesDuel.style.display = "none";
+
+}
             boutonNouvellePartie.style.display = "none";
 
             dessinerPlateau(partie);
@@ -958,6 +1026,12 @@ function surveillerPartie(code) {
 
 boutonCreer.addEventListener("click", async function () {
     pseudoActuel = champPseudo.value.trim();
+    const modeChoisi =
+    parseInt(
+        document.querySelector(
+            'input[name="modeJoueurs"]:checked'
+        ).value
+    );
 
     if (pseudoActuel === "") {
         alert("Choose nickname");
@@ -968,12 +1042,14 @@ boutonCreer.addEventListener("click", async function () {
 
     await set(ref(db, "parties/" + codePartieActuelle), {
     createur: pseudoActuel,
+    mode: modeChoisi,
     etat: "lobby",
     joueurs: {
         [pseudoActuel]: {
             numero: 1
         }
     }
+    
 });
 monNumero = 1;
 
@@ -1018,9 +1094,18 @@ boutonRejoindre.addEventListener("click", async function () {
 
 const nbJoueurs =
     Object.keys(partie.joueurs).length;
-    if (nbJoueurs >= 4) {
-    alert("the game is complete");
+
+const mode =
+    partie.mode || 4;
+
+if (nbJoueurs >= mode) {
+
+    alert(
+        "the game is complete"
+    );
+
     return;
+
 }
 
 monNumero = nbJoueurs + 1;
@@ -1072,16 +1157,40 @@ boutonCommencer.addEventListener("click", async function () {
         snapshot.val();
 
     const nbJoueurs =
-        Object.keys(partie.joueurs).length;
+    Object.keys(partie.joueurs).length;
 
-    if (nbJoueurs < 4) {
-        alert("You need 4 players to start");
-        return;
-    }
+const mode =
+    partie.mode || 4;
 
-    const plateauMelange =
-        melangerCartes(cartesDeBase);
+if (nbJoueurs < mode) {
 
+    alert(
+        "You need " +
+        mode +
+        " players to start"
+    );
+
+    return;
+
+}
+let cartes;
+
+if (partie.mode === 2) {
+
+    cartes = cartesDeBaseDuel;
+
+} else if (partie.mode === 3) {
+
+    cartes = cartesDeBase3Joueurs;
+
+} else {
+
+    cartes = cartesDeBase;
+
+}
+
+const plateauMelange =
+    melangerCartes(cartes);
         await update(partieRef, {
         etat: "jeu",
         plateau: plateauMelange,

@@ -6,8 +6,28 @@ body {
     color: white;
     text-align: center;
     font-family: Arial, sans-serif;
+    #reglesDuel {
+    position: absolute;
+    left: 20px;
+    top: 360px;
+    width: 180px;
+    text-align: left;
+    background-color: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 10px;
 }
 
+#reglesDuel h3 {
+    margin-top: 0;
+    color: gold;
+}
+}
+#reglesDuel {
+    width: 180px;
+    float: left;
+    margin-right: 20px;
+    text-align: left;
+}
 #plateau {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
