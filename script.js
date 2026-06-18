@@ -42,6 +42,9 @@ const boutonRejoindre = document.getElementById("boutonRejoindre");
 const boutonCommencer = document.getElementById("commencer");
 const boutonNouvellePartie = document.getElementById("nouvellePartie");
 const boutonRejouer = document.getElementById("rejouer");
+const changerMode =
+    document.getElementById("changerMode");
+    console.log(changerMode);
 
 const codeLobby = document.getElementById("codeLobby");
 const listeJoueurs = document.getElementById("listeJoueurs");
@@ -50,6 +53,8 @@ const plateau = document.getElementById("plateau");
 const affichageTour = document.getElementById("tour");
 const affichageTimer =
     document.getElementById("timer");
+    const modeLobby =
+    document.getElementById("modeLobby");
 const affichageScore = document.getElementById("score");
 const affichageCouleurs =
     document.getElementById("etatCouleurs");
@@ -450,6 +455,7 @@ affichageCouleurs.innerHTML = "";
 }
 function dessinerPlateau(partie) {
     partieActuelle = partie;
+   
     timerTraite = false;
     lancerTimer();
     const cartes = partie.plateau;
@@ -956,8 +962,7 @@ function surveillerJoueurs(code) {
         for (let nom in joueurs) {
 
             let ligne =
-                "<li>" + nom;
-
+    "<li class='ligne-joueur'>" + nom;
             if (
                 partieActuelle &&
                 partieActuelle.createur === pseudoActuel &&
@@ -965,10 +970,9 @@ function surveillerJoueurs(code) {
             ) {
 
                 ligne +=
-                    ' <button onclick="exclureJoueur(\'' +
-                    nom +
-                    '\')">❌</button>';
-
+    ' <button class="bouton-exclure" onclick="exclureJoueur(\'' +
+    nom +
+    '\')">❌</button>';
             }
 
             ligne += "</li>";
@@ -990,7 +994,49 @@ function surveillerPartie(code) {
     if (!partie) {
         return;
     }
+partieActuelle = partie;
+ if (
+    partie.createur === pseudoActuel
+) {
 
+    choixModeLobby.style.display =
+        "block";
+
+} else {
+
+    choixModeLobby.style.display =
+        "none";
+        if (
+    partie.createur === pseudoActuel
+) {
+
+    commencer.style.display =
+        "inline-block";
+
+} else {
+
+    commencer.style.display =
+        "none";
+
+}
+
+}
+    if (partie.mode === 2) {
+
+    modeLobby.innerHTML =
+        "Mode : Duel";
+
+} else if (partie.mode === 3) {
+
+    modeLobby.innerHTML =
+        "Mode : 3 Players";
+
+} else {
+
+    modeLobby.innerHTML =
+        "Mode : 4 Players";
+
+}
     if (
         pseudoActuel &&
         partie.joueurs &&
@@ -1023,6 +1069,7 @@ function surveillerPartie(code) {
         }
     });
 }
+
 
 boutonCreer.addEventListener("click", async function () {
     pseudoActuel = champPseudo.value.trim();
@@ -1108,7 +1155,28 @@ if (nbJoueurs >= mode) {
 
 }
 
-monNumero = nbJoueurs + 1;
+let numerosUtilises = [];
+
+for (let nom in partie.joueurs) {
+
+    numerosUtilises.push(
+        partie.joueurs[nom].numero
+    );
+
+}
+
+for (let i = 1; i <= mode; i++) {
+
+    if (
+        numerosUtilises.includes(i) === false
+    ) {
+
+        monNumero = i;
+        break;
+
+    }
+
+}
 
 await update(
     ref(
@@ -1137,6 +1205,12 @@ await update(
 });
 
 boutonCommencer.addEventListener("click", async function () {
+    if (
+    partieActuelle.createur !==
+    pseudoActuel
+) {
+    return;
+}
 
     if (codePartieActuelle === "") {
         alert("no game in progress");
@@ -1233,3 +1307,115 @@ onValue(
 );
 prechargerImages();
 console.log("VERSION PLAYBATTLE V1.01 - compteur + verrouillage");
+mode2.addEventListener(
+    "click",
+    async function () {
+        if (
+    partieActuelle.createur !==
+    pseudoActuel
+) {
+    return;
+}
+
+        const snapshot =
+            await get(
+                ref(
+                    db,
+                    "parties/" +
+                    codePartieActuelle
+                )
+            );
+
+        const partie =
+            snapshot.val();
+
+        const nbJoueurs =
+            Object.keys(
+                partie.joueurs
+            ).length;
+
+        if (nbJoueurs > 2) {
+
+            alert(
+                "Too many players"
+            );
+
+            return;
+
+        }
+
+        await update(
+            ref(
+                db,
+                "parties/" +
+                codePartieActuelle
+            ),
+            {
+                mode: 2
+            }
+        );
+
+    }
+);
+mode3.addEventListener(
+    "click",
+    async function () {
+        
+
+        const snapshot =
+            await get(
+                ref(
+                    db,
+                    "parties/" +
+                    codePartieActuelle
+                )
+            );
+
+        const partie =
+            snapshot.val();
+
+        const nbJoueurs =
+            Object.keys(
+                partie.joueurs
+            ).length;
+
+        if (nbJoueurs > 3) {
+
+            alert(
+                "Too many players"
+            );
+
+            return;
+
+        }
+
+        await update(
+            ref(
+                db,
+                "parties/" +
+                codePartieActuelle
+            ),
+            {
+                mode: 3
+            }
+        );
+
+    }
+);
+mode4.addEventListener(
+    "click",
+    async function () {
+
+        await update(
+            ref(
+                db,
+                "parties/" +
+                codePartieActuelle
+            ),
+            {
+                mode: 4
+            }
+        );
+
+    }
+);
