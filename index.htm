@@ -49,6 +49,15 @@
 </label>
 
 <br><br>
+<label>
+    <input
+        type="checkbox"
+        id="partiePublique"
+        checked>
+    Public Game
+</label>
+
+<br><br>
         <button id="creerPartie" class="boutonMenu">
     Create Game
 </button>
@@ -63,6 +72,10 @@
         <button id="boutonRejoindre" class="boutonMenu">
     Join Game
 </button>
+<h3>Open Games</h3>
+
+<div id="partiesPubliques">
+</div>
 
     </div>
 
@@ -84,12 +97,29 @@
 <div
     id="choixModeLobby"
     style="display:none;">
+    <h4 id="titreModeLobby">
+    Change game mode
+</h4>
+
+</html>
+<button id="mode2" class="boutonMode">
+    Duel
+</button>
+
+<button id="mode3" class="boutonMode">
+    3 Players
+</button>
+
+<button id="mode4" class="boutonMode">
+    4 Players
+</button>
 
 
 </div>
         <button id="commencer">
             Start Game
         </button>
+        
 
     </div>
 
@@ -109,13 +139,17 @@
     🔵 Bleu : 3 | 🔴 Rouge : 3 | 🟡 Jaune : 3 | 🟢 Vert : 3
 </p>
 
-        <p id="score">
-            Score : 0
-        </p>
+       <p id="score">
+    Score : 0
+</p>
 
-        <button id="nouvellePartie">
-            New Game
-        </button>
+<button id="salonVideo">
+    🎥 Video Room
+</button>
+
+<button id="nouvellePartie">
+    New Game
+</button>
         <div id="reglesDuel" style="display:none;">
 
     <h3>🎮 DUEL CARDS</h3>
@@ -160,21 +194,5 @@
 
     <script type="module" src="script.js"></script>
 
-</body>
 
-<h4 id="titreModeLobby">
-    Change game mode
-</h4>
 
-</html>
-<button id="mode2" class="boutonMode">
-    Duel
-</button>
-
-<button id="mode3" class="boutonMode">
-    3 Players
-</button>
-
-<button id="mode4" class="boutonMode">
-    4 Players
-</button>

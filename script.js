@@ -31,10 +31,18 @@ const compteurParties =
         "compteurParties"
     );
 const lobby = document.getElementById("lobby");
+const partiesPubliques =
+    document.getElementById(
+        "partiesPubliques"
+    );
 const jeu = document.getElementById("jeu");
 const finPartie = document.getElementById("finPartie");
 
 const champPseudo = document.getElementById("pseudo");
+const partiePublique =
+    document.getElementById(
+        "partiePublique"
+    );
 const champCode = document.getElementById("codePartie");
 
 const boutonCreer = document.getElementById("creerPartie");
@@ -62,6 +70,10 @@ const affichageScoresJoueurs = document.getElementById("scores");
 const classement = document.getElementById("classement");
 const reglesDuel =
     document.getElementById("reglesDuel");
+    const salonVideo =
+    document.getElementById(
+        "salonVideo"
+    );
 
 let codePartieActuelle = "";
 let pseudoActuel = "";
@@ -142,6 +154,95 @@ function prechargerImages() {
             chemin;
 
     }
+
+}
+function surveillerPartiesPubliques() {
+
+    const partiesRef =
+        ref(db, "parties");
+
+    onValue(partiesRef, function (snapshot) {
+
+        const parties =
+            snapshot.val();
+
+        partiesPubliques.innerHTML = "";
+
+        if (!parties) {
+            return;
+        }
+
+        for (let code in parties) {
+
+            const partie =
+                parties[code];
+                if (
+    partie.publique !== true
+) {
+    continue;
+}
+                const age =
+    Date.now() -
+    (partie.dateCreation || 0);
+
+if (
+    age >
+    15 * 60 * 1000
+) {
+    continue;
+}
+
+            if (
+                partie.etat !== "lobby"
+            ) {
+                continue;
+            }
+
+            const nbJoueurs =
+                Object.keys(
+                    partie.joueurs
+                ).length;
+
+            const mode =
+                partie.mode || 4;
+                if (nbJoueurs >= mode) {
+    continue;
+}
+
+            let nomMode;
+
+if (mode === 2) {
+
+    nomMode = "🎯 Duel";
+
+} else if (mode === 3) {
+
+    nomMode = "👥 3 Players";
+
+} else {
+
+    nomMode = "👥 4 Players";
+
+}
+
+partiesPubliques.innerHTML +=
+    '<button class="partiePublique" onclick="rejoindrePartiePublique(\'' +
+    code +
+    '\')">' +
+    nomMode +
+    "<br>" +
+    "By " +
+    partie.createur +
+    "<br>" +
+    nbJoueurs +
+    " / " +
+    mode +
+    " players" +
+    "</button><br>";
+
+        }
+
+    });
 
 }
 
@@ -995,30 +1096,25 @@ function surveillerPartie(code) {
         return;
     }
 partieActuelle = partie;
- if (
+
+if (
+    partie.etat === "lobby" &&
     partie.createur === pseudoActuel
 ) {
 
     choixModeLobby.style.display =
         "block";
 
-} else {
-
-    choixModeLobby.style.display =
-        "none";
-        if (
-    partie.createur === pseudoActuel
-) {
-
     commencer.style.display =
         "inline-block";
 
 } else {
 
-    commencer.style.display =
+    choixModeLobby.style.display =
         "none";
 
-}
+    commencer.style.display =
+        "none";
 
 }
     if (partie.mode === 2) {
@@ -1091,7 +1187,11 @@ boutonCreer.addEventListener("click", async function () {
     createur: pseudoActuel,
     mode: modeChoisi,
     etat: "lobby",
-    joueurs: {
+    publique:
+    partiePublique.checked,
+    dateCreation: Date.now(),
+
+  joueurs: {
         [pseudoActuel]: {
             numero: 1
         }
@@ -1415,6 +1515,27 @@ mode4.addEventListener(
             {
                 mode: 4
             }
+        );
+
+    }
+);
+window.rejoindrePartiePublique =
+    function (code) {
+
+        champCode.value = code;
+
+        boutonRejoindre.click();
+
+    };
+surveillerPartiesPubliques();
+salonVideo.addEventListener(
+    "click",
+    function () {
+
+        window.open(
+            "https://kmeet.infomaniak.com/playbattle-" +
+            codePartieActuelle,
+            "_blank"
         );
 
     }
