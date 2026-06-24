@@ -66,6 +66,10 @@ const affichageTimer =
 const affichageScore = document.getElementById("score");
 const affichageCouleurs =
     document.getElementById("etatCouleurs");
+    const boutonReady =
+    document.getElementById(
+        "boutonReady"
+    );
 const affichageScoresJoueurs = document.getElementById("scores");
 const classement = document.getElementById("classement");
 const reglesDuel =
@@ -1059,11 +1063,52 @@ function surveillerJoueurs(code) {
         if (!joueurs) {
             return;
         }
+        const totalJoueurs =
+    Object.keys(joueurs).length;
+
+const joueursReady =
+    Object.values(joueurs)
+        .filter(j => j.ready)
+        .length;
+
+compteurReady.innerHTML =
+    "Ready Players : " +
+    joueursReady +
+    " / " +
+    totalJoueurs;
+
+        if (
+            joueurs[pseudoActuel]
+        ) {
+
+            if (
+                joueurs[pseudoActuel].ready
+            ) {
+
+                boutonReady.innerHTML =
+                    "🟢 Ready";
+
+            } else {
+
+                boutonReady.innerHTML =
+                    "⚪ Not Ready";
+
+            }
+
+        }
 
         for (let nom in joueurs) {
 
+            let statut =
+                joueurs[nom].ready
+                    ? "🟢 "
+                    : "⚪ ";
+
             let ligne =
-    "<li class='ligne-joueur'>" + nom;
+                "<li class='ligne-joueur'>" +
+                statut +
+                nom;
+
             if (
                 partieActuelle &&
                 partieActuelle.createur === pseudoActuel &&
@@ -1071,9 +1116,10 @@ function surveillerJoueurs(code) {
             ) {
 
                 ligne +=
-    ' <button class="bouton-exclure" onclick="exclureJoueur(\'' +
-    nom +
-    '\')">❌</button>';
+                    ' <button class="bouton-exclure" onclick="exclureJoueur(\'' +
+                    nom +
+                    '\')">❌</button>';
+
             }
 
             ligne += "</li>";
@@ -1536,6 +1582,38 @@ salonVideo.addEventListener(
             "https://kmeet.infomaniak.com/playbattle-" +
             codePartieActuelle,
             "_blank"
+        );
+
+    }
+);
+boutonReady.addEventListener(
+    "click",
+    async function () {
+
+        const joueurRef =
+            ref(
+                db,
+                "parties/" +
+                codePartieActuelle +
+                "/joueurs/" +
+                pseudoActuel
+            );
+
+        const snapshot =
+            await get(joueurRef);
+
+        if (!snapshot.exists()) {
+            return;
+        }
+
+        const joueur =
+            snapshot.val();
+
+        await update(
+            joueurRef,
+            {
+                ready: !joueur.ready
+            }
         );
 
     }

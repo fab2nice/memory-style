@@ -197,3 +197,19 @@ margin: 0;
     gap: 10px;
 
 }
+#zoneActions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+#codePartie {
+    width: 120px;
+}
+#signature {
+    font-size: 11px;
+    color: #7e7d7d;
+    margin-top: 30px;
+}

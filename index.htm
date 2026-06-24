@@ -15,7 +15,6 @@
 
         <h2>Battle Memory Online</h2>
         
-    🎮 Games Played : 0
 </p>
 
         <input
@@ -58,20 +57,23 @@
 </label>
 
 <br><br>
-        <button id="creerPartie" class="boutonMenu">
-    Create Game
-</button>
 
-        <br><br>
+<div id="zoneActions">
 
-        <input
-            type="text"
-            id="codePartie"
-            placeholder="Game Code">
+    <button id="creerPartie" class="boutonMenu">
+        Create Game
+    </button>
 
-        <button id="boutonRejoindre" class="boutonMenu">
-    Join Game
-</button>
+    <input
+        type="text"
+        id="codePartie"
+        placeholder="Private Code">
+
+    <button id="boutonRejoindre" class="boutonMenu">
+        Join Game
+    </button>
+
+</div>
 <h3>Open Games</h3>
 
 <div id="partiesPubliques">
@@ -91,6 +93,12 @@
         <h3>Players</h3>
 
         <ul id="listeJoueurs"></ul>
+        <p id="compteurReady">
+    Ready Players : 0 / 0
+</p>
+        <button id="boutonReady">
+    Ready
+</button>
         <p id="modeLobby">
     Mode : 4 Players
 </p>
@@ -193,6 +201,9 @@
     </div>
 
     <script type="module" src="script.js"></script>
+    <p id="signature">
+    Game developed by Whale
+</p>
 
 
 
