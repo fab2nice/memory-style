@@ -8,12 +8,18 @@
 </head>
 
 <body>
+<h1 id="titreSite">
+    PLAYBATTLE
+    <span id="slogan">
+        · Reveal Yourself
+    </span>
+</h1>
 
-    <h1>Strip Memory Battle</h1>
+<h2 id="nomJeu">
+    Strip Memory
+</h2>
 
     <div id="accueil">
-
-        <h2>Battle Memory Online</h2>
         
 </p>
 
@@ -24,12 +30,16 @@
 
         <br><br>
         <label>
-    <input
-        type="radio"
-        name="modeJoueurs"
-        value="2">
-    Duel
+    <label>
+    <label>
+    <input type="radio" name="modeJoueurs" value="2">
+    Duel 🌶️
 </label>
+
+<div class="duelDescription">
+    Reveal a little more
+</div>
+
 <label>
     <input
         type="radio"
@@ -64,10 +74,11 @@
         Create Game
     </button>
 
-    <input
-        type="text"
-        id="codePartie"
-        placeholder="Private Code">
+   <input
+    type="text"
+    id="codePartie"
+    placeholder="ABCD"
+    maxlength="4">
 
     <button id="boutonRejoindre" class="boutonMenu">
         Join Game
@@ -83,33 +94,47 @@
 
     <div id="lobby" style="display:none;">
 
-        <h2>Lobby</h2>
+       <p id="infosLobby">
+    Code :
+    <span id="codeLobby"></span>
 
-        <p>
-            Code :
-            <span id="codeLobby"></span>
-        </p>
+    •
+
+    <span id="modeLobby">
+        Mode : 4 Players
+    </span>
+</p>
 
         <h3>Players</h3>
 
         <ul id="listeJoueurs"></ul>
-        <p id="compteurReady">
-    Ready Players : 0 / 0
-</p>
-        <button id="boutonReady">
-    Ready
-</button>
-        <p id="modeLobby">
-    Mode : 4 Players
-</p>
+        
+<div id="zoneReady">
+
+    <span id="compteurReady">
+        Ready : 0 / 0
+    </span>
+
+    
+
+</div>
+<label class="switch">
+
+    <input
+        type="checkbox"
+        id="readySwitch">
+    <span class="slider"></span>
+</label>
+       
 <div
     id="choixModeLobby"
     style="display:none;">
-    <h4 id="titreModeLobby">
-    Change game mode
-</h4>
+    
 
 </html>
+<h4 id="titreModeLobby">
+    Change Mode
+</h4>
 <button id="mode2" class="boutonMode">
     Duel
 </button>
@@ -203,6 +228,15 @@
     <script type="module" src="script.js"></script>
     <p id="signature">
     Game developed by Whale
+    
+<p id="contactWhale">
+    Need help?<br>
+    Found a bug?<br>
+    Have a suggestion?<br><br>
+
+    <a href="mailto:playbattle.help@outlook.fr">
+        📧 playbattle.help@outlook.fr
+    </a>
 </p>
 
 

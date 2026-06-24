@@ -66,9 +66,9 @@ const affichageTimer =
 const affichageScore = document.getElementById("score");
 const affichageCouleurs =
     document.getElementById("etatCouleurs");
-    const boutonReady =
+   const readySwitch =
     document.getElementById(
-        "boutonReady"
+        "readySwitch"
     );
 const affichageScoresJoueurs = document.getElementById("scores");
 const classement = document.getElementById("classement");
@@ -1077,25 +1077,14 @@ compteurReady.innerHTML =
     " / " +
     totalJoueurs;
 
-        if (
-            joueurs[pseudoActuel]
-        ) {
+       if (
+    joueurs[pseudoActuel]
+) {
 
-            if (
-                joueurs[pseudoActuel].ready
-            ) {
+    readySwitch.checked =
+        joueurs[pseudoActuel].ready === true;
 
-                boutonReady.innerHTML =
-                    "🟢 Ready";
-
-            } else {
-
-                boutonReady.innerHTML =
-                    "⚪ Not Ready";
-
-            }
-
-        }
+}
 
         for (let nom in joueurs) {
 
@@ -1586,7 +1575,7 @@ salonVideo.addEventListener(
 
     }
 );
-boutonReady.addEventListener(
+readySwitch.addEventListener(
     "click",
     async function () {
 
