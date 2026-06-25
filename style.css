@@ -343,3 +343,63 @@ input:checked + .slider:before {
     margin: 15px 0;
 
 }
+#howToWin {
+
+    width: 320px;
+
+    margin: 20px auto;
+
+    padding: 12px;
+
+    background: rgba(255,255,255,0.05);
+
+    border: 1px solid #555;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    line-height: 1.4;
+
+}
+
+#howToWin h3 {
+
+    margin-top: 0;
+    color: gold;
+
+}
+
+#howToWin p {
+
+    margin: 8px 0;
+
+}
+#reglesVideo {
+
+    position: absolute;
+
+    right: 20px;
+    top: 180px;
+
+    width: 220px;
+
+    text-align: left;
+
+    background: rgba(0,0,0,0.3);
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+}
+
+#reglesVideo h3 {
+
+    margin-top: 0;
+
+    color: gold;
+
+}
