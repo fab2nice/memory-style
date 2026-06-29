@@ -403,3 +403,60 @@ input:checked + .slider:before {
     color: gold;
 
 }
+#salonVideo {
+
+    background: gold;
+
+    color: black;
+
+    font-weight: bold;
+
+    border: 2px solid #222;
+
+    border-radius: 8px;
+
+}
+#salonVideo:hover {
+
+    background: #ffd700;
+
+    transform: scale(1.05);
+
+}
+
+
+#popupRegles{
+    display: none;
+    background-color: #333;
+    border: 3px solid gold;
+    border-radius: 20px;
+    width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    text-align: center;
+    color: white;
+}
+#popupRegles h2{
+    color: gold;
+}
+#howToPlay{
+
+    display:none;
+
+    text-align:center;
+
+    color:white;
+
+}
+
+#howToPlay h2{
+
+    color:gold;
+
+}
+
+#howToPlay button{
+
+    margin-top:30px;
+
+}

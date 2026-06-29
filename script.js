@@ -36,6 +36,8 @@ const partiesPubliques =
         "partiesPubliques"
     );
 const jeu = document.getElementById("jeu");
+const howToPlay =
+    document.getElementById("howToPlay");
 const finPartie = document.getElementById("finPartie");
 
 const champPseudo = document.getElementById("pseudo");
@@ -86,6 +88,7 @@ let partieActuelle = null;
 let intervalTimer = null;
 let timerTraite = false;
 let joueurExcluDetecte = false;
+let tutorielVu = false;
 
 const cartesDeBase = [
     "images/basbleu.png", "images/basbleu.png",
@@ -1181,10 +1184,23 @@ if (
     }
 
     if (partie.etat === "jeu" && partie.plateau && partie.game) {
-            accueil.style.display = "none";
-            lobby.style.display = "none";
-            finPartie.style.display = "none";
-            jeu.style.display = "block";
+
+    accueil.style.display = "none";
+    lobby.style.display = "none";
+    finPartie.style.display = "none";
+
+    if (tutorielVu === false) {
+
+        jeu.style.display = "none";
+        howToPlay.style.display = "block";
+
+    } else {
+
+        howToPlay.style.display = "none";
+        jeu.style.display = "block";
+
+    }
+           
             if (partie.mode === 2) {
 
     reglesDuel.style.display = "block";
@@ -1364,6 +1380,17 @@ boutonCommencer.addEventListener("click", async function () {
 
     const partie =
         snapshot.val();
+        const joueurs =
+    partie.joueurs || {};
+
+const tousReady =
+    Object.values(joueurs)
+        .every(joueur => joueur.ready === true);
+
+if (!tousReady) {
+    alert("All players must be ready before starting.");
+    return;
+}
 
     const nbJoueurs =
     Object.keys(partie.joueurs).length;
@@ -1426,6 +1453,19 @@ const plateauMelange =
 
 boutonNouvellePartie.addEventListener("click", nouvellePartie);
 boutonRejouer.addEventListener("click", nouvellePartie);
+document
+.getElementById("continuerJeu")
+.addEventListener(
+    "click",
+    function(){
+        tutorielVu = true;
+
+        howToPlay.style.display="none";
+
+        jeu.style.display="block";
+
+    }
+);
 onValue(
     ref(db, "stats/partiesJouees"),
     function(snapshot) {
@@ -1607,3 +1647,25 @@ readySwitch.addEventListener(
 
     }
 );
+function afficherRegles() {
+
+    alert(
+`⚔️ PLAYBATTLE
+
+HOW TO WIN
+
+🎯 Find your opponents' clothes,
+NOT YOUR OWN!
+
+👕 Every clothing pair found
+must be removed by its owner.
+
+🙈 A naked player is eliminated.
+
+📹 Click the yellow Open Video button.
+
+🤝 Respect every player
+and have fun!`
+    );
+
+}
