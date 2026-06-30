@@ -145,6 +145,17 @@ const cartesDeBaseDuel = [
     "images/cadeau.png", "images/cadeau.png"
 
 ];
+async function updatePartie(
+    partieRef,
+    donnees
+) {
+
+    return await update(
+        partieRef,
+        donnees
+    );
+
+}
 function prechargerImages() {
 
     const images =
@@ -1638,12 +1649,12 @@ readySwitch.addEventListener(
         const joueur =
             snapshot.val();
 
-        await update(
-            joueurRef,
-            {
-                ready: !joueur.ready
-            }
-        );
+       await updatePartie(
+    joueurRef,
+    {
+        ready: !joueur.ready
+    }
+);
 
     }
 );
