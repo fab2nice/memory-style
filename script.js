@@ -8,6 +8,7 @@ import {
     get,
     update,
     onValue,
+    onChildAdded,
     remove,
     runTransaction
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
@@ -74,6 +75,8 @@ const affichageCouleurs =
     );
 const affichageScoresJoueurs = document.getElementById("scores");
 const classement = document.getElementById("classement");
+const sonJoueur =
+    new Audio("sons/joueur.mp3");
 const reglesDuel =
     document.getElementById("reglesDuel");
     const salonVideo =
@@ -89,7 +92,10 @@ let intervalTimer = null;
 let timerTraite = false;
 let joueurExcluDetecte = false;
 let tutorielVu = false;
-
+let ancienNombreJoueurs = 0;
+let anciensJoueurs = [];
+let derniereNotification = 0;
+let premiereLectureNotifications = true;
 const cartesDeBase = [
     "images/basbleu.png", "images/basbleu.png",
     "images/basjaune.png", "images/basjaune.png",
@@ -156,6 +162,7 @@ async function updatePartie(
     );
 
 }
+
 function prechargerImages() {
 
     const images =
@@ -1071,7 +1078,8 @@ function surveillerJoueurs(code) {
 
         const joueurs =
             snapshot.val();
-
+           
+           
         listeJoueurs.innerHTML = "";
 
         if (!joueurs) {
@@ -1270,6 +1278,7 @@ monNumero = 1;
     finPartie.style.display = "none";
 
     surveillerJoueurs(codePartieActuelle);
+    surveillerNotifications(codePartieActuelle);
     surveillerPartie(codePartieActuelle);
 });
 
@@ -1340,7 +1349,7 @@ for (let i = 1; i <= mode; i++) {
 
 }
 
-await update(
+await updatePartie(
     ref(
         db,
         "parties/" +
@@ -1348,12 +1357,18 @@ await update(
         "/joueurs"
     ),
     {
-
         [pseudoActuel]: {
             numero: monNumero
         }
     }
 );
+
+await envoyerNotification(
+    codePartieActuelle,
+    "join",
+    pseudoActuel
+);
+
 
     codeLobby.innerHTML = codePartieActuelle;
 
@@ -1363,6 +1378,7 @@ await update(
     finPartie.style.display = "none";
 
     surveillerJoueurs(codePartieActuelle);
+    surveillerNotifications(codePartieActuelle);
     surveillerPartie(codePartieActuelle);
 });
 
@@ -1658,6 +1674,76 @@ readySwitch.addEventListener(
 
     }
 );
+async function envoyerNotification(
+    codePartie,
+    type,
+    joueur
+) {
+
+    const notificationRef =
+        ref(
+            db,
+            "parties/" +
+            codePartie +
+            "/notification"
+        );
+
+    await set(
+        notificationRef,
+        {
+            id: Date.now(),
+            type: type,
+            joueur: joueur,
+            date: Date.now()
+        }
+    );
+
+}
+function surveillerNotifications(code) {
+
+    const notificationRef =
+        ref(
+            db,
+            "parties/" +
+            code +
+            "/notification"
+        );
+
+    onValue(
+        notificationRef,
+        function (snapshot) {
+
+            const notification =
+                snapshot.val();
+
+            if (!notification) {
+                return;
+            }
+
+            if (
+                notification.id === derniereNotification
+            ) {
+                return;
+            }
+
+            derniereNotification =
+                notification.id;
+
+            if (
+                notification.type === "join" &&
+                partieActuelle &&
+                partieActuelle.createur === pseudoActuel
+            ) {
+
+                sonJoueur.currentTime = 0;
+                sonJoueur.play();
+
+            }
+
+        }
+    );
+
+}
 function afficherRegles() {
 
     alert(
