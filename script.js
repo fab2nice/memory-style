@@ -10,7 +10,8 @@ import {
     onValue,
     onChildAdded,
     remove,
-    runTransaction
+    runTransaction,
+    onDisconnect
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -96,6 +97,9 @@ let ancienNombreJoueurs = 0;
 let anciensJoueurs = [];
 let derniereNotification = 0;
 let premiereLectureNotifications = true;
+let joueursEnLigne = 0;
+let nombrePartiesPubliques = 0;
+
 const cartesDeBase = [
     "images/basbleu.png", "images/basbleu.png",
     "images/basjaune.png", "images/basjaune.png",
@@ -513,12 +517,7 @@ async function gererExpirationTimer() {
         });
 
     }
-    await runTransaction(
-    ref(db, "stats/partiesJouees"),
-    function(valeur) {
-        return (valeur || 0) + 1;
-    }
-);
+    
 
 }
 function afficherEtatCouleurs(cartesTrouvees, cartes) {
@@ -1269,6 +1268,9 @@ boutonCreer.addEventListener("click", async function () {
     
 });
 monNumero = 1;
+await incrementerStat(
+    "partiesCreees"
+);
 
     codeLobby.innerHTML = codePartieActuelle;
 
@@ -1368,7 +1370,9 @@ await envoyerNotification(
     "join",
     pseudoActuel
 );
-
+await incrementerStat(
+    "partiesRejointes"
+);
 
     codeLobby.innerHTML = codePartieActuelle;
 
@@ -1468,13 +1472,11 @@ const plateauMelange =
             timerFin: Date.now() + 20000
         }
     });
-
-    await runTransaction(
-        ref(db, "stats/partiesJouees"),
-        function(valeur) {
-            return (valeur || 0) + 1;
-        }
-    );
+    await incrementerStat(
+    "partiesDemarrees"
+);
+    
+    
 
 });
 
@@ -1493,22 +1495,210 @@ document
 
     }
 );
-onValue(
-    ref(db, "stats/partiesJouees"),
-    function(snapshot) {
 
-        if (!compteurParties) {
-            return;
+prechargerImages();
+surveillerPresence();
+compterJoueursEnLigne();
+compterPartiesOuvertes();
+nettoyerAnciennesParties();
+
+if (
+    sessionStorage.getItem(
+        "playbattleVisite"
+    ) === null
+) {
+
+    compterVisiteur();
+
+}
+async function surveillerPresence() {
+
+    const identifiant =
+        pseudoActuel !== ""
+            ? pseudoActuel
+            : "Visiteur-" + Date.now();
+
+    const presenceRef =
+        ref(
+            db,
+            "presence/" + identifiant
+        );
+
+    await set(
+        presenceRef,
+        {
+            pseudo: identifiant
+        }
+    );
+
+    onDisconnect(
+        presenceRef
+    ).remove();
+
+}
+async function compterJoueursEnLigne() {
+
+    const presenceRef =
+        ref(
+            db,
+            "presence"
+        );
+
+    onValue(
+        presenceRef,
+        function(snapshot) {
+
+            if (!snapshot.exists()) {
+
+                joueursEnLigne = 0;
+
+afficherDashboard();
+
+return;
+
+            }
+
+            joueursEnLigne =
+    Object.keys(
+        snapshot.val()
+    ).length;
+
+afficherDashboard();
+        }
+    );
+
+}
+function compterPartiesOuvertes() {
+
+    const partiesRef =
+        ref(
+            db,
+            "parties"
+        );
+
+    onValue(
+        partiesRef,
+        function(snapshot) {
+
+            if (!snapshot.exists()) {
+
+                nombrePartiesPubliques = 0;
+
+afficherDashboard();
+
+return;
+
+            }
+
+            const parties =
+                snapshot.val();
+
+            let nombre = 0;
+
+            for (let code in parties) {
+
+                if (
+    parties[code].etat === "lobby" &&
+    parties[code].publique === true
+) {
+
+    nombre++;
+
+}
+
+            }
+
+nombrePartiesPubliques = nombre;
+
+afficherDashboard();
+
+        }
+    );
+
+}
+function afficherDashboard() {
+
+    console.clear();
+
+    console.log(
+        "=============================="
+    );
+
+    console.log(
+        "📊 PLAYBATTLE LIVE"
+    );
+
+    console.log("");
+
+    console.log(
+        "👥 Joueurs en ligne :",
+        joueursEnLigne
+    );
+
+    console.log(
+    "🎮 Parties publiques :",
+    nombrePartiesPubliques
+);
+
+    console.log(
+        "=============================="
+    );
+
+}
+async function nettoyerAnciennesParties() {
+
+    const partiesRef =
+        ref(
+            db,
+            "parties"
+        );
+
+    const snapshot =
+        await get(partiesRef);
+
+    if (!snapshot.exists()) {
+        return;
+    }
+
+    const parties =
+        snapshot.val();
+
+    const maintenant =
+        Date.now();
+
+    for (let code in parties) {
+
+        const partie =
+            parties[code];
+
+        if (
+            partie.etat === "lobby" &&
+            partie.dateCreation &&
+            maintenant -
+                partie.dateCreation >
+                30 * 60 * 1000
+        ) {
+
+            await remove(
+                ref(
+                    db,
+                    "parties/" + code
+                )
+            );
+
+            console.log(
+                "Partie supprimée :",
+                code
+            );
+
         }
 
-        compteurParties.innerHTML =
-            "🎮 Parties jouées : " +
-            (snapshot.val() || 0);
-
     }
+
+}
+console.log(
+    "VERSION PLAYBATTLE V1.01 - compteur + verrouillage"
 );
-prechargerImages();
-console.log("VERSION PLAYBATTLE V1.01 - compteur + verrouillage");
 mode2.addEventListener(
     "click",
     async function () {
@@ -1696,6 +1886,50 @@ async function envoyerNotification(
             joueur: joueur,
             date: Date.now()
         }
+    );
+
+}
+async function incrementerStat(nomStat) {
+
+    console.log(
+        "Incrémentation :",
+        nomStat
+    );
+
+    const statRef =
+        ref(
+            db,
+            "stats/" + nomStat
+        );
+
+    await runTransaction(
+        statRef,
+        function(valeur) {
+
+            console.log(
+                "Ancienne valeur :",
+                valeur
+            );
+
+            return (valeur || 0) + 1;
+
+        }
+    );
+
+    console.log(
+        "Stat terminée"
+    );
+
+}
+async function compterVisiteur() {
+
+    sessionStorage.setItem(
+        "playbattleVisite",
+        "oui"
+    );
+
+    await incrementerStat(
+        "visiteurs"
     );
 
 }
