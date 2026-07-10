@@ -8,354 +8,345 @@
 </head>
 
 <body>
-<h1 id="titreSite">
-    PLAYBATTLE
-    <span id="slogan">
-        · Reveal Yourself
-    </span>
-</h1>
+    <h1 id="titreSite">
+        PLAYBATTLE
+        <span id="slogan">
+            · Reveal Yourself
+        </span>
+    </h1>
 
-<h2 id="nomJeu">
-    Strip Memory
-</h2>
+    <h2 id="nomJeu">
+        Strip Memory
+    </h2>
 
     <div id="accueil">
-        
-</p>
 
-        <input
-            type="text"
-            id="pseudo"
-            placeholder="Nickname">
+        <input type="text" id="pseudo" placeholder="Nickname">
 
         <br><br>
         <label>
-    <label>
-    <label>
-    <input type="radio" name="modeJoueurs" value="2">
-    Duel 🌶️
-</label>
+            <input type="radio" name="modeJoueurs" value="2">
+            Duel 🌶️
+        </label>
 
-<div class="duelDescription">
-    Reveal a little more
-</div>
+        <div class="duelDescription">
+            Reveal a little more
+        </div>
 
-<label>
-    <input
-        type="radio"
-        name="modeJoueurs"
-        value="3">
-    3 Players
-</label>
+        <label>
+            <input type="radio" name="modeJoueurs" value="3">
+            3 Players
+        </label>
 
-<label>
-    <input
-        type="radio"
-        name="modeJoueurs"
-        value="4"
-        checked>
-    4 Players
-</label>
-<div id="howToWin">
+        <label>
+            <input type="radio" name="modeJoueurs" value="4" checked>
+            4 Players
+        </label>
+        <div id="howToWin">
 
-    <h3>⚔️ HOW TO WIN</h3>
+            <h3>⚔️ HOW TO WIN</h3>
 
-    <p>
-        Find your opponents' clothes.
-    </p>
+            <p>
+                Find your opponents' clothes.
+            </p>
 
-    <p>
-       When a clothing pair is found,
-its owner removes it.
-    </p>
+            <p>
+                When a clothing pair is found,
+                its owner removes it.
+            </p>
 
-    <p>
-        A naked player is eliminated.
-    </p>
+            <p>
+                A naked player is eliminated.
+            </p>
 
-</div>
+        </div>
 
-<br><br>
-<label>
-    <input
-        type="checkbox"
-        id="partiePublique"
-        checked>
-    Public Game
-</label>
+        <br><br>
+        <label>
+            <input type="checkbox" id="partiePublique" checked>
+            Public Game
+        </label>
 
-<br><br>
+        <br><br>
 
-<div id="zoneActions">
+        <div id="zoneActions">
 
-    <button id="creerPartie" class="boutonMenu">
-        Create Game
-    </button>
+            <button id="creerPartie" class="boutonMenu">
+                Create Game
+            </button>
 
-   <input
-    type="text"
-    id="codePartie"
-    placeholder="ABCD"
-    maxlength="4">
+            <input type="text" id="codePartie" placeholder="ABCD" maxlength="4">
 
-    <button id="boutonRejoindre" class="boutonMenu">
-        Join Game
-    </button>
+            <button id="boutonRejoindre" class="boutonMenu">
+                Join Game
+            </button>
 
-</div>
-<h3>Open Games</h3>
+        </div>
+        <h3>Open Games</h3>
 
-<div id="partiesPubliques">
-</div>
+        <div id="partiesPubliques">
+        </div>
 
     </div>
 
     <div id="lobby" style="display:none;">
 
-       <p id="infosLobby">
-    Code :
-    <span id="codeLobby"></span>
+        <p id="infosLobby">
+            Code :
+            <span id="codeLobby"></span>
 
-    •
+            •
 
-    <span id="modeLobby">
-        Mode : 4 Players
-    </span>
-</p>
+            <span id="modeLobby">
+                Mode : 4 Players
+            </span>
+        </p>
 
         <h3>Players</h3>
 
         <ul id="listeJoueurs"></ul>
-        
-<div id="zoneReady">
 
-    <span id="compteurReady">
-        Ready : 0 / 0
-    </span>
+        <h3>💬 Lobby Chat</h3>
 
-    
+        <div id="chatLobby">
+
+        </div>
+
+        <div id="zoneEnvoiChat">
+
+
+            <input type="text" id="messageChat" placeholder="Type a message..." maxlength="100">
+
+            <button id="envoyerMessage">
+                Send
+            </button>
+
+            <div id="zoneReady">
+
+                <span id="compteurReady">
+                    Ready : 0 / 0
+                </span>
+
+
+
+            </div>
+            <label class="switch">
+
+                <input type="checkbox" id="readySwitch">
+                <span class="slider"></span>
+            </label>
+
+            <div id="choixModeLobby" style="display:none;">
+
+
+
+                <h4 id="titreModeLobby">
+                    Change Mode
+                </h4>
+                <button id="mode2" class="boutonMode">
+                    Duel
+                </button>
+
+                <button id="mode3" class="boutonMode">
+                    3 Players
+                </button>
+
+                <button id="mode4" class="boutonMode">
+                    4 Players
+                </button>
+
+
+            </div>
+            <button id="commencer">
+                Start Game
+            </button>
+
+
+        </div>
 
 </div>
-<label class="switch">
 
-    <input
-        type="checkbox"
-        id="readySwitch">
-    <span class="slider"></span>
-</label>
-       
-<div
-    id="choixModeLobby"
-    style="display:none;">
-    
-
-</html>
-<h4 id="titreModeLobby">
-    Change Mode
-</h4>
-<button id="mode2" class="boutonMode">
-    Duel
-</button>
-
-<button id="mode3" class="boutonMode">
-    3 Players
-</button>
-
-<button id="mode4" class="boutonMode">
-    4 Players
-</button>
-
-
-</div>
-        <button id="commencer">
-            Start Game
-        </button>
-        
-
-    </div>
 <div id="howToPlay" style="display:none;">
+            <h2>⚔️ HOW TO PLAY</h2>
 
-    <h2>⚔️ HOW TO PLAY</h2>
+            <h3>🎯 YOUR MISSION</h3>
 
-    <h3>🎯 YOUR MISSION</h3>
+            <p>
+                Find your opponents' clothes.
+            </p>
 
-    <p>
-        Find your opponents' clothes.
-    </p>
+            <p style="color:gold;font-size:28px;font-weight:bold;">
+                NOT YOUR OWN!
+            </p>
 
-    <p style="color:gold;font-size:28px;font-weight:bold;">
-        NOT YOUR OWN!
-    </p>
+            <br>
 
-    <br>
+            <p>
+                👕 Every clothing pair found<br>
+                must be removed by its owner.
+            </p>
 
-    <p>
-        👕 Every clothing pair found<br>
-        must be removed by its owner.
-    </p>
+            <p>
+                🙈 A naked player is eliminated.
+            </p>
 
-    <p>
-        🙈 A naked player is eliminated.
-    </p>
+            <p>
+                📹 Click the yellow <b>OPEN VIDEO</b><br>
+                button before playing.
+            </p>
 
-    <p>
-        📹 Click the yellow <b>OPEN VIDEO</b><br>
-        button before playing.
-    </p>
+            <p>
+                🤝 Respect every player<br>
+                and have fun!
+            </p>
 
-    <p>
-        🤝 Respect every player<br>
-        and have fun!
-    </p>
+            <br>
 
-    <br>
+            <button id="continuerJeu">
+                START GAME
+            </button>
 
-    <button id="continuerJeu">
-        START GAME
-    </button>
+        </div>
+        <div id="jeu" style="display:none;">
 
-</div>
-    <div id="jeu" style="display:none;">
+            <h2 id="tour" class="joueur1">
+                🔴 Turn player 1
+            </h2>
 
-        <h2 id="tour" class="joueur1">
-    🔴 Turn player 1
-</h2>
+            <h3 id="timer">
+                ⏱️ 15
+            </h3>
 
-<h3 id="timer">
-    ⏱️ 15
-</h3>
+            <p id="scores">
+                J1 : 0 | J2 : 0 | J3 : 0 | J4 : 0
+            </p>
 
-<p id="scores">
-    J1 : 0 | J2 : 0 | J3 : 0 | J4 : 0
-</p><p id="etatCouleurs">
-    🔵 Bleu : 3 | 🔴 Rouge : 3 | 🟡 Jaune : 3 | 🟢 Vert : 3
-</p>
+            <p id="etatCouleurs">
+                🔵 Bleu : 3 | 🔴 Rouge : 3 | 🟡 Jaune : 3 | 🟢 Vert : 3
+            </p>
 
-       <p id="score">
-    Score : 0
-</p>
+            <p id="score">
+                Score : 0
+            </p>
 
-<button id="salonVideo">
-    🎥 Open Vidéo
-</button>
-<div id="reglesVideo">
+            <button id="salonVideo">
+                🎥 Open Vidéo
+            </button>
+            <div id="reglesVideo">
 
-    <h3>📹 VIDEO</h3>
+                <h3>📹 VIDEO</h3>
 
-    <p>✔ Camera is optional.</p>
+                <p>✔ Camera is optional.</p>
 
-    <p>✔ Show removed clothing on camera.</p>
+                <p>✔ Show removed clothing on camera.</p>
 
-    <p>✔ Duel actions must be performed live on camera.</p>
+                <p>✔ Duel actions must be performed live on camera.</p>
 
-    <p>✔ Respect all players.</p>
+                <p>✔ Respect all players.</p>
 
-</div>
-<button id="nouvellePartie">
-    New Game
-</button>
-        <div id="reglesDuel" style="display:none;">
+            </div>
+            <button id="nouvellePartie">
+                New Game
+            </button>
+            <div id="reglesDuel" style="display:none;">
 
-    <h3>🎮 DUEL CARDS</h3>
+                <h3>🎮 DUEL CARDS</h3>
 
-    <p>
-        🍆<br>
-        Masturbate 30s
-    </p>
+                <p>
+                    🍆<br>
+                    Masturbate 30s
+                </p>
 
-    <p>
-        🍑<br>
-        10 spankings 
-    </p>
+                <p>
+                    🍑<br>
+                    10 spankings
+                </p>
 
-    <p>
-        🛡️ Shield<br>
-        Block one action.
-    </p>
+                <p>
+                    🛡️ Shield<br>
+                    Block one action.
+                </p>
 
-    <p>
-        🎁 Gift<br>
-        Ask anything you want.
-    </p>
+                <p>
+                    🎁 Gift<br>
+                    Ask anything you want.
+                </p>
 
-</div>
+            </div>
 
-        <div id="plateau"></div>
+            <div id="plateau"></div>
 
-    </div>
+        </div>
 
+        <div id="finPartie" style="display:none;">
 
-</div>
-    <div id="finPartie" style="display:none;">
+            <h2>🏆 Game Over</h2>
 
-        <h2>🏆 Game Over</h2>
+            <p id="classement"></p>
 
-        <p id="classement"></p>a
+            <button id="rejouer">
+                New Game
+            </button>
 
-        <button id="rejouer">
-            New Game
-        </button>
+        </div>
+        <div id="popupRegles" style="display:none;">
 
-    </div>
-<div id="popupRegles" style="display:none;">
+            <div id="contenuPopup">
 
-  <div id="contenuPopup">
+                <h2>🎯 YOUR MISSION</h2>
 
-    <h2>🎯 YOUR MISSION</h2>
+                <p>
+                    Find your opponents' clothes.
+                </p>
 
-    <p>
-        Find your opponents' clothes.
-    </p>
+                <p style="color:gold;font-size:28px;font-weight:bold;">
+                    NOT YOUR OWN!
+                </p>
 
-    <p style="color:gold;font-size:28px;font-weight:bold;">
-        NOT YOUR OWN!
-    </p>
+                <p>
+                    👕 Every clothing pair found<br>
+                    must be removed by its owner.
+                </p>
 
-    <p>
-        👕 Every clothing pair found<br>
-        must be removed by its owner.
-    </p>
+                <p>
+                    🙈 A naked player is eliminated.
+                </p>
 
-    <p>
-        🙈 A naked player is eliminated.
-    </p>
+                <p>
+                    📹 Click the yellow <b>OPEN VIDEO</b><br>
+                    button before playing.
+                </p>
 
-    <p>
-        📹 Click the yellow <b>OPEN VIDEO</b><br>
-        button before playing.
-    </p>
+                <p>
+                    🤝 Respect every player<br>
+                    and have fun!
+                </p>
 
-    <p>
-        🤝 Respect every player<br>
-        and have fun!
-    </p>
+                <button id="continuerPopup">
+                    START PLAYING
+                </button>
 
-    <button id="fermerPopup">
-        START PLAYING
-    </button>
+            </div>
 
-</div>
+            <button id="fermerPopupOK">
+                GOT IT!
+            </button>
 
-        <button id="fermerPopup">
-            GOT IT!
-        </button>
+        </div>
 
-    </div>
+        <script type="module" src="script.js"></script>
+        <p id="signature">
+            Game developed by Whale
+        </p>
 
-</div>
-    <script type="module" src="script.js"></script>
-    <p id="signature">
-    Game developed by Whale
-    
-<p id="contactWhale">
-    Need help?<br>
-    Found a bug?<br>
-    Have a suggestion?<br><br>
+        <p id="contactWhale">
+            Need help?<br>
+            Found a bug?<br>
+            Have a suggestion?<br><br>
 
-    <a href="mailto:playbattle.help@outlook.fr">
-        📧 playbattle.help@outlook.fr
-    </a>
-</p>
-
-
-
+            <a href="mailto:playbattle.help@outlook.fr">
+                📧 playbattle.help@outlook.fr
+            </a>
+        </p>
+        </body>
+</html>

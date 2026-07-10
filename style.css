@@ -1,12 +1,14 @@
 body {
     background: linear-gradient(
-    #3a3a3a,
-    #222222
-);
+        #3a3a3a,
+        #222222
+    );
     color: white;
     text-align: center;
     font-family: Arial, sans-serif;
-    #reglesDuel {
+}
+
+#reglesDuel {
     position: absolute;
     left: 20px;
     top: 360px;
@@ -21,13 +23,7 @@ body {
     margin-top: 0;
     color: gold;
 }
-}
-#reglesDuel {
-    width: 180px;
-    float: left;
-    margin-right: 20px;
-    text-align: left;
-}
+
 #plateau {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -42,7 +38,7 @@ button {
     margin: 8px;
     border-radius: 10px;
     border: none;
-    Padding: 0; 
+    padding: 0; 
     cursor: pointer;
     background: transparent;
     font-size: 18px;
@@ -88,13 +84,11 @@ button:hover {
     padding: 30px;
     text-align: center;
     color: white;
+    animation: apparition 0.8s ease;
 }
 
 #finPartie h2 {
     color: gold;
-}
-#finPartie {
-    animation: apparition 0.8s ease;
 }
 
 @keyframes apparition {
@@ -108,20 +102,31 @@ button:hover {
         opacity: 1;
     }
 }
-button:hover {
-    transform: scale(1.1) rotate(2deg);
-    transition: 0.2s;
-}
+
 button {
+    width: 90px;
+    height: 140px;
+    margin: 8px;
+    border-radius: 10px;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: transparent;
+    font-size: 18px;
+    color: #ffd700;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255,215,0,0.6);
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-}
-button:hover {
-    box-shadow: 0 0 20px gold;
 }
 .boutonMenu {
     color: gold;
     font-weight: bold;
     text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+}
+button:hover {
+    transform: scale(1.1) rotate(2deg);
+    transition: 0.2s;
+    box-shadow: 0 0 20px gold;
 }
 #tour {
     font-size: 2em;
@@ -129,22 +134,19 @@ button:hover {
     margin-top: 25px;
     margin-bottom: 25px;
 }
+
+
 #scores {
     font-size: 1.2em;
     opacity: 0.8;
-}
-
-#score {
-    font-size: 0.8em;
-    opacity: 0.6;
-}
-#scores {
     position: absolute;
     left: 20px;
     top: 180px;
     text-align: left;
 }
 #score {
+    font-size: 0.8em;
+    opacity: 0.6;
     position: absolute;
     left: 20px;
     top: 350px;
@@ -157,11 +159,10 @@ button:hover {
     font-size: 14px;
     cursor: pointer;
     padding: 0;
-    margin-left: 5px;
     box-shadow: none;
     width: auto;
-height: auto;
-margin: 0;
+    height: auto;
+    margin: 0;
 }
 .ligne-joueur {
     list-style: none;
@@ -230,11 +231,6 @@ margin: 0;
     color: #888;
     text-align: center;
     margin-top: 10px;
-}
-
-#contactWhale a {
-    color: #888;
-    text-decoration: none;
 }
 
 #contactWhale a:hover {
@@ -458,5 +454,21 @@ input:checked + .slider:before {
 #howToPlay button{
 
     margin-top:30px;
+
+}
+#chatLobby {
+
+    width: 350px;
+    height: 180px;
+
+    overflow-y: auto;
+
+    border: 1px solid white;
+
+    padding: 10px;
+
+    margin: auto;
+
+    text-align: left;
 
 }

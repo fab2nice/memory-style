@@ -11,7 +11,8 @@ import {
     onChildAdded,
     remove,
     runTransaction,
-    onDisconnect
+    onDisconnect,
+    push,
 } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -84,6 +85,14 @@ const reglesDuel =
     document.getElementById(
         "salonVideo"
     );
+    const chatLobby =
+    document.getElementById("chatLobby");
+
+const messageChat =
+    document.getElementById("messageChat");
+
+const envoyerMessage =
+    document.getElementById("envoyerMessage");
 
 let codePartieActuelle = "";
 let pseudoActuel = "";
@@ -1259,6 +1268,7 @@ boutonCreer.addEventListener("click", async function () {
     publique:
     partiePublique.checked,
     dateCreation: Date.now(),
+    chat: {},
 
   joueurs: {
         [pseudoActuel]: {
@@ -1277,6 +1287,7 @@ await incrementerStat(
     accueil.style.display = "none";
     lobby.style.display = "block";
     jeu.style.display = "none";
+    surveillerChat();
     finPartie.style.display = "none";
 
     surveillerJoueurs(codePartieActuelle);
@@ -1378,6 +1389,7 @@ await incrementerStat(
 
     accueil.style.display = "none";
     lobby.style.display = "block";
+    surveillerChat();
     jeu.style.display = "none";
     finPartie.style.display = "none";
 
@@ -1385,6 +1397,10 @@ await incrementerStat(
     surveillerNotifications(codePartieActuelle);
     surveillerPartie(codePartieActuelle);
 });
+envoyerMessage.addEventListener(
+    "click",
+    envoyerMessageChat
+);
 
 boutonCommencer.addEventListener("click", async function () {
     if (
@@ -1616,6 +1632,87 @@ afficherDashboard();
     );
 
 }
+async function envoyerMessageChat() {
+
+    const texte =
+        messageChat.value.trim();
+
+    if (texte === "") {
+        return;
+    }
+
+    await push(
+
+        ref(
+            db,
+            "parties/" +
+            codePartieActuelle +
+            "/chat"
+        ),
+
+        {
+
+            pseudo:
+                pseudoActuel,
+
+            message:
+                texte,
+
+            date:
+                Date.now()
+
+        }
+
+    );
+
+    messageChat.value = "";
+
+}
+function surveillerChat() {
+
+    const chatRef =
+        ref(
+            db,
+            "parties/" +
+            codePartieActuelle +
+            "/chat"
+        );
+
+    onValue(
+
+        chatRef,
+
+        function(snapshot) {
+
+            chatLobby.innerHTML = "";
+
+            if (!snapshot.exists()) {
+                return;
+            }
+
+            const messages =
+                snapshot.val();
+
+            for (let id in messages) {
+
+                const ligne =
+                    "<p><b>" +
+                    messages[id].pseudo +
+                    " :</b> " +
+                    messages[id].message +
+                    "</p>";
+
+                chatLobby.innerHTML +=
+                    ligne;
+
+            }
+
+        }
+
+    );
+
+}
+
 function afficherDashboard() {
 
     console.clear();
