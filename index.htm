@@ -91,78 +91,101 @@
 
     <div id="lobby" style="display:none;">
 
-        <p id="infosLobby">
-            Code :
-            <span id="codeLobby"></span>
+    <div id="badgesLobby">
 
-            •
+        <span class="badgeLobby">
+            🏷 <span id="codeLobby"></span>
+        </span>
 
-            <span id="modeLobby">
-                Mode : 4 Players
-            </span>
-        </p>
+        <span class="badgeLobby">
+            👥 <span id="badgeJoueurs">1 / 4</span>
+        </span>
 
-        <h3>Players</h3>
+        <span class="badgeLobby">
+            🌶 <span id="modeLobby">4 Players</span>
+        </span>
 
-        <ul id="listeJoueurs"></ul>
+        <span class="badgeLobby">
+            🌍 Public
+        </span>
 
-        <h3>💬 Lobby Chat</h3>
+    </div>
 
-        <div id="chatLobby">
+    <div id="contenuLobby">
+
+        <div id="colonneJoueurs">
+
+            <h3>Players</h3>
+
+            <ul id="listeJoueurs"></ul>
+
+        </div>
+
+        <div id="colonneChat">
+
+            <h3>💬 Lobby Chat</h3>
+
+            <div id="chatLobby"></div>
+
+            <div id="zoneEnvoiChat">
+
+                <input
+                    type="text"
+                    id="messageChat"
+                    placeholder="Type a message..."
+                    maxlength="100">
+
+                <button id="envoyerMessage">
+                    Send
+                </button>
+
+            </div>
 
         </div>
 
-        <div id="zoneEnvoiChat">
+    </div>
 
+    <div id="barreLobby">
 
-            <input type="text" id="messageChat" placeholder="Type a message..." maxlength="100">
+        <span id="compteurReady">
+            Ready : 0 / 0
+        </span>
 
-            <button id="envoyerMessage">
-                Send
+        <label class="switch">
+
+            <input
+                type="checkbox"
+                id="readySwitch">
+
+            <span class="slider"></span>
+
+        </label>
+
+        <h4 id="titreModeLobby">
+            Change Mode
+        </h4>
+
+        <div id="choixMode">
+
+            <button id="mode2" class="boutonMode">
+                Duel
             </button>
 
-            <div id="zoneReady">
-
-                <span id="compteurReady">
-                    Ready : 0 / 0
-                </span>
-
-
-
-            </div>
-            <label class="switch">
-
-                <input type="checkbox" id="readySwitch">
-                <span class="slider"></span>
-            </label>
-
-            <div id="choixModeLobby" style="display:none;">
-
-
-
-                <h4 id="titreModeLobby">
-                    Change Mode
-                </h4>
-                <button id="mode2" class="boutonMode">
-                    Duel
-                </button>
-
-                <button id="mode3" class="boutonMode">
-                    3 Players
-                </button>
-
-                <button id="mode4" class="boutonMode">
-                    4 Players
-                </button>
-
-
-            </div>
-            <button id="commencer">
-                Start Game
+            <button id="mode3" class="boutonMode">
+                3 Players
             </button>
 
+            <button id="mode4" class="boutonMode">
+                4 Players
+            </button>
 
         </div>
+
+        <button id="commencer">
+            Start Game
+        </button>
+
+    </div>
 
 </div>
 

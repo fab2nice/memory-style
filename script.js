@@ -66,8 +66,8 @@ const plateau = document.getElementById("plateau");
 const affichageTour = document.getElementById("tour");
 const affichageTimer =
     document.getElementById("timer");
-    const modeLobby =
-    document.getElementById("modeLobby");
+   
+
 const affichageScore = document.getElementById("score");
 const affichageCouleurs =
     document.getElementById("etatCouleurs");
@@ -93,6 +93,11 @@ const messageChat =
 
 const envoyerMessage =
     document.getElementById("envoyerMessage");
+   const badgeJoueurs =
+    document.getElementById("badgeJoueurs");
+
+const modeLobby =
+    document.getElementById("modeLobby");
 
 let codePartieActuelle = "";
 let pseudoActuel = "";
@@ -1124,10 +1129,18 @@ compteurReady.innerHTML =
                     : "⚪ ";
 
             let ligne =
-                "<li class='ligne-joueur'>" +
-                statut +
-                nom;
+    "<li class='carteJoueur'>" +
 
+        "<div class='nomJoueur'>" +
+            statut +
+            nom +
+        "</div>" +
+
+        "<div class='etatJoueur'>" +
+           (joueurs[nom].ready
+    ? "✅ READY"
+    : "⏳ WAITING") +
+        "</div>";
             if (
                 partieActuelle &&
                 partieActuelle.createur === pseudoActuel &&
@@ -1152,15 +1165,64 @@ compteurReady.innerHTML =
 }
 
 function surveillerPartie(code) {
-    const partieRef = ref(db, "parties/" + code);
+
+    const partieRef =
+        ref(db, "parties/" + code);
 
     onValue(partieRef, function (snapshot) {
-    const partie = snapshot.val();
 
-    if (!partie) {
-        return;
-    }
-partieActuelle = partie;
+        const partie =
+            snapshot.val();
+
+        if (!partie) {
+            return;
+        }
+
+        let maxJoueurs = 4;
+
+        if (partie.mode === 2) {
+
+            maxJoueurs = 2;
+
+        }
+        else if (partie.mode === 3) {
+
+            maxJoueurs = 3;
+
+        }
+
+        const nbJoueurs =
+            Object.keys(
+                partie.joueurs || {}
+            ).length;
+
+        badgeJoueurs.innerHTML =
+            nbJoueurs +
+            " / " +
+            maxJoueurs;
+
+        if (partie.mode === 2) {
+
+            modeLobby.innerHTML =
+                "Mode : Duel";
+
+        }
+        else if (partie.mode === 3) {
+
+            modeLobby.innerHTML =
+                "Mode : 3 Players";
+
+        }
+        else {
+
+            modeLobby.innerHTML =
+                "Mode : 4 Players";
+
+        }
+
+        partieActuelle = partie;
+
+        // <<< À partir d'ici, tu gardes exactement ton code actuel >>>
 
 if (
     partie.etat === "lobby" &&
@@ -1182,22 +1244,7 @@ if (
         "none";
 
 }
-    if (partie.mode === 2) {
-
-    modeLobby.innerHTML =
-        "Mode : Duel";
-
-} else if (partie.mode === 3) {
-
-    modeLobby.innerHTML =
-        "Mode : 3 Players";
-
-} else {
-
-    modeLobby.innerHTML =
-        "Mode : 4 Players";
-
-}
+    
     if (
         pseudoActuel &&
         partie.joueurs &&
