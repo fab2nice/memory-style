@@ -1752,6 +1752,9 @@ function surveillerChatAccueil() {
     onValue(chatAccueilRef, function (snapshot) {
 
         const messages = snapshot.val();
+        const maintenant =
+    Date.now();
+    
 
         chatAccueil.innerHTML = "";
 
@@ -1760,6 +1763,22 @@ function surveillerChatAccueil() {
         }
 
         for (let id in messages) {
+        
+
+    if (
+
+    messages[id].date &&
+
+    maintenant -
+    messages[id].date >
+
+    30 * 60 * 1000
+
+) {
+
+    continue;
+
+}
 
             chatAccueil.innerHTML +=
 
@@ -1813,6 +1832,7 @@ const messages =
     snapshot.val();
     const maintenant =
     Date.now();
+   
 
 if (messages) {
 
@@ -1913,6 +1933,7 @@ function surveillerChat() {
 
                 chatLobby.innerHTML +=
                     ligne;
+                    
 
             }
 
