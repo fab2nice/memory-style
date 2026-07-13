@@ -122,6 +122,9 @@ button {
     color: gold;
     font-weight: bold;
     text-shadow: 0 0 5px rgba(255, 215, 0, 0.6);
+    width: 110px;
+    height: 70px;
+    margin: 4px;
 }
 button:hover {
     transform: scale(1.1) rotate(2deg);
@@ -212,22 +215,31 @@ button:hover {
 
 }
 #zoneActions {
+
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 20px;
     flex-wrap: wrap;
-    margin-top: 10px; 
+
+}
+
+#labelPublic {
+
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 26px;
+
 }
 
 #codePartie {
 
-    width: 70px;
+    width: 110px;
 
     text-align: center;
 
-    text-transform: uppercase;
-
+   
 }
 #signature {
     font-size: 11px;
@@ -356,7 +368,7 @@ input:checked + .slider:before {
 
     width: 320px;
 
-    margin: 20px auto;
+    margin: 5px auto;
 
     padding: 12px;
 
@@ -697,5 +709,136 @@ box-shadow:0 0 15px rgba(255,215,0,.5);
     background:#333;
     text-shadow:
 0 0 8px rgba(255,215,0,.7);
+
+}
+#chatAccueil {
+
+    width: 700px;
+
+    height: 130px;
+
+    margin: 10px auto;
+
+    padding: 12px;
+
+    background: #3b3b3b;
+
+    border: 1px solid #555;
+
+    border-radius: 12px;
+
+    overflow-y: auto;
+
+    text-align: left;
+
+     margin-top: 10px;
+
+    margin-bottom: 10px;
+
+}
+
+#zoneEnvoiAccueil {
+
+    display: flex;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin-top: 8px;
+
+    margin-bottom: 8px;
+
+}
+
+#messageAccueil {
+
+    width: 520px;
+     height: 20px;
+
+    padding: 8px 10px;
+    font-size: 18px;
+
+}
+
+#envoyerAccueil {
+
+    width: 120px;
+    height: 38px;
+
+}
+#accueil h3 {
+
+    margin-top: 20px;
+
+    margin-bottom: 10px;
+
+      margin: 15px 0 8px;
+
+}
+#zoneActions {
+    margin-bottom: 15px;
+}
+#accueilBas{
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:flex-start;
+
+    gap:40px;
+
+    margin-top:10px;
+
+}
+#colonneParties{
+
+    width:280px;
+
+}
+#chatAccueil {
+    width: 100%;
+    height: 95px;
+    margin: 8px auto;
+    padding: 10px;
+    box-sizing: border-box;
+}
+#choixModeAccueil{
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+
+    margin-top:10px;
+
+}
+.messageAccueil {
+
+    margin-bottom: 6px;
+
+}
+
+.pseudoAccueil {
+
+    color: gold;
+
+    font-weight: bold;
+
+    font-size: 16px;
+
+    margin-bottom: 3px;
+
+}
+
+.texteAccueil {
+
+    color: white;
+
+    font-size: 15px;
+
+    word-wrap: break-word;
 
 }

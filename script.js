@@ -99,6 +99,20 @@ const envoyerMessage =
 const modeLobby =
     document.getElementById("modeLobby");
 
+    const chatAccueilRef =
+    ref(db, "chatAccueil");
+
+    const chatAccueil =
+    document.getElementById("chatAccueil");
+    
+
+const messageAccueil =
+    document.getElementById("messageAccueil");
+
+const envoyerAccueil =
+    document.getElementById("envoyerAccueil");
+    
+
 let codePartieActuelle = "";
 let pseudoActuel = "";
 let monNumero = 0;
@@ -1341,6 +1355,22 @@ await incrementerStat(
     surveillerNotifications(codePartieActuelle);
     surveillerPartie(codePartieActuelle);
 });
+envoyerAccueil.addEventListener(
+    "click",
+    envoyerMessageAccueil
+);
+messageAccueil.addEventListener(
+    "keypress",
+    function (event) {
+
+        if (event.key === "Enter") {
+
+            envoyerMessageAccueil();
+
+        }
+
+    }
+);
 
 boutonRejoindre.addEventListener("click", async function () {
     pseudoActuel = champPseudo.value.trim();
@@ -1444,6 +1474,7 @@ await incrementerStat(
     surveillerNotifications(codePartieActuelle);
     surveillerPartie(codePartieActuelle);
 });
+
 envoyerMessage.addEventListener(
     "click",
     envoyerMessageChat
@@ -1564,6 +1595,7 @@ surveillerPresence();
 compterJoueursEnLigne();
 compterPartiesOuvertes();
 nettoyerAnciennesParties();
+surveillerChatAccueil();
 
 if (
     sessionStorage.getItem(
@@ -1715,6 +1747,136 @@ async function envoyerMessageChat() {
     messageChat.value = "";
 
 }
+function surveillerChatAccueil() {
+
+    onValue(chatAccueilRef, function (snapshot) {
+
+        const messages = snapshot.val();
+
+        chatAccueil.innerHTML = "";
+
+        if (!messages) {
+            return;
+        }
+
+        for (let id in messages) {
+
+            chatAccueil.innerHTML +=
+
+    "<div class='messageAccueil'>" +
+
+        "<div class='pseudoAccueil'>" +
+
+            messages[id].pseudo +
+
+        "</div>" +
+
+        "<div class='texteAccueil'>" +
+
+            messages[id].texte +
+
+        "</div>" +
+
+    "</div>";
+
+        }
+
+        chatAccueil.scrollTop =
+            chatAccueil.scrollHeight;
+
+    });
+
+}
+async function envoyerMessageAccueil() {
+    console.log("envoyerMessageAccueil");
+
+    const texte =
+        messageAccueil.value.trim();
+
+    if (texte === "") {
+        return;
+    }
+
+    await push(chatAccueilRef, {
+
+        pseudo: pseudo.value.trim(),
+
+        texte: texte,
+
+        date: Date.now()
+
+    });
+    const snapshot =
+    await get(chatAccueilRef);
+
+const messages =
+    snapshot.val();
+    const maintenant =
+    Date.now();
+
+if (messages) {
+
+    const ids =
+        Object.keys(messages).sort(
+            (a, b) =>
+            messages[a].date -
+            messages[b].date
+        );
+
+    // Suppression des messages
+    // de plus de 30 minutes
+
+    for (const id of ids) {
+
+        if (
+
+            maintenant -
+            messages[id].date >
+
+            30 * 60 * 1000
+
+        ) {
+
+            await remove(
+
+                ref(
+                    db,
+                    "chatAccueil/" +
+                    id
+                )
+
+            );
+
+        }
+
+    }
+
+    // Limite à 30 messages
+
+    const idsRestants =
+        Object.keys(messages);
+
+    if (idsRestants.length > 30) {
+
+        await remove(
+
+            ref(
+                db,
+                "chatAccueil/" +
+                idsRestants[0]
+            )
+
+        );
+
+    }
+
+}
+
+    messageAccueil.value = "";
+
+}
+
+
 function surveillerChat() {
 
     const chatRef =

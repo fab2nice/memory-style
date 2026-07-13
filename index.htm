@@ -25,23 +25,28 @@
 
         <br><br>
         <label>
-            <input type="radio" name="modeJoueurs" value="2">
-            Duel 🌶️
-        </label>
+           <div id="choixModeAccueil">
 
-        <div class="duelDescription">
-            Reveal a little more
-        </div>
+    <label>
+        <input type="radio" name="modeJoueurs" value="2">
+        Duel 🌶
+    </label>
 
-        <label>
-            <input type="radio" name="modeJoueurs" value="3">
-            3 Players
-        </label>
+    <label>
+        <input type="radio" name="modeJoueurs" value="3">
+        3 Players
+    </label>
 
-        <label>
-            <input type="radio" name="modeJoueurs" value="4" checked>
-            4 Players
-        </label>
+    <label>
+        <input type="radio" name="modeJoueurs" value="4" checked>
+        4 Players
+    </label>
+
+</div>
+
+<div class="duelDescription">
+    Reveal a little more
+</div>
         <div id="howToWin">
 
             <h3>⚔️ HOW TO WIN</h3>
@@ -62,29 +67,68 @@
         </div>
 
         <br><br>
-        <label>
-            <input type="checkbox" id="partiePublique" checked>
-            Public Game
-        </label>
-
-        <br><br>
-
         <div id="zoneActions">
 
-            <button id="creerPartie" class="boutonMenu">
-                Create Game
-            </button>
+    <label id="labelPublic">
 
-            <input type="text" id="codePartie" placeholder="ABCD" maxlength="4">
+        <input
+            type="checkbox"
+            id="partiePublique"
+            checked>
 
-            <button id="boutonRejoindre" class="boutonMenu">
-                Join Game
+        Public Game
+
+    </label>
+
+           <button id="creerPartie" class="boutonMenu">
+    Create Game
+</button>
+
+<button id="boutonRejoindre" class="boutonMenu">
+    Join Game
+</button>
+
+<input
+    type="text"
+    id="codePartie"
+    placeholder="Game Code"
+    maxlength="4">
+        </div>
+        <div id="accueilBas">
+
+    <div id="colonneParties">
+
+        <h3>🎮 Open Games</h3>
+
+        <div id="partiesPubliques">
+        </div>
+
+    </div>
+
+    <div id="colonneCommunity">
+
+        <h3>🌍 Live Community</h3>
+
+        <div id="chatAccueil">
+        </div>
+
+        <div id="zoneEnvoiAccueil">
+
+            <input
+                type="text"
+                id="messageAccueil"
+                placeholder="Say hello..."
+                maxlength="100">
+
+            <button id="envoyerAccueil">
+                Send
             </button>
 
         </div>
-        <h3>Open Games</h3>
 
-        <div id="partiesPubliques">
+    </div>
+
+</div>
         </div>
 
     </div>
@@ -131,7 +175,7 @@
 
                 <input
                     type="text"
-                    id="messageChat"
+                    id="messageAccueil"
                     placeholder="Type a message..."
                     maxlength="100">
 
