@@ -1243,17 +1243,13 @@ if (
     partie.createur === pseudoActuel
 ) {
 
-    choixModeLobby.style.display =
-        "block";
-
+    
     commencer.style.display =
         "inline-block";
 
 } else {
 
-    choixModeLobby.style.display =
-        "none";
-
+   
     commencer.style.display =
         "none";
 
