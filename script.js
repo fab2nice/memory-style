@@ -1649,12 +1649,14 @@ if (
 
 }
 async function surveillerPresence() {
-    
 
     const identifiant =
         pseudoActuel !== ""
             ? pseudoActuel
             : "Visiteur-" + Date.now();
+
+    const connectedRef =
+        ref(db, ".info/connected");
 
     const presenceRef =
         ref(
@@ -1662,16 +1664,27 @@ async function surveillerPresence() {
             "presence/" + identifiant
         );
 
-    await set(
-        presenceRef,
-        {
-            pseudo: identifiant
+    onValue(
+        connectedRef,
+        async function (snapshot) {
+
+            if (snapshot.val() !== true) {
+                return;
+            }
+
+            await onDisconnect(
+                presenceRef
+            ).remove();
+
+            await set(
+                presenceRef,
+                {
+                    pseudo: identifiant
+                }
+            );
+
         }
     );
-
-    onDisconnect(
-        presenceRef
-    ).remove();
 
 }
 async function compterJoueursEnLigne() {
