@@ -1304,6 +1304,51 @@ if (
 
 boutonCreer.addEventListener("click", async function () {
     pseudoActuel = champPseudo.value.trim();
+    const partiesRef =
+    ref(db, "parties");
+
+const snapshot =
+    await get(partiesRef);
+
+if (snapshot.exists()) {
+
+    const parties =
+        snapshot.val();
+
+    for (let code in parties) {
+
+        const partie =
+            parties[code];
+
+       if (
+
+    partie.createur === pseudoActuel &&
+
+    partie.etat === "lobby"
+
+) {
+
+    codePartieActuelle = code;
+
+    accueil.style.display = "none";
+    lobby.style.display = "block";
+    jeu.style.display = "none";
+    finPartie.style.display = "none";
+
+    codeLobby.innerHTML =
+        code;
+
+    surveillerChat();
+    surveillerJoueurs(code);
+    surveillerNotifications(code);
+    surveillerPartie(code);
+
+    return;
+
+}
+    }
+
+}
     const modeChoisi =
     parseInt(
         document.querySelector(
@@ -1335,6 +1380,7 @@ boutonCreer.addEventListener("click", async function () {
     
 });
 monNumero = 1;
+
 await incrementerStat(
     "partiesCreees"
 );
@@ -1603,6 +1649,7 @@ if (
 
 }
 async function surveillerPresence() {
+    
 
     const identifiant =
         pseudoActuel !== ""
@@ -2244,6 +2291,25 @@ async function incrementerStat(nomStat) {
     );
 
 }
+async function incrementerVisiteHeure() {
+
+    const heure =
+    new Date()
+        .toLocaleString(
+            "fr-FR",
+            {
+                timeZone: "Europe/Paris",
+                hour: "2-digit",
+                hour12: false
+            }
+        )
+        .padStart(2, "0");
+
+    await incrementerStat(
+        "visitesParHeure/" + heure
+    );
+
+}
 async function compterVisiteur() {
 
     sessionStorage.setItem(
@@ -2254,6 +2320,7 @@ async function compterVisiteur() {
     await incrementerStat(
         "visiteurs"
     );
+    await incrementerVisiteHeure();
 
 }
 function surveillerNotifications(code) {
