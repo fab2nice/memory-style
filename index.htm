@@ -20,9 +20,26 @@
     </h2>
 <div id="infoUpdate">
 
-    <strong>✅ Every great community starts small.</strong><br>
+    <div id="messageCommunaute">
 
-    Thanks for being one of the first players! Invite your friends and let's grow PlayBattle together.
+    <strong>
+        ✅ Player Profiles are Live!
+    </strong>
+
+    <br>
+
+    Create your profile today and secure your nickname.
+
+    <br><br>
+
+    🏆 Coming soon:
+    Badges, achievements, player statistics and community rewards.
+
+    <br><br>
+
+    Thank you for helping build PlayBattle from day one!
+
+</div>
 
 </div>
     <div id="accueil">
@@ -30,7 +47,7 @@
         <input type="text" id="pseudo" placeholder="Nickname">
 
         <br><br>
-        <label>
+        
            <div id="choixModeAccueil">
 
     <label>
@@ -86,24 +103,51 @@
 
     </label>
 
-           <button id="creerPartie" class="boutonMenu">
-    Create Game
-</button>
+           <div id="zoneCompte">
 
-<button id="boutonRejoindre" class="boutonMenu">
-    Join Game
-</button>
+    <div id="compteAccueil">
 
-<input
-    type="text"
-    id="codePartie"
-    placeholder="Game Code"
-    maxlength="4">
-        </div>
-        <div id="accueilBas">
+        <button id="connectProfile">
+            👤<br>Connect
+        </button>
 
-    <div id="colonneParties">
+        <button
+            id="logoutProfile"
+            class="boutonMenu"
+            style="display:none;">
+            Logout
+        </button>
 
+    </div>
+
+</div>
+
+<div id="zoneJeu">
+
+    <button id="creerPartie" class="boutonMenu">
+        Create Game
+    </button>
+
+    <button id="boutonRejoindre" class="boutonMenu">
+        Join Game
+    </button>
+
+    <input
+        type="text"
+        id="codePartie"
+        ...>
+
+</div>
+
+<div id="colonneParties">
+<h2>🟢 Online Players</h2>
+
+<div id="joueursEnLigne">
+</div>
+
+<br>
+
+<br>
         <h3>🎮 Open Games</h3>
 
         <div id="partiesPubliques">
@@ -121,11 +165,10 @@
         <div id="zoneEnvoiAccueil">
 
             <input
-                type="text"
-                id="messageAccueil"
-                placeholder="Say hello..."
-                maxlength="100">
-
+    type="text"
+    id="messageAccueil"
+    placeholder="Type a message..."
+    maxlength="100">
             <button id="envoyerAccueil">
                 Send
             </button>
@@ -179,11 +222,11 @@
 
             <div id="zoneEnvoiChat">
 
-                <input
-                    type="text"
-                    id="messageAccueil"
-                    placeholder="Type a message..."
-                    maxlength="100">
+               <input
+    type="text"
+    id="messageChat"
+    placeholder="Type a message..."
+    maxlength="100">
 
                 <button id="envoyerMessage">
                     Send
@@ -420,6 +463,165 @@
             <a href="mailto:playbattle.help@outlook.fr">
                 📧 playbattle.help@outlook.fr
             </a>
-        </p>
-        </body>
-</html>
+            </p>
+        
+            
+   <div id="profileModal">
+
+    <h2>CREATE PROFILE</h2>
+
+    <input
+        type="text"
+        id="profileNickname"
+        placeholder="Nickname">
+
+    <input
+        type="password"
+        id="profilePassword"
+        placeholder="Password">
+
+    <input
+        type="password"
+        id="profileConfirmPassword"
+        placeholder="Confirm password">
+
+    <div class="profileColumns">
+
+        <div class="profileColumn">
+
+            <h3>I AM</h3>
+
+            <label class="optionLine">
+                <input
+                    type="radio"
+                    name="gender"
+                    value="man"
+                    checked>
+                <span>Man</span>
+            </label>
+
+            <label class="optionLine">
+                <input
+                    type="radio"
+                    name="gender"
+                    value="woman">
+                <span>Woman</span>
+            </label>
+
+            <label class="optionLine">
+                <input
+                    type="radio"
+                    name="gender"
+                    value="couple">
+                <span>Couple</span>
+            </label>
+
+            <label class="optionLine">
+                <input
+                    type="radio"
+                    name="gender"
+                    value="martian">
+                <span>Martian</span>
+            </label>
+
+        </div>
+
+        <div class="profileColumn">
+
+            <h3>I PLAY WITH</h3>
+
+            <label class="optionLine">
+                <input
+                    type="checkbox"
+                    id="playMen"
+                    checked>
+                <span>Men</span>
+            </label>
+
+            <label class="optionLine">
+                <input
+                    type="checkbox"
+                    id="playWomen"
+                    checked>
+                <span>Women</span>
+            </label>
+
+            <label class="optionLine">
+                <input
+                    type="checkbox"
+                    id="playCouples"
+                    checked>
+                <span>Couples</span>
+            </label>
+
+            <label class="optionLine">
+                <input
+                    type="checkbox"
+                    id="playMartians">
+                <span>Martians</span>
+            </label>
+
+        </div>
+
+    </div>
+
+    <div class="profileBottom">
+
+        <h3>COUNTRY</h3>
+
+        <input
+            type="text"
+            id="profileCountry"
+            placeholder="Country (optional)">
+
+        <label class="optionLine">
+
+            <input
+                type="checkbox"
+                id="over18">
+
+            <span>I am over 18 years old</span>
+
+        </label>
+
+    </div>
+
+    <div class="profileButtons">
+
+    <button id="cancelProfile">
+        Cancel
+    </button>
+
+    <button id="loginProfile">
+        Login
+    </button>
+
+    <button id="saveProfile">
+        Create Profile
+    </button>
+
+</div>
+
+</div>
+<div
+    id="viewProfileModal"
+    class="modal"
+    style="display:none;">
+
+    <div class="modal-content">
+
+        <h2>Player Profile</h2>
+
+        <div id="viewProfileContent"></div>
+
+        <br>
+
+        <button id="closeProfile">
+            Close
+        </button>
+
+    </div>
+
+</div>
+
+    

@@ -52,6 +52,20 @@ const champCode = document.getElementById("codePartie");
 
 const boutonCreer = document.getElementById("creerPartie");
 const boutonRejoindre = document.getElementById("boutonRejoindre");
+const connectProfile =
+    document.getElementById(
+        "connectProfile"
+    );
+
+const profileModal =
+    document.getElementById(
+        "profileModal"
+    );
+console.log(profileModal);
+const cancelProfile =
+    document.getElementById(
+        "cancelProfile"
+    );
 const boutonCommencer = document.getElementById("commencer");
 const boutonNouvellePartie = document.getElementById("nouvellePartie");
 const boutonRejouer = document.getElementById("rejouer");
@@ -111,6 +125,52 @@ const messageAccueil =
 
 const envoyerAccueil =
     document.getElementById("envoyerAccueil");
+    const saveProfile =
+    document.getElementById("saveProfile");
+    const over18 =
+    document.getElementById("over18");
+    const profileNickname =
+    document.getElementById("profileNickname");
+
+const profilePassword =
+    document.getElementById("profilePassword");
+
+const profileConfirmPassword =
+    document.getElementById("profileConfirmPassword");
+    const playMen = document.getElementById("playMen");
+const playWomen = document.getElementById("playWomen");
+const playCouples = document.getElementById("playCouples");
+const playMartians = document.getElementById("playMartians");
+
+const profileCountry = document.getElementById("profileCountry");
+const loginProfile =
+    document.getElementById("loginProfile");
+    const logoutProfile =
+    document.getElementById("logoutProfile");
+    const viewProfileModal =
+    document.getElementById(
+        "viewProfileModal"
+    );
+
+const viewProfileContent =
+    document.getElementById(
+        "viewProfileContent"
+    );
+
+const closeProfile =
+    document.getElementById(
+        "closeProfile"
+    );
+    closeProfile.addEventListener(
+    "click",
+    function () {
+
+        viewProfileModal.style.display =
+            "none";
+
+    }
+);
+    
     
 
 let codePartieActuelle = "";
@@ -127,6 +187,20 @@ let derniereNotification = 0;
 let premiereLectureNotifications = true;
 let joueursEnLigne = 0;
 let nombrePartiesPubliques = 0;
+let profilConnecte = null;
+
+const profilSauvegarde =
+    localStorage.getItem(
+        "profilConnecte"
+    );
+
+if (profilSauvegarde) {
+
+    reconnecterProfil(
+        profilSauvegarde
+    );
+
+}
 
 const cartesDeBase = [
     "images/basbleu.png", "images/basbleu.png",
@@ -300,6 +374,80 @@ partiesPubliques.innerHTML +=
         }
 
     });
+
+}
+function surveillerJoueursEnLigne() {
+
+    const joueursEnLigne =
+        document.getElementById(
+            "joueursEnLigne"
+        );
+
+    onValue(
+
+        ref(db, "presence"),
+
+        function (snapshot) {
+
+            joueursEnLigne.innerHTML = "";
+
+            if (!snapshot.exists()) {
+
+                joueursEnLigne.innerHTML =
+                    "<i>No player online.</i>";
+
+                return;
+
+            }
+
+            const joueurs =
+                snapshot.val();
+
+           for (let id in joueurs) {
+
+    const profil =
+    joueurs[id].pseudo;
+
+if (!profil) {
+
+    continue;
+
+}
+
+const pseudo =
+    profil.nickname;
+
+    if (pseudo === "") {
+
+        continue;
+
+    }
+
+    const div =
+        document.createElement("div");
+
+    div.innerHTML =
+        "<span style='cursor:pointer;color:#ffd700;font-weight:bold'>" +
+        pseudo +
+        "</span>";
+
+    div.onclick = function () {
+
+        voirProfil(
+            pseudo
+        );
+
+    };
+
+    joueursEnLigne.appendChild(
+        div
+    );
+
+}
+
+        }
+
+    );
 
 }
 
@@ -1145,7 +1293,9 @@ compteurReady.innerHTML =
             let ligne =
     "<li class='carteJoueur'>" +
 
-        "<div class='nomJoueur'>" +
+        "<div class='nomJoueur' onclick=\"voirProfil('" +
+nom +
+"')\">" +
             statut +
             nom +
         "</div>" +
@@ -1327,6 +1477,7 @@ if (snapshot.exists()) {
     partie.etat === "lobby"
 
 ) {
+    console.log("Lobby existant trouvé :", code);
 
     codePartieActuelle = code;
 
@@ -1615,6 +1766,45 @@ const plateauMelange =
     
 
 });
+connectProfile.addEventListener(
+    "click",
+    function () {
+         console.log("Create Profile");
+
+        profileModal.style.display =
+            "block";
+
+    }
+);
+logoutProfile.addEventListener("click", function () {
+
+    profilConnecte = null;
+
+    localStorage.removeItem(
+        "profilConnecte"
+    );
+
+    pseudo.disabled = false;
+
+    pseudo.value = "";
+
+    connectProfile.innerHTML =
+        "👤<br>Connect";
+
+    logoutProfile.style.display =
+        "none";
+
+});
+
+cancelProfile.addEventListener(
+    "click",
+    function () {
+
+        profileModal.style.display =
+            "none";
+
+    }
+);
 
 boutonNouvellePartie.addEventListener("click", nouvellePartie);
 boutonRejouer.addEventListener("click", nouvellePartie);
@@ -1638,6 +1828,7 @@ compterJoueursEnLigne();
 compterPartiesOuvertes();
 nettoyerAnciennesParties();
 surveillerChatAccueil();
+surveillerJoueursEnLigne();
 
 if (
     sessionStorage.getItem(
@@ -1677,11 +1868,13 @@ async function surveillerPresence() {
             ).remove();
 
             await set(
-                presenceRef,
-                {
-                    pseudo: identifiant
-                }
-            );
+    presenceRef,
+    {
+        pseudo:
+            profilConnecte ||
+            ""
+    }
+);
 
         }
     );
@@ -1777,27 +1970,17 @@ async function envoyerMessageChat() {
     }
 
     await push(
-
         ref(
             db,
             "parties/" +
             codePartieActuelle +
             "/chat"
         ),
-
         {
-
-            pseudo:
-                pseudoActuel,
-
-            message:
-                texte,
-
-            date:
-                Date.now()
-
+            pseudo: pseudoActuel,
+            message: texte,
+            date: Date.now()
         }
-
     );
 
     messageChat.value = "";
@@ -2403,3 +2586,275 @@ and have fun!`
     );
 
 }
+saveProfile.addEventListener("click", async function () {
+
+    if (!over18.checked) {
+
+        alert("You must confirm that you are over 18 years old.");
+
+        return;
+
+    }
+
+    if (profileNickname.value.trim() === "") {
+
+        alert("Please choose a nickname.");
+
+        return;
+
+    }
+
+    if (profilePassword.value === "") {
+
+        alert("Please enter a password.");
+
+        return;
+
+    }
+    if (profilePassword.value.length < 6) {
+
+    alert("Password must contain at least 6 characters.");
+
+    return;
+
+}
+
+    if (profilePassword.value !== profileConfirmPassword.value) {
+
+        alert("Passwords do not match.");
+
+        return;
+
+    }
+    const profilRef =
+    ref(db, "profils/" + profileNickname.value);
+
+const snapshot =
+    await get(profilRef);
+
+if (snapshot.exists()) {
+
+    alert("Nickname already exists.");
+
+    return;
+
+}
+
+    await set(profilRef, {
+
+    nickname: profileNickname.value,
+
+    password: await hashPassword(
+    profilePassword.value
+),
+
+    gender: document.querySelector(
+        'input[name="gender"]:checked'
+    ).value,
+
+    playWith: {
+
+        men: playMen.checked,
+
+        women: playWomen.checked,
+
+        couples: playCouples.checked,
+
+        martians: playMartians.checked
+
+    },
+
+    country: profileCountry.value.trim(),
+
+    createdAt: Date.now()
+
+});
+
+alert("Profile created successfully!");
+
+});
+async function hashPassword(password) {
+
+    const encoder =
+        new TextEncoder();
+
+    const data =
+        encoder.encode(password);
+
+    const hashBuffer =
+        await crypto.subtle.digest(
+            "SHA-256",
+            data
+        );
+
+    const hashArray =
+        Array.from(
+            new Uint8Array(hashBuffer)
+        );
+
+    return hashArray
+        .map(b => b.toString(16).padStart(2, "0"))
+        .join("");
+
+}
+loginProfile.addEventListener("click", async function () {
+
+    const profilRef =
+        ref(db, "profils/" + profileNickname.value);
+
+    const snapshot =
+        await get(profilRef);
+
+    if (!snapshot.exists()) {
+
+        alert("Unknown nickname.");
+
+        return;
+
+    }
+
+   const profil =
+    snapshot.val();
+
+const passwordHash =
+    await hashPassword(
+        profilePassword.value
+    );
+
+if (profil.password !== passwordHash) {
+
+    alert("Wrong password.");
+
+    return;
+
+}
+
+profileModal.style.display = "none";
+profilConnecte = profil;
+pseudo.value =
+    profil.nickname;
+    pseudo.disabled = true;
+    localStorage.setItem(
+    "profilConnecte",
+    profil.nickname
+);
+logoutProfile.style.display =
+    "inline-block";
+    });
+async function reconnecterProfil(
+    pseudoSauvegarde
+) {
+
+    const profilRef =
+        ref(
+            db,
+            "profils/" +
+            pseudoSauvegarde
+        );
+
+    const snapshot =
+        await get(profilRef);
+
+    if (!snapshot.exists()) {
+
+        localStorage.removeItem(
+            "profilConnecte"
+        );
+
+        return;
+
+    }
+
+    const profil =
+        snapshot.val();
+
+    profilConnecte =
+        profil;
+
+    pseudo.value =
+        profil.nickname;
+
+    pseudo.disabled =
+        true;
+logoutProfile.style.display =
+    "inline-block";
+
+}
+async function voirProfil(nom) {
+
+    const profilRef =
+        ref(
+            db,
+            "profils/" + nom
+        );
+
+    const snapshot =
+        await get(profilRef);
+
+    if (!snapshot.exists()) {
+
+        alert(
+            "This player has no profile."
+        );
+
+        return;
+
+    }
+
+    const profil =
+        snapshot.val();
+        let prefere = [];
+
+if (profil.playWith.men)
+    prefere.push("👨");
+
+if (profil.playWith.women)
+    prefere.push("👩");
+
+if (profil.playWith.couples)
+    prefere.push("👩‍❤️‍👨");
+
+if (profil.playWith.martians)
+    prefere.push("👽");
+
+    viewProfileContent.innerHTML =
+
+    "<h3>" +
+    profil.nickname +
+    "</h3>" +
+
+    "<hr><br>" +
+
+    "<b>🌍 Country</b><br>" +
+    (profil.country || "-") +
+
+    "<br><br>" +
+
+    "<b>👤 I am</b><br>" +
+    profil.gender +
+
+    "<br><br>" +
+
+    "<b>🎮 I like to play with</b><br>" +
+
+    (profil.playWith.men
+        ? "✔ Men<br>"
+        : "") +
+
+    (profil.playWith.women
+        ? "✔ Women<br>"
+        : "") +
+
+    (profil.playWith.couples
+        ? "✔ Couples<br>"
+        : "") +
+
+    (profil.playWith.martians
+        ? "✔ Martians<br>"
+        : "");
+
+       viewProfileModal.style.display =
+    "block";
+
+}
+window.voirProfil = voirProfil;
