@@ -309,8 +309,10 @@ function surveillerPartiesPubliques() {
                 parties[code];
                 if (
     partie.publique !== true
+    
 ) {
     continue;
+    
 }
                 const age =
     Date.now() -
@@ -397,18 +399,22 @@ function surveillerJoueursEnLigne() {
                     "<i>No player online.</i>";
 
                 return;
+                
 
             }
 
             const joueurs =
                 snapshot.val();
+                let nbGuests = 0;
 
            for (let id in joueurs) {
 
     const profil =
     joueurs[id].pseudo;
 
-if (!profil) {
+if (profil === "") {
+
+    nbGuests++;
 
     continue;
 
@@ -441,6 +447,20 @@ const pseudo =
 
     joueursEnLigne.appendChild(
         div
+    );
+
+}
+if (nbGuests > 0) {
+
+    const divGuest =
+        document.createElement("div");
+
+    divGuest.innerHTML =
+        "👥 Guests : " +
+        nbGuests;
+
+    joueursEnLigne.appendChild(
+        divGuest
     );
 
 }
