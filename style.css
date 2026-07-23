@@ -664,9 +664,9 @@ box-shadow:0 0 15px rgba(255,215,0,.5);
 
     margin-bottom: 15px;
 
-    background: rgba(255,255,255,0.05);
+   background: rgba(255,248,235,.04);
 
-    border: 1px solid #555;
+    border:1px solid rgba(255,255,255,.08);
 
     border-radius: 12px;
 
