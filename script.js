@@ -845,6 +845,7 @@ affichageTimer.innerHTML =
         }
 
         bouton.addEventListener("click", function () {
+            console.error("CLICK", i);
             jouerCarte(i);
         });
 
@@ -852,11 +853,12 @@ affichageTimer.innerHTML =
     }
 
     const victoireBattle =
-    verifierVictoireBattle(
+     verifierVictoireBattle(
         cartesTrouvees,
         cartes,
         partie.joueurs
     );
+    
 
 if (
     victoireBattle === false &&
@@ -864,6 +866,37 @@ if (
 ) {
     afficherFinPartie(scores);
 }
+}
+function traiterStatistiques(
+    partie,
+    cartesTrouvees,
+    cartes
+) {
+
+    console.log("traiterStatistiques appelée");
+
+for (let pseudo in partie.joueurs) {
+
+        const numero =
+            partie.joueurs[pseudo].numero;
+
+        if (
+            joueurEstNaked(
+                numero,
+                cartesTrouvees,
+                cartes
+            )
+        ) {
+
+            console.log(
+                pseudo +
+                " est devenu NAKED"
+            );
+
+        }
+
+    }
+
 }
 function joueurEstNaked(
     numeroJoueur,
@@ -973,7 +1006,7 @@ function trouverProchainJoueur(
 }
 
 
-function verifierVictoireBattle(
+async function verifierVictoireBattle(
     cartesTrouvees,
     cartes,
     joueurs
@@ -1013,7 +1046,10 @@ function verifierVictoireBattle(
         jeu.style.display = "none";
         finPartie.style.display = "block";
         boutonNouvellePartie.style.display = "block";
-
+ incrementerStatProfil(
+    joueursEncoreHabilles[0],
+    "victories"
+);
         return true;
 
     }
@@ -1024,6 +1060,7 @@ function verifierVictoireBattle(
 
 
 async function jouerCarte(indexCarte) {
+     console.error("jouerCarte", indexCarte);
     if (codePartieActuelle === "") {
         return;
     }
@@ -1096,12 +1133,19 @@ if (
 
     const premiereIndex = selection[0];
     const deuxiemeIndex = selection[1];
-
+console.error("Avant le if");
     if (cartes[premiereIndex] === cartes[deuxiemeIndex]) {
-        cartesTrouvees[premiereIndex] = true;
-        cartesTrouvees[deuxiemeIndex] = true;
+console.log("Paire trouvée");
+    cartesTrouvees[premiereIndex] = true;
+    cartesTrouvees[deuxiemeIndex] = true;
 
-        scores[game.joueurActuel - 1]++;
+    traiterStatistiques(
+        partie,
+        cartesTrouvees,
+        cartes
+    );
+
+    scores[game.joueurActuel - 1]++;
 
         await update(partieRef, {
             "game/cartesVisibles": cartesVisibles,
@@ -1776,9 +1820,18 @@ const plateauMelange =
             joueurActuel: 1,
             scores: [0, 0, 0, 0],
             pairesTrouvees: 0,
-            timerFin: Date.now() + 20000
+            timerFin: Date.now() + 20000, 
+            
         }
     });
+    for (let pseudo in joueurs) {
+
+    await incrementerStatProfil(
+        pseudo,
+        "gamesPlayed"
+    );
+
+}
     await incrementerStat(
     "partiesDemarrees"
 );
@@ -2507,6 +2560,39 @@ async function incrementerStat(nomStat) {
     );
 
 }
+async function incrementerStatProfil(
+    pseudo,
+    stat
+) {
+
+    const profilRef =
+        ref(
+            db,
+            "profils/" + pseudo
+        );
+
+    const snapshot =
+        await get(profilRef);
+
+    if (!snapshot.exists()) {
+        return;
+    }
+
+    const profil =
+        snapshot.val();
+
+    const valeur =
+        profil[stat] || 0;
+
+    await update(
+        profilRef,
+        {
+            [stat]:
+                valeur + 1
+        }
+    );
+
+}
 async function incrementerVisiteHeure() {
 
     const heure =
@@ -2685,6 +2771,8 @@ if (snapshot.exists()) {
     },
 
     country: profileCountry.value.trim(),
+    gamesPlayed: 0,
+    victories: 0,
 
     createdAt: Date.now()
 
@@ -2839,41 +2927,74 @@ if (profil.playWith.martians)
 
     viewProfileContent.innerHTML =
 
-    "<h3>" +
-    profil.nickname +
-    "</h3>" +
+"<h4>📊 STATISTICS</h4>" +
 
-    "<hr><br>" +
+"<b>🎮 Games Played</b><br>" +
+(profil.gamesPlayed || 0) +
 
-    "<b>🌍 Country</b><br>" +
-    (profil.country || "-") +
+"<br>" +
 
-    "<br><br>" +
+"<b>🏆 Victories</b><br>" +
+(profil.victories || 0) +
 
-    "<b>👤 I am</b><br>" +
-    profil.gender +
+"<br>" +
 
-    "<br><br>" +
+"<b>🔥 Best Win Streak</b><br>" +
+"🚧 In development" +
 
-    "<b>🎮 I like to play with</b><br>" +
+"<br>" +
 
-    (profil.playWith.men
-        ? "✔ Men<br>"
-        : "") +
+"<b>🙈 Times Naked</b><br>" +
+"🚧 In development" +
 
-    (profil.playWith.women
-        ? "✔ Women<br>"
-        : "") +
+"<br>" +
 
-    (profil.playWith.couples
-        ? "✔ Couples<br>"
-        : "") +
+"<b>🏅 Badges</b><br>" +
+"🚧 In development" +
 
-    (profil.playWith.martians
-        ? "✔ Martians<br>"
-        : "");
+"<br>" +
 
-       viewProfileModal.style.display =
+"<b>⭐ Achievements</b><br>" +
+"🚧 In development" +
+
+"<hr>" +
+
+"<h4>👤 PLAYER</h4>" +
+
+"<b>🌍 Country</b><br>" +
+(profil.country || "-") +
+
+"<br>" +
+
+"<b>📅 Member Since</b><br>" +
+new Date(profil.createdAt).toLocaleDateString() +
+
+"<br>" +
+
+"<b>👤 I am</b><br>" +
+profil.gender +
+
+"<br>" +
+
+"<b>🎮 I like to play with</b><br>" +
+
+(profil.playWith.men
+    ? "✔ Men<br>"
+    : "") +
+
+(profil.playWith.women
+    ? "✔ Women<br>"
+    : "") +
+
+(profil.playWith.couples
+    ? "✔ Couples<br>"
+    : "") +
+
+(profil.playWith.martians
+    ? "✔ Martians<br>"
+    : "");
+
+viewProfileModal.style.display =
     "block";
 
 }
