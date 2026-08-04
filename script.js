@@ -1449,6 +1449,18 @@ function surveillerPartie(code) {
         }
 
         partieActuelle = partie;
+        if (
+    partie.etat === "lobby" &&
+    Object.keys(partie.joueurs || {}).length === 3
+) {
+
+    conseilMode.style.display = "block";
+
+} else {
+
+    conseilMode.style.display = "none";
+
+}
 
         // <<< À partir d'ici, tu gardes exactement ton code actuel >>>
 

@@ -1122,3 +1122,17 @@ transition: 0.2s;
     color: #bbbbbb;
     text-align: center;
 }
+#conseilMode {
+
+    margin-top: 15px;
+    padding: 10px;
+
+    text-align: center;
+
+    border-radius: 8px;
+
+    background: rgba(255, 255, 255, 0.08);
+
+    font-size: 15px;
+
+}
