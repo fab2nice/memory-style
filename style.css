@@ -231,7 +231,7 @@ button:hover {
 
     width: 100%;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 30px;
     font-size: 26px;
 
 }
@@ -1079,12 +1079,11 @@ transition: 0.2s;
 #zoneJeu {
 
     display: flex;
-
     justify-content: center;
-
     align-items: center;
-
     gap: 25px;
+
+    margin-top: -10px;
 
 }
 #joueursEnLigne {
