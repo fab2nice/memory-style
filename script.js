@@ -1146,15 +1146,31 @@ console.log("Paire trouvée");
     );
 
     scores[game.joueurActuel - 1]++;
+    const prochainJoueurApresPaire =
+    joueurEstNaked(
+        game.joueurActuel,
+        cartesTrouvees,
+        cartes
+    )
+        ? trouverProchainJoueur(
+            game.joueurActuel,
+            cartesTrouvees,
+            cartes,
+            partie.joueurs
+        )
+        : game.joueurActuel;
 
         await update(partieRef, {
-            "game/cartesVisibles": cartesVisibles,
-            "game/cartesTrouvees": cartesTrouvees,
-            "game/selection": [],
-            "game/scores": scores,
-            "game/pairesTrouvees": game.pairesTrouvees + 1, 
-            "game/timerFin": Date.now() + 20000
-        });
+
+    "game/cartesVisibles": cartesVisibles,
+    "game/cartesTrouvees": cartesTrouvees,
+    "game/selection": [],
+    "game/scores": scores,
+    "game/pairesTrouvees": game.pairesTrouvees + 1,
+    "game/joueurActuel": prochainJoueurApresPaire,
+    "game/timerFin": Date.now() + 20000
+
+});
 
         return;
     }
