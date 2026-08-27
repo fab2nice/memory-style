@@ -1596,12 +1596,17 @@ if (snapshot.exists()) {
     }
 
 }
-    const modeChoisi =
-    parseInt(
-        document.querySelector(
-            'input[name="modeJoueurs"]:checked'
-        ).value
-    );
+    const valeurMode =
+    document.querySelector(
+        'input[name="modeJoueurs"]:checked'
+    ).value;
+
+if (valeurMode === "solo") {
+    return;
+}
+
+const modeChoisi =
+    parseInt(valeurMode);
 
     if (pseudoActuel === "") {
         alert("Choose nickname");
