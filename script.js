@@ -158,6 +158,8 @@ const viewProfileContent =
     document.getElementById(
         "viewProfileContent"
     );
+    const quitterLobby =
+    document.getElementById("quitterLobby");
 
 const closeProfile =
     document.getElementById(
@@ -1662,6 +1664,62 @@ messageAccueil.addEventListener(
             envoyerMessageAccueil();
 
         }
+
+    }
+);
+quitterLobby.addEventListener(
+    "click",
+    async function () {
+
+        if (codePartieActuelle === "") {
+            return;
+        }
+
+        const partieRef =
+            ref(
+                db,
+                "parties/" +
+                codePartieActuelle
+            );
+
+        const snapshot =
+            await get(partieRef);
+
+        if (!snapshot.exists()) {
+            return;
+        }
+
+        const partie =
+            snapshot.val();
+
+        if (
+            partie.createur ===
+            pseudoActuel
+        ) {
+
+            await remove(
+                partieRef
+            );
+
+        } else {
+
+            await remove(
+                ref(
+                    db,
+                    "parties/" +
+                    codePartieActuelle +
+                    "/joueurs/" +
+                    pseudoActuel
+                )
+            );
+
+        }
+
+        codePartieActuelle = "";
+        partieActuelle = null;
+
+        lobby.style.display = "none";
+        accueil.style.display = "block";
 
     }
 );

@@ -1193,3 +1193,15 @@ transition: 0.2s;
      margin-left: 5px;
     margin-right: -37px;
 }
+#quitterLobby {
+    background: #5a2020;
+    border: 1px solid #a94444;
+    color: white;
+
+    font-weight: bold;
+
+    width: 115px;
+    height: 55px;
+
+    border-radius: 10px;
+}
