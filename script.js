@@ -99,6 +99,8 @@ const reglesDuel =
     document.getElementById(
         "salonVideo"
     );
+    const infoSalonVideo =
+    document.getElementById("infoSalonVideo");
     const chatLobby =
     document.getElementById("chatLobby");
 
@@ -188,6 +190,8 @@ let premiereLectureNotifications = true;
 let joueursEnLigne = 0;
 let nombrePartiesPubliques = 0;
 let profilConnecte = null;
+let chronoSoloDepart = 0;
+let chronoSoloInterval = null;
 
 const profilSauvegarde =
     localStorage.getItem(
@@ -3027,3 +3031,796 @@ viewProfileModal.style.display =
 
 }
 window.voirProfil = voirProfil;
+const boutonsModeJoueurs = document.querySelectorAll(
+    'input[name="modeJoueurs"]'
+);
+
+const boutonStartSolo = document.getElementById("startSolo");
+
+boutonsModeJoueurs.forEach(bouton => {
+
+    bouton.addEventListener("change", () => {
+
+        const solo = bouton.value === "solo";
+
+        document.getElementById("creerPartie").style.display =
+            solo ? "none" : "";
+
+        document.getElementById("boutonRejoindre").style.display =
+            solo ? "none" : "";
+
+        document.getElementById("codePartie").style.display =
+            solo ? "none" : "";
+
+        boutonStartSolo.style.display =
+            solo ? "" : "none";
+
+    });
+
+});
+// ==============================
+// SOLO MODE
+// ==============================
+
+let cartesSolo = [];
+let selectionSolo = [];
+let cartesTrouveesSolo = {};
+let soloVerrouille = false;
+
+
+// ------------------------------
+// LANCEMENT DU SOLO
+// ------------------------------
+
+boutonStartSolo.addEventListener(
+    "click",
+    function () {
+
+        if (!profilConnecte) {
+
+            alert(
+                "A player profile is required to play Solo mode."
+            );
+
+            profileModal.style.display =
+                "block";
+
+            return;
+
+        }
+
+        lancerSoloTimeTrial();
+
+    }
+);
+
+
+function lancerSoloTimeTrial() {
+
+    cartesSolo =
+        melangerCartes(cartesDeBase);
+
+    selectionSolo = [];
+
+    cartesTrouveesSolo = {};
+
+    soloVerrouille = false;
+
+
+    accueil.style.display =
+        "none";
+
+    lobby.style.display =
+        "none";
+
+    howToPlay.style.display =
+        "none";
+
+    finPartie.style.display =
+        "none";
+
+    jeu.style.display =
+        "block";
+
+
+    // On cache tout ce qui appartient
+    // au multijoueur
+
+    affichageTour.style.display =
+        "none";
+
+    affichageTimer.style.display =
+        "none";
+
+    affichageScore.style.display =
+        "none";
+
+    affichageScoresJoueurs.style.display =
+        "none";
+
+    affichageCouleurs.style.display =
+        "none";
+
+    salonVideo.style.display =
+        "none";
+        infoSalonVideo.style.display =
+    "none";
+    reglesVideo.style.display =
+        "none";
+
+    reglesDuel.style.display =
+        "none";
+
+    boutonNouvellePartie.style.display =
+        "none";
+chronoSoloDepart = Date.now();
+
+chronoSoloInterval = setInterval(
+    function () {
+
+        const tempsEcoule =
+            Date.now() -
+            chronoSoloDepart;
+
+        const secondes =
+            Math.floor(
+                tempsEcoule / 1000
+            );
+
+        affichageTimer.style.display =
+            "block";
+
+        affichageTimer.innerHTML =
+            "⏱️ " + secondes + " s";
+
+    },
+    100
+);
+
+    dessinerPlateauSolo();
+
+}
+
+
+// ------------------------------
+// AFFICHAGE DU PLATEAU SOLO
+// ------------------------------
+
+function dessinerPlateauSolo() {
+
+    plateau.innerHTML = "";
+
+    for (
+        let i = 0;
+        i < cartesSolo.length;
+        i++
+    ) {
+
+        const bouton =
+            document.createElement(
+                "button"
+            );
+
+
+        if (
+            cartesTrouveesSolo[i] === true
+        ) {
+
+            afficherCarte(
+                bouton,
+                cartesSolo[i]
+            );
+
+            bouton.disabled = true;
+
+        } else {
+
+            afficherDos(bouton);
+
+        }
+
+
+        bouton.addEventListener(
+            "click",
+            function () {
+
+                jouerCarteSolo(
+                    i,
+                    bouton
+                );
+
+            }
+        );
+
+
+        plateau.appendChild(
+            bouton
+        );
+
+    }
+
+}
+
+
+// ------------------------------
+// CLIC SUR UNE CARTE SOLO
+// ------------------------------
+
+function jouerCarteSolo(
+    indexCarte,
+    bouton
+) {
+
+    if (soloVerrouille === true) {
+        return;
+    }
+
+
+    if (
+        cartesTrouveesSolo[indexCarte] ===
+        true
+    ) {
+        return;
+    }
+
+
+    if (
+        selectionSolo.some(
+            carte =>
+                carte.index === indexCarte
+        )
+    ) {
+        return;
+    }
+
+
+    afficherCarte(
+        bouton,
+        cartesSolo[indexCarte]
+    );
+
+
+    selectionSolo.push({
+
+        index: indexCarte,
+
+        bouton: bouton
+
+    });
+
+
+    if (
+        selectionSolo.length === 1
+    ) {
+        return;
+    }
+
+
+    verifierPaireSolo();
+
+}
+
+
+// ------------------------------
+// VERIFICATION DE LA PAIRE
+// ------------------------------
+
+function verifierPaireSolo() {
+
+    soloVerrouille = true;
+
+
+    const premiere =
+        selectionSolo[0];
+
+    const deuxieme =
+        selectionSolo[1];
+
+
+    const carte1 =
+        cartesSolo[
+            premiere.index
+        ];
+
+    const carte2 =
+        cartesSolo[
+            deuxieme.index
+        ];
+
+
+    // PAIRE TROUVEE
+
+    if (carte1 === carte2) {
+
+        cartesTrouveesSolo[
+            premiere.index
+        ] = true;
+
+        cartesTrouveesSolo[
+            deuxieme.index
+        ] = true;
+
+
+        premiere.bouton.disabled =
+            true;
+
+        deuxieme.bouton.disabled =
+            true;
+
+
+        selectionSolo = [];
+
+        soloVerrouille = false;
+
+
+        verifierFinSolo();
+
+        return;
+
+    }
+
+
+    // MAUVAISE PAIRE
+
+    setTimeout(
+        function () {
+
+            afficherDos(
+                premiere.bouton
+            );
+
+            afficherDos(
+                deuxieme.bouton
+            );
+
+            selectionSolo = [];
+
+            soloVerrouille = false;
+
+        },
+        1200
+    );
+
+}
+
+
+// ------------------------------
+// FIN DU SOLO
+// ------------------------------
+
+async function verifierFinSolo() {
+
+    const nombreTrouvees =
+        Object.keys(
+            cartesTrouveesSolo
+        ).length;
+
+    if (
+        nombreTrouvees ===
+        cartesSolo.length
+    ) {
+
+        clearInterval(
+            chronoSoloInterval
+        );
+
+        chronoSoloInterval = null;
+affichageTimer.style.display =
+    "none";
+        const tempsFinal =
+            Date.now() -
+            chronoSoloDepart;
+
+        const secondesFinales =
+            (tempsFinal / 1000)
+                .toFixed(1);
+
+        const tempsFinalNombre =
+            parseFloat(
+                secondesFinales
+            );
+
+        const resultatRecord =
+            await enregistrerMeilleurTempsSolo(
+                tempsFinalNombre
+            );
+
+        const meilleurTemps =
+            resultatRecord
+                ? resultatRecord.meilleurTemps
+                : tempsFinalNombre;
+
+        const nouveauRecord =
+            resultatRecord
+                ? resultatRecord.nouveauRecord
+                : false;
+                const worldBest =
+    await recupererWorldBestSolo();
+    const top10 =
+    await recupererTop10Solo();
+
+        setTimeout(
+            function () {
+
+                plateau.innerHTML = "";
+
+                plateau.classList.add(
+                    "finSolo"
+                );
+
+                const messageFin =
+                    document.createElement(
+                        "h2"
+                    );
+
+          let texteFin =
+    "Solo complete!\n\n" +
+    "⏱ TIME: " +
+    secondesFinales +
+    " s\n" +
+    "🏆 PERSONAL BEST: " +
+    meilleurTemps +
+    " s";
+
+if (worldBest) {
+
+    texteFin +=
+        "\n👑 WORLD BEST: " +
+        worldBest.temps +
+        " s - " +
+        worldBest.pseudo;
+
+}
+if (
+    nouveauRecord === true
+) {
+
+    texteFin +=
+        " 🏆 NEW RECORD!";
+
+}
+
+if (
+    worldBest &&
+    worldBest.pseudo ===
+        profilConnecte.nickname &&
+    worldBest.temps ===
+        tempsFinalNombre
+) {
+
+    texteFin +=
+        " 👑 WORLD RECORD!";
+
+}
+
+messageFin.textContent =
+    texteFin;
+
+
+// À PARTIR D'ICI, ton code existant continue :
+const classementTitre =
+    document.createElement("h3");
+
+classementTitre.textContent =
+    "🏆 TOP 10 TIME TRIAL";
+
+
+const classementListe =
+    document.createElement("div");
+
+classementListe.className =
+    "classementSolo";
+
+
+top10.forEach(
+    function (joueur, index) {
+
+        const ligne =
+            document.createElement("div");
+
+        let position =
+            (index + 1) + ".";
+
+        if (index === 0) {
+            position = "🥇";
+        }
+
+        if (index === 1) {
+            position = "🥈";
+        }
+
+        if (index === 2) {
+            position = "🥉";
+        }
+
+        ligne.textContent =
+            position +
+            " " +
+            joueur.pseudo +
+            " — " +
+            joueur.temps +
+            " s";
+
+        if (
+            profilConnecte &&
+            joueur.pseudo ===
+                profilConnecte.nickname
+        ) {
+
+            ligne.classList.add(
+                "classementMoi"
+            );
+
+        }
+
+        classementListe.appendChild(
+            ligne
+        );
+
+    }
+);
+
+const boutonRetour =
+    document.createElement(
+        "button"
+    );
+
+boutonRetour.textContent =
+    "Back to Home";
+
+                boutonRetour.className =
+                    "boutonMenu";
+
+                boutonRetour.addEventListener(
+                    "click",
+                    function () {
+
+                        retourAccueilSolo();
+                        infoSalonVideo.style.display = "";
+                        affichageTimer.style.display = ""; 
+
+                    }
+                    
+                );
+
+                plateau.appendChild(
+    messageFin
+);
+
+plateau.appendChild(
+    classementTitre
+);
+
+plateau.appendChild(
+    classementListe
+);
+
+plateau.appendChild(
+    boutonRetour
+);
+
+            },
+            300
+        );
+
+    }
+
+}
+function retourAccueilSolo() {
+
+    jeu.style.display = "none";
+
+    plateau.innerHTML = "";
+plateau.classList.remove("finSolo");
+    accueil.style.display = "block";
+
+    cartesSolo = [];
+    selectionSolo = [];
+    cartesTrouveesSolo = {};
+    soloVerrouille = false;
+    if (
+    chronoSoloInterval !== null
+) {
+
+    clearInterval(
+        chronoSoloInterval
+    );
+
+    chronoSoloInterval = null;
+
+}
+
+}
+async function enregistrerMeilleurTempsSolo(
+    temps
+) {
+
+    if (!profilConnecte) {
+        return null;
+    }
+
+    const pseudo =
+        profilConnecte.nickname;
+
+    const profilRef =
+        ref(
+            db,
+            "profils/" + pseudo
+        );
+
+    const snapshot =
+        await get(profilRef);
+
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    const profil =
+        snapshot.val();
+
+    const ancienRecord =
+        profil.soloTimeTrialBest || null;
+
+    let nouveauRecord = false;
+
+    let meilleurTemps =
+        ancienRecord;
+
+    if (
+        ancienRecord === null ||
+        temps < ancienRecord
+    ) {
+
+        meilleurTemps =
+            temps;
+
+        nouveauRecord =
+            true;
+
+        await update(
+            profilRef,
+            {
+                soloTimeTrialBest:
+                    temps
+            }
+        );
+
+        profilConnecte.soloTimeTrialBest =
+            temps;
+
+    }
+
+    return {
+        meilleurTemps:
+            meilleurTemps,
+
+        nouveauRecord:
+            nouveauRecord
+    };
+
+}
+async function recupererWorldBestSolo() {
+
+    const profilsRef =
+        ref(
+            db,
+            "profils"
+        );
+
+    const snapshot =
+        await get(
+            profilsRef
+        );
+
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    const profils =
+        snapshot.val();
+
+    let meilleurTemps =
+        null;
+
+    let meilleurPseudo =
+        null;
+
+    for (let pseudo in profils) {
+
+        const temps =
+            profils[pseudo]
+                .soloTimeTrialBest;
+
+        if (
+            typeof temps !==
+            "number"
+        ) {
+            continue;
+        }
+
+        if (
+            meilleurTemps === null ||
+            temps < meilleurTemps
+        ) {
+
+            meilleurTemps =
+                temps;
+
+            meilleurPseudo =
+                pseudo;
+
+        }
+
+    }
+
+    if (
+        meilleurTemps === null
+    ) {
+        return null;
+    }
+
+    return {
+        pseudo:
+            meilleurPseudo,
+
+        temps:
+            meilleurTemps
+    };
+
+}
+async function recupererTop10Solo() {
+
+    const profilsRef =
+        ref(
+            db,
+            "profils"
+        );
+
+    const snapshot =
+        await get(
+            profilsRef
+        );
+
+    if (!snapshot.exists()) {
+        return [];
+    }
+
+    const profils =
+        snapshot.val();
+
+    const classement = [];
+
+    for (let pseudo in profils) {
+
+        const temps =
+            profils[pseudo]
+                .soloTimeTrialBest;
+
+        if (
+            typeof temps !==
+            "number"
+        ) {
+            continue;
+        }
+
+        classement.push({
+            pseudo: pseudo,
+            temps: temps
+        });
+
+    }
+
+    classement.sort(
+        function (a, b) {
+
+            return a.temps - b.temps;
+
+        }
+    );
+
+    return classement.slice(
+        0,
+        10
+    );
+
+}

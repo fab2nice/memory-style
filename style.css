@@ -1136,3 +1136,35 @@ transition: 0.2s;
     font-size: 15px;
 
 }
+/* ==============================
+   SOLO MODE
+   ============================== */
+
+#plateau.finSolo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    min-height: 300px;
+    text-align: center;
+}
+
+#plateau.finSolo h2 {
+    margin: 0;
+}
+.classementSolo {
+    text-align: left;
+    min-width: 280px;
+    line-height: 1.7;
+    font-size: 18px;
+}
+
+.classementMoi {
+    font-weight: bold;
+    color: #ffd700;
+}
+#plateau.finSolo h2 {
+    white-space: pre-line;
+}
