@@ -3835,3 +3835,22 @@ async function recupererTop10Solo() {
     );
 
 }
+const togglePassword =
+    document.getElementById("togglePassword");
+
+togglePassword.addEventListener(
+    "click",
+    function () {
+
+        if (profilePassword.type === "password") {
+
+            profilePassword.type = "text";
+
+        } else {
+
+            profilePassword.type = "password";
+
+        }
+
+    }
+);

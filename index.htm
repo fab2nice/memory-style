@@ -506,14 +506,26 @@ Try another game mode below to find players faster.
     <h2>CREATE PROFILE</h2>
 
     <input
-        type="text"
-        id="profileNickname"
-        placeholder="Nickname">
+    type="text"
+    id="profileNickname"
+    placeholder="Nickname"
+    autocomplete="username">
+
+<div class="passwordField">
 
     <input
         type="password"
         id="profilePassword"
-        placeholder="Password">
+        placeholder="Password"
+        autocomplete="current-password">
+
+    <button
+        type="button"
+        id="togglePassword">
+        👁️
+    </button>
+
+</div>
 
     <input
         type="password"
