@@ -1903,6 +1903,8 @@ logoutProfile.addEventListener("click", function () {
 
     logoutProfile.style.display =
         "none";
+        connectProfile.style.display =
+    "inline-block";
 
 });
 
@@ -2885,6 +2887,8 @@ pseudo.value =
 );
 logoutProfile.style.display =
     "inline-block";
+    connectProfile.style.display =
+    "none";
     });
 async function reconnecterProfil(
     pseudoSauvegarde
@@ -2923,6 +2927,8 @@ async function reconnecterProfil(
         true;
 logoutProfile.style.display =
     "inline-block";
+    connectProfile.style.display =
+    "none";
 
 }
 async function voirProfil(nom) {
