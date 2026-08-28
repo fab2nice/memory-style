@@ -2220,7 +2220,7 @@ function surveillerChatAccueil() {
         for (let id in messages) {
         
 
-    if (
+   if (
 
     messages[id].date &&
 
@@ -2230,6 +2230,13 @@ function surveillerChatAccueil() {
     30 * 60 * 1000
 
 ) {
+
+    remove(
+        ref(
+            db,
+            "chatAccueil/" + id
+        )
+    );
 
     continue;
 
