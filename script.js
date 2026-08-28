@@ -160,6 +160,8 @@ const viewProfileContent =
     );
     const quitterLobby =
     document.getElementById("quitterLobby");
+    const quitterPartie =
+    document.getElementById("quitterPartie");
 
 const closeProfile =
     document.getElementById(
@@ -1830,6 +1832,39 @@ await incrementerStat(
 envoyerMessage.addEventListener(
     "click",
     envoyerMessageChat
+);
+quitterPartie.addEventListener(
+    "click",
+    async function () {
+
+        if (codePartieActuelle === "") {
+            return;
+        }
+
+        const partieRef =
+            ref(
+                db,
+                "parties/" +
+                codePartieActuelle
+            );
+
+        await remove(
+            ref(
+                db,
+                "parties/" +
+                codePartieActuelle +
+                "/joueurs/" +
+                pseudoActuel
+            )
+        );
+
+        codePartieActuelle = "";
+        partieActuelle = null;
+
+        jeu.style.display = "none";
+        accueil.style.display = "block";
+
+    }
 );
 
 boutonCommencer.addEventListener("click", async function () {
