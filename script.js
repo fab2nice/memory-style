@@ -186,6 +186,7 @@ let partieActuelle = null;
 let intervalTimer = null;
 let timerTraite = false;
 let joueurExcluDetecte = false;
+let sortieVolontaire = false;
 let tutorielVu = false;
 let ancienNombreJoueurs = 0;
 let anciensJoueurs = [];
@@ -1424,11 +1425,18 @@ function surveillerPartie(code) {
     onValue(partieRef, function (snapshot) {
 
         const partie =
-            snapshot.val();
+    snapshot.val();
 
-        if (!partie) {
-            return;
-        }
+if (!partie) {
+
+    codePartieActuelle = "";
+    partieActuelle = null;
+
+    lobby.style.display = "none";
+    accueil.style.display = "block";
+
+    return;
+}
 
         let maxJoueurs = 4;
 
@@ -1506,11 +1514,12 @@ if (
 }
     
     if (
-        pseudoActuel &&
-        partie.joueurs &&
-        !partie.joueurs[pseudoActuel] &&
-        joueurExcluDetecte === false
-    ) {
+    pseudoActuel &&
+    partie.joueurs &&
+    !partie.joueurs[pseudoActuel] &&
+    joueurExcluDetecte === false &&
+    sortieVolontaire === false
+) {
         joueurExcluDetecte = true;
         alert("You have been excluded.");
         location.reload();
@@ -1836,6 +1845,7 @@ envoyerMessage.addEventListener(
 quitterPartie.addEventListener(
     "click",
     async function () {
+        sortieVolontaire = true;
 
         if (codePartieActuelle === "") {
             return;
@@ -1862,6 +1872,7 @@ quitterPartie.addEventListener(
         partieActuelle = null;
 
         jeu.style.display = "none";
+        finPartie.style.display = "none";
         accueil.style.display = "block";
 
     }
