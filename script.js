@@ -418,19 +418,16 @@ function surveillerJoueursEnLigne() {
 
            for (let id in joueurs) {
 
-    const profil =
+    const pseudo =
     joueurs[id].pseudo;
 
-if (profil === "") {
+if (pseudo === "") {
 
     nbGuests++;
 
     continue;
 
 }
-
-const pseudo =
-    profil.nickname;
 
     if (pseudo === "") {
 
@@ -2087,8 +2084,9 @@ async function surveillerPresence() {
     presenceRef,
     {
         pseudo:
-            profilConnecte ||
-            ""
+            profilConnecte
+                ? profilConnecte.nickname
+                : ""
     }
 );
 
@@ -2459,14 +2457,12 @@ async function nettoyerAnciennesParties() {
 
         const partie =
             parties[code];
-
-        if (
-            partie.etat === "lobby" &&
-            partie.dateCreation &&
-            maintenant -
-                partie.dateCreation >
-                30 * 60 * 1000
-        ) {
+if (
+    partie.dateCreation &&
+    maintenant -
+        partie.dateCreation >
+        24 * 60 * 60 * 1000
+) {
 
             await remove(
                 ref(
@@ -3965,3 +3961,4 @@ togglePassword.addEventListener(
 
     }
 );
+nettoyerAnciennesParties();
