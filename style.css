@@ -1203,3 +1203,18 @@ transition: 0.2s;
     height: 55px;
     border-radius: 10px;
 }
+.legalLink {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.legalLink a {
+    color: #aaa;
+    text-decoration: none;
+}
+
+.legalLink a:hover {
+    color: #ffd700;
+    text-decoration: underline;
+}
