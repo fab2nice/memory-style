@@ -1236,3 +1236,37 @@ transition: 0.2s;
     background: #ffffff;
     color: #222;
 }
+/* =========================
+   SOLO MODES
+========================= */
+
+#soloModes {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.soloModesGrid {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+.soloModeCard {
+    width: 300px;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+.soloModeCard h3 {
+    margin-top: 0;
+}
+
+.soloModeCard > div {
+    margin: 25px 0;
+    line-height: 1.7;
+}

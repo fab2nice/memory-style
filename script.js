@@ -124,7 +124,7 @@ const modeLobby =
 
 const messageAccueil =
     document.getElementById("messageAccueil");
-
+    
 const envoyerAccueil =
     document.getElementById("envoyerAccueil");
     const saveProfile =
@@ -3207,7 +3207,7 @@ boutonStartSolo.addEventListener(
 
         }
 
-        lancerSoloTimeTrial();
+        ouvrirSoloModes();
 
     }
 );
@@ -3962,3 +3962,55 @@ togglePassword.addEventListener(
     }
 );
 nettoyerAnciennesParties();
+const soloModes =
+    document.getElementById(
+        "soloModes"
+    );
+
+const playTimeTrial =
+    document.getElementById(
+        "playTimeTrial"
+    );
+
+const backSoloModes =
+    document.getElementById(
+        "backSoloModes"
+    );
+
+
+function ouvrirSoloModes() {
+
+    accueil.style.display =
+        "none";
+
+    soloModes.style.display =
+        "block";
+
+}
+
+
+playTimeTrial.addEventListener(
+    "click",
+    function () {
+
+        soloModes.style.display =
+            "none";
+
+        lancerSoloTimeTrial();
+
+    }
+);
+
+
+backSoloModes.addEventListener(
+    "click",
+    function () {
+
+        soloModes.style.display =
+            "none";
+
+        accueil.style.display =
+            "block";
+
+    }
+);
