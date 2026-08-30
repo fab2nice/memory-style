@@ -1843,6 +1843,10 @@ quitterPartie.addEventListener(
     "click",
     async function () {
         sortieVolontaire = true;
+                if (cartesSolo.length > 0) {
+            retourAccueilSolo();
+            return;
+        }
 
         if (codePartieActuelle === "") {
             return;
@@ -3985,7 +3989,61 @@ function ouvrirSoloModes() {
 
     soloModes.style.display =
         "block";
+afficherTop3TimeTrial();
+}
+async function afficherTop3TimeTrial() {
 
+    const classement =
+        await recupererTop10Solo();
+
+    const top3 =
+        classement.slice(0, 3);
+
+    const zone =
+        document.getElementById(
+            "top3TimeTrial"
+        );
+
+    if (top3.length === 0) {
+
+        zone.innerHTML =
+            "🥇 ---<br>" +
+            "🥈 ---<br>" +
+            "🥉 ---";
+
+        return;
+    }
+
+    const medailles =
+        ["🥇", "🥈", "🥉"];
+
+    let html = "";
+
+    for (let i = 0; i < 3; i++) {
+
+        if (top3[i]) {
+
+            html +=
+                medailles[i] +
+                " " +
+                top3[i].pseudo +
+                " — " +
+                top3[i].temps.toFixed(1) +
+                " s";
+
+        } else {
+
+            html +=
+                medailles[i] +
+                " ---";
+        }
+
+        if (i < 2) {
+            html += "<br>";
+        }
+    }
+
+    zone.innerHTML = html;
 }
 
 
