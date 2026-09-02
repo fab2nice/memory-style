@@ -3761,6 +3761,7 @@ if (chronoCombatInterval !== null) {
 }
 
 combatHud.style.display = "none";
+reglesCombat.style.display = "none";
 nouvellePartie.style.display = "";
 document.getElementById("nouvellePartie").style.display = "";
 
@@ -4118,6 +4119,10 @@ const affichageViesCombat =
         "viesCombat"
 
     );
+    const reglesCombat =
+    document.getElementById(
+        "reglesCombat"
+    );
     
 function creerDeckCombat() {
 
@@ -4164,6 +4169,8 @@ if (chronoCombatInterval !== null) {
     jeu.style.display =
         "block";
         combatHud.style.display =
+    "block";
+    reglesCombat.style.display =
     "block";
 
 chronoCombat.textContent =
@@ -4294,7 +4301,8 @@ function verifierVictoireCombat() {
     plateau.classList.add(
         "finSolo"
     );
-
+document.getElementById("quitterPartie").style.display = "none";
+reglesCombat.style.display = "none";
     const titre =
         document.createElement(
             "h2"
@@ -4313,6 +4321,9 @@ function verifierVictoireCombat() {
 
     boutonRetour.textContent =
         "BACK TO HOME";
+        boutonRetour.classList.add(
+    "boutonMenu"
+);
 
     boutonRetour.addEventListener(
         "click",
