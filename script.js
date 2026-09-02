@@ -4100,6 +4100,7 @@ const cartesPiegesCombat = [
     "images/tornade.png",
     "images/givre.png",
     "images/mort.png",
+    "images/revelation.png"
     
 ];
 const combatHud =
@@ -4436,6 +4437,60 @@ function jouerCarteCombat(indexCarte) {
     );
 
     return;
+}
+if (
+    cheminCarte ===
+    "images/revelation.png"
+) {
+
+    cartesTrouveesCombat[indexCarte] =
+        true;
+
+    combatVerrouille =
+        true;
+
+    selectionCombat = [];
+    const cartesDuPlateau =
+    plateau.querySelectorAll(
+        "button"
+    );
+
+cartesDuPlateau.forEach(
+    
+    function (bouton, index) {
+
+        if (
+            !cartesTrouveesCombat[index]
+        ) {
+            bouton.querySelector("img").src =
+                cartesCombat[index];
+        }
+
+    }
+);
+setTimeout(
+    function () {
+
+        cartesDuPlateau.forEach(
+            function (bouton, index) {
+
+                if (
+                    !cartesTrouveesCombat[index]
+                ) {
+                    bouton.querySelector("img").src =
+                        "images/dos.png";
+                }
+
+            }
+        );
+
+        combatVerrouille =
+            false;
+
+    },
+    2000
+);
+
 }
 if (
     cheminCarte ===
