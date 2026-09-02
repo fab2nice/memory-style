@@ -1843,10 +1843,13 @@ quitterPartie.addEventListener(
     "click",
     async function () {
         sortieVolontaire = true;
-                if (cartesSolo.length > 0) {
-            retourAccueilSolo();
-            return;
-        }
+                if (
+    cartesSolo.length > 0 ||
+    cartesCombat.length > 0
+) {
+    retourAccueilSolo();
+    return;
+}
 
         if (codePartieActuelle === "") {
             return;
@@ -2924,7 +2927,8 @@ if (snapshot.exists()) {
     gamesPlayed: 0,
     victories: 0,
 
-    createdAt: Date.now()
+    createdAt: Date.now(), 
+    createdDate: new Date().toLocaleString("fr-FR")
 
 });
 
@@ -3751,6 +3755,14 @@ plateau.classList.remove("finSolo");
     chronoSoloInterval = null;
 
 }
+if (chronoCombatInterval !== null) {
+    clearInterval(chronoCombatInterval);
+    chronoCombatInterval = null;
+}
+
+combatHud.style.display = "none";
+nouvellePartie.style.display = "";
+document.getElementById("nouvellePartie").style.display = "";
 
 }
 async function enregistrerMeilleurTempsSolo(
@@ -3980,6 +3992,10 @@ const backSoloModes =
     document.getElementById(
         "backSoloModes"
     );
+    const playCombat =
+    document.getElementById(
+        "playCombat"
+    );
 
 
 function ouvrirSoloModes() {
@@ -4072,3 +4088,719 @@ backSoloModes.addEventListener(
 
     }
 );
+playCombat.addEventListener(
+    "click",
+    function () {
+
+        lancerSoloCombat();
+
+    }
+);
+const cartesPiegesCombat = [
+    "images/tornade.png",
+    "images/givre.png",
+    "images/mort.png",
+    
+];
+const combatHud =
+    document.getElementById(
+        "combatHud"
+    );
+
+const chronoCombat =
+    document.getElementById(
+        "chronoCombat"
+    );
+
+const affichageViesCombat =
+    document.getElementById(
+        "viesCombat"
+
+    );
+    
+function creerDeckCombat() {
+
+    return [
+        ...cartesDeBase,
+        ...cartesPiegesCombat
+    ];
+
+}
+let cartesCombat = [];
+let selectionCombat = [];
+let cartesTrouveesCombat = {};
+let combatVerrouille = false;
+
+let chronoCombatDepart = null;
+let chronoCombatInterval = null;
+
+let viesCombat = 3;
+let utilisationsTornade = 0;
+
+function lancerSoloCombat() {
+if (chronoCombatInterval !== null) {
+    clearInterval(chronoCombatInterval);
+    chronoCombatInterval = null;
+}
+    cartesCombat =
+        melangerCartes(
+            creerDeckCombat()
+        );
+
+    selectionCombat = [];
+    cartesTrouveesCombat = {};
+
+    combatVerrouille = false;
+    viesCombat = 3;
+    utilisationsTornade = 0;
+
+    soloModes.style.display =
+        "none";
+
+    accueil.style.display =
+        "none";
+
+    jeu.style.display =
+        "block";
+        combatHud.style.display =
+    "block";
+
+chronoCombat.textContent =
+    "⏱ 0.0 s";
+
+affichageViesCombat.textContent =
+    "☠️ ☠️ ☠️";
+        tour.style.display = "none";
+timer.style.display = "none";
+scores.style.display = "none";
+etatCouleurs.style.display = "none";
+score.style.display = "none";
+reglesVideo.style.display = "none";
+document.getElementById("nouvellePartie").style.display = "none";
+
+    salonVideo.style.display =
+        "none";
+
+    infoSalonVideo.style.display =
+        "none";
+        afficherPlateauCombat();
+        demarrerChronoCombat();
+       
+
+    console.log(
+        "Combat deck:",
+        cartesCombat
+    );
+}
+function afficherPlateauCombat() {
+
+    plateau.innerHTML = "";
+
+    cartesCombat.forEach(
+        function (carte, index) {
+            
+
+            const carteDiv =
+    document.createElement(
+        "button"
+    );
+
+            carteDiv.dataset.index =
+                index;
+
+            const imageDos =
+                document.createElement(
+                    "img"
+                );
+
+            imageDos.src =
+                "images/dos.png";
+
+            imageDos.alt =
+                "Carte";
+
+            carteDiv.appendChild(
+                imageDos
+            );
+carteDiv.addEventListener(
+    "click",
+    function () {
+
+        jouerCarteCombat(index);
+
+    }
+);
+            plateau.appendChild(
+                carteDiv
+            );
+
+        }
+    );
+}
+function demarrerChronoCombat() {
+
+    chronoCombatDepart =
+        Date.now();
+
+    chronoCombatInterval =
+        setInterval(
+            function () {
+
+                const tempsEcoule =
+                    Date.now() -
+                    chronoCombatDepart;
+
+                chronoCombat.textContent =
+                    "⏱ " +
+                    (tempsEcoule / 1000).toFixed(1) +
+                    " s";
+
+            },
+            100
+        );
+}
+function verifierVictoireCombat() {
+
+    const nombreCartesTrouvees =
+        Object.keys(
+            cartesTrouveesCombat
+        ).length;
+
+    // 12 paires = 24 cartes normales trouvées
+    if (nombreCartesTrouvees < 24) {
+        return;
+    }
+
+    combatVerrouille = true;
+
+    if (chronoCombatInterval !== null) {
+        clearInterval(chronoCombatInterval);
+        chronoCombatInterval = null;
+    }
+
+    const tempsFinal =
+        Date.now() -
+        chronoCombatDepart;
+
+    const secondesFinales =
+        (tempsFinal / 1000).toFixed(1);
+
+    combatHud.style.display =
+        "none";
+
+    plateau.innerHTML = "";
+
+    plateau.classList.add(
+        "finSolo"
+    );
+
+    const titre =
+        document.createElement(
+            "h2"
+        );
+
+    titre.textContent =
+        "⚔ COMBAT COMPLETE!\n\n" +
+        "⏱ TIME: " +
+        secondesFinales +
+        " s";
+
+    const boutonRetour =
+        document.createElement(
+            "button"
+        );
+
+    boutonRetour.textContent =
+        "BACK TO HOME";
+
+    boutonRetour.addEventListener(
+        "click",
+        function () {
+
+            retourAccueilSolo();
+
+        }
+    );
+
+    plateau.appendChild(titre);
+    plateau.appendChild(boutonRetour);
+}
+function jouerCarteCombat(indexCarte) {
+
+    if (combatVerrouille) {
+        return;
+    }
+
+    if (cartesTrouveesCombat[indexCarte]) {
+        return;
+    }
+
+    if (selectionCombat.includes(indexCarte)) {
+        return;
+    }
+
+    const cheminCarte =
+        cartesCombat[indexCarte];
+
+    const bouton =
+    plateau.querySelector(
+        'button[data-index="' +
+        indexCarte +
+        '"]'
+    );
+
+    const image =
+        bouton.querySelector("img");
+
+
+
+    // -------------------------
+    // CARTE PIÈGE
+    // Aucun effet pour l'instant
+    // -------------------------
+
+    if (
+    cartesPiegesCombat.includes(
+        cheminCarte
+    )
+) {
+
+    image.src =
+        cheminCarte;
+
+
+    // -------------------------
+    // GIVRE
+    // -------------------------
+
+    if (
+    cheminCarte ===
+    "images/givre.png"
+) {
+
+    cartesTrouveesCombat[indexCarte] =
+        true;
+
+    combatVerrouille =
+        true;
+
+
+    // Gèle toutes les cartes encore cachées
+
+    const cartesDuPlateau =
+        plateau.querySelectorAll(
+            "button img"
+        );
+
+    cartesDuPlateau.forEach(
+        function (img) {
+
+            if (
+                img.src.endsWith(
+                    "/images/dos.png"
+                )
+            ) {
+                img.src =
+                    "images/dosglace.png";
+            }
+
+        }
+    );
+
+
+    setTimeout(
+        function () {
+
+            // Dégèle les cartes
+
+            cartesDuPlateau.forEach(
+                function (img) {
+
+                    if (
+                        img.src.endsWith(
+                            "/images/dosglace.png"
+                        )
+                    ) {
+                        img.src =
+                            "images/dos.png";
+                    }
+
+                }
+            );
+
+            combatVerrouille =
+                false;
+
+        },
+        5000
+    );
+
+    return;
+}
+if (
+    cheminCarte ===
+    "images/mort.png"
+) {
+
+    viesCombat--;
+
+    if (viesCombat === 2) {
+        affichageViesCombat.textContent =
+            "☠️ ☠️";
+    }
+
+    if (viesCombat === 1) {
+        affichageViesCombat.textContent =
+            "☠️";
+    }
+
+    if (viesCombat === 0) {
+
+        affichageViesCombat.textContent =
+            "";
+
+        terminerCombatMort();
+
+        return;
+    }
+
+
+    // La Mort se recache
+    
+
+    combatVerrouille =
+        true;
+
+    setTimeout(
+        function () {
+
+            image.src =
+                "images/dos.png";
+
+            combatVerrouille =
+                false;
+
+        },
+        800
+    );
+
+    return;
+}
+if (
+    cheminCarte ===
+    "images/tornade.png"
+) {
+    utilisationsTornade++;
+
+    combatVerrouille =
+        true;
+
+    selectionCombat = [];
+    plateau.classList.add(
+    "effetTornade"
+);
+
+
+    setTimeout(
+        function () {
+plateau.classList.remove(
+    "effetTornade"
+);
+            melangerPlateauCombat();
+           if (
+    utilisationsTornade >= 2
+) {
+
+    const indexTornade =
+        cartesCombat.indexOf(
+            "images/tornade.png"
+        );
+
+    cartesTrouveesCombat[indexTornade] =
+        true;
+
+    plateau.children[indexTornade]
+        .querySelector("img")
+        .src =
+        "images/tornade.png";
+}
+
+            combatVerrouille =
+                false;
+
+        },
+        800
+    );
+
+    return;
+}
+
+    
+    // -------------------------
+    // AUTRES PIÈGES
+    // Effet pas encore codé
+    // -------------------------
+
+    combatVerrouille =
+        true;
+
+    setTimeout(
+        function () {
+
+            image.src =
+                "images/dos.png";
+
+            combatVerrouille =
+                false;
+
+        },
+        800
+    );
+
+    return;
+}
+
+    // -------------------------
+    // CARTE NORMALE
+    // -------------------------
+
+    image.src =
+        cheminCarte;
+
+    selectionCombat.push(
+        indexCarte
+    );
+
+
+    if (
+        selectionCombat.length < 2
+    ) {
+        return;
+    }
+
+
+    combatVerrouille =
+        true;
+
+    const index1 =
+        selectionCombat[0];
+
+    const index2 =
+        selectionCombat[1];
+
+    const carte1 =
+        cartesCombat[index1];
+
+    const carte2 =
+        cartesCombat[index2];
+
+
+    // PAIRE TROUVÉE
+
+    if (carte1 === carte2) {
+
+        cartesTrouveesCombat[index1] =
+            true;
+
+        cartesTrouveesCombat[index2] =
+            true;
+
+        selectionCombat = [];
+
+        combatVerrouille =
+            false;
+verifierVictoireCombat();
+        return;
+    }
+    
+
+
+    // MAUVAISE PAIRE
+
+    setTimeout(
+        function () {
+
+            const bouton1 =
+    plateau.querySelector(
+        'button[data-index="' +
+        index1 +
+        '"]'
+    );
+
+const bouton2 =
+    plateau.querySelector(
+        'button[data-index="' +
+        index2 +
+        '"]'
+    );
+
+            bouton1.querySelector(
+                "img"
+            ).src =
+                "images/dos.png";
+
+            bouton2.querySelector(
+                "img"
+            ).src =
+                "images/dos.png";
+
+            selectionCombat = [];
+
+            combatVerrouille =
+                false;
+
+        },
+        1000
+    );
+}
+function terminerCombatMort() {
+
+    combatVerrouille =
+        true;
+
+    if (
+        chronoCombatInterval !== null
+    ) {
+
+        clearInterval(
+            chronoCombatInterval
+        );
+
+        chronoCombatInterval =
+            null;
+    }
+
+    combatHud.style.display =
+        "none";
+
+    plateau.innerHTML = "";
+
+    plateau.classList.add(
+        "finSolo"
+    );
+
+    const titre =
+        document.createElement("h2");
+
+    titre.textContent =
+        "☠️ GAME OVER\n\n" +
+        "DEATH GOT YOU";
+
+
+    const boutonRetour =
+        document.createElement(
+            "button"
+        );
+
+    boutonRetour.textContent =
+        "BACK TO HOME";
+
+    boutonRetour.addEventListener(
+        "click",
+        function () {
+
+            retourAccueilSolo();
+
+        }
+    );
+
+    plateau.appendChild(
+        titre
+    );
+
+    plateau.appendChild(
+        boutonRetour
+    );
+}
+function melangerPlateauCombat() {
+
+    const plateauMelange = cartesCombat.map(
+        function (carte, index) {
+
+            return {
+                carte: carte,
+                trouvee:
+                    cartesTrouveesCombat[index]
+                    === true
+            };
+
+        }
+    );
+
+
+    for (
+        let i =
+            plateauMelange.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+        const temp =
+            plateauMelange[i];
+
+        plateauMelange[i] =
+            plateauMelange[j];
+
+        plateauMelange[j] =
+            temp;
+    }
+
+
+    cartesCombat =
+        plateauMelange.map(
+            function (element) {
+
+                return element.carte;
+
+            }
+        );
+
+
+    cartesTrouveesCombat = {};
+
+    plateauMelange.forEach(
+        function (element, index) {
+
+            if (
+                element.trouvee
+            ) {
+
+                cartesTrouveesCombat[index] =
+                    true;
+
+            }
+
+        }
+    );
+
+
+    afficherPlateauCombat();
+
+
+    // Réaffiche les cartes déjà trouvées
+
+    Object.keys(
+        cartesTrouveesCombat
+    ).forEach(
+        function (index) {
+
+            const bouton =
+                plateau.children[index];
+
+            const image =
+                bouton.querySelector(
+                    "img"
+                );
+
+            image.src =
+                cartesCombat[index];
+
+        }
+    );
+}

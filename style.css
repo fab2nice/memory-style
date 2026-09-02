@@ -1270,3 +1270,59 @@ transition: 0.2s;
     margin: 25px 0;
     line-height: 1.7;
 }
+#combatHud {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#combatHud h2 {
+    margin-bottom: 12px;
+}
+
+.combatInfos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#viesCombat {
+    letter-spacing: 6px;
+}
+#plateau.effetTornade button {
+    animation: carteTornade 0.8s ease-in-out;
+}
+
+#plateau.effetTornade button:nth-child(3n) {
+    animation-delay: 0.05s;
+}
+
+#plateau.effetTornade button:nth-child(3n+1) {
+    animation-delay: 0.1s;
+}
+
+@keyframes carteTornade {
+
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    25% {
+        transform: translate(-15px, -10px) rotate(-8deg);
+    }
+
+    50% {
+        transform: translate(15px, 8px) rotate(10deg);
+    }
+
+    75% {
+        transform: translate(-8px, 5px) rotate(-5deg);
+    }
+
+    100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+}
