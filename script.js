@@ -3834,6 +3834,73 @@ async function enregistrerMeilleurTempsSolo(
     };
 
 }
+async function enregistrerMeilleurTempsCombat(
+    temps
+) {
+
+    if (!profilConnecte) {
+        return null;
+    }
+
+    const pseudo =
+        profilConnecte.nickname;
+
+    const profilRef =
+        ref(
+            db,
+            "profils/" + pseudo
+        );
+
+    const snapshot =
+        await get(profilRef);
+
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    const profil =
+        snapshot.val();
+
+    const ancienRecord =
+        profil.soloCombatBest || null;
+
+    let nouveauRecord = false;
+
+    let meilleurTemps =
+        ancienRecord;
+
+    if (
+        ancienRecord === null ||
+        temps < ancienRecord
+    ) {
+
+        meilleurTemps =
+            temps;
+
+        nouveauRecord =
+            true;
+
+        await update(
+            profilRef,
+            {
+                soloCombatBest:
+                    temps
+            }
+        );
+
+        profilConnecte.soloCombatBest =
+            temps;
+    }
+
+    return {
+        meilleurTemps:
+            meilleurTemps,
+
+        nouveauRecord:
+            nouveauRecord
+    };
+
+}
 async function recupererWorldBestSolo() {
 
     const profilsRef =
@@ -4267,7 +4334,7 @@ function demarrerChronoCombat() {
             100
         );
 }
-function verifierVictoireCombat() {
+async function verifierVictoireCombat() {
 
     const nombreCartesTrouvees =
         Object.keys(
@@ -4289,6 +4356,19 @@ function verifierVictoireCombat() {
     const tempsFinal =
         Date.now() -
         chronoCombatDepart;
+        const resultatRecord =
+    await enregistrerMeilleurTempsCombat(
+        tempsFinal
+    );
+    const meilleurTemps =
+    resultatRecord
+        ? resultatRecord.meilleurTemps
+        : tempsFinal;
+
+const nouveauRecord =
+    resultatRecord
+        ? resultatRecord.nouveauRecord
+        : false;
 
     const secondesFinales =
         (tempsFinal / 1000).toFixed(1);
@@ -4308,11 +4388,24 @@ reglesCombat.style.display = "none";
             "h2"
         );
 
-    titre.textContent =
-        "⚔ COMBAT COMPLETE!\n\n" +
-        "⏱ TIME: " +
-        secondesFinales +
-        " s";
+    let texteFin =
+    "⚔ COMBAT COMPLETE!\n\n" +
+    "⏱ TIME: " +
+    secondesFinales +
+    " s\n" +
+    "🏆 PERSONAL BEST: " +
+    (meilleurTemps / 1000).toFixed(1) +
+    " s";
+
+if (
+    nouveauRecord === true
+) {
+    texteFin +=
+        " 🏆 NEW RECORD!";
+}
+
+titre.textContent =
+    texteFin;
 
     const boutonRetour =
         document.createElement(
