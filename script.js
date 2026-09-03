@@ -462,7 +462,7 @@ if (nbGuests > 0) {
         document.createElement("div");
 
     divGuest.innerHTML =
-        "👥 Guests : " +
+        "👥 Visitors : " +
         nbGuests;
 
     joueursEnLigne.appendChild(
@@ -1559,6 +1559,11 @@ if (
 
 
 boutonCreer.addEventListener("click", async function () {
+    if (!profilConnecte) {
+    alert("A player profile is required to play.");
+    profileModal.style.display = "block";
+    return;
+}
     pseudoActuel = champPseudo.value.trim();
     const partiesRef =
     ref(db, "parties");
@@ -1733,6 +1738,11 @@ quitterLobby.addEventListener(
 );
 
 boutonRejoindre.addEventListener("click", async function () {
+    if (!profilConnecte) {
+    alert("A player profile is required to play.");
+    profileModal.style.display = "block";
+    return;
+}
     pseudoActuel = champPseudo.value.trim();
     codePartieActuelle = champCode.value.trim().toUpperCase();
 
