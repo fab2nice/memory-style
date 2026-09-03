@@ -3901,7 +3901,8 @@ async function enregistrerMeilleurTempsCombat(
     };
 
 }
-async function recupererWorldBestSolo() {
+
+async function recupererWorldBestCombat() {
 
     const profilsRef =
         ref(
@@ -3931,7 +3932,7 @@ async function recupererWorldBestSolo() {
 
         const temps =
             profils[pseudo]
-                .soloTimeTrialBest;
+                .soloCombatBest;
 
         if (
             typeof temps !==
@@ -4026,6 +4027,62 @@ async function recupererTop10Solo() {
     );
 
 }
+async function recupererTop10Combat() {
+
+    const profilsRef =
+        ref(
+            db,
+            "profils"
+        );
+
+    const snapshot =
+        await get(
+            profilsRef
+        );
+
+    if (!snapshot.exists()) {
+        return [];
+    }
+
+    const profils =
+        snapshot.val();
+
+    const classement = [];
+
+    for (let pseudo in profils) {
+
+        const temps =
+            profils[pseudo]
+                .soloCombatBest;
+
+        if (
+            typeof temps !==
+            "number"
+        ) {
+            continue;
+        }
+
+        classement.push({
+            pseudo: pseudo,
+            temps: temps
+        });
+
+    }
+
+    classement.sort(
+        function (a, b) {
+
+            return a.temps - b.temps;
+
+        }
+    );
+
+    return classement.slice(
+        0,
+        10
+    );
+
+}
 const togglePassword =
     document.getElementById("togglePassword");
 
@@ -4074,6 +4131,7 @@ function ouvrirSoloModes() {
     soloModes.style.display =
         "block";
 afficherTop3TimeTrial();
+afficherTop3Combat();
 }
 async function afficherTop3TimeTrial() {
 
@@ -4129,7 +4187,60 @@ async function afficherTop3TimeTrial() {
 
     zone.innerHTML = html;
 }
+async function afficherTop3Combat() {
 
+    const classement =
+        await recupererTop10Combat();
+
+    const top3 =
+        classement.slice(0, 3);
+
+    const zone =
+        document.getElementById(
+            "top3Combat"
+        );
+
+    if (top3.length === 0) {
+
+        zone.innerHTML =
+            "🥇 ---<br>" +
+            "🥈 ---<br>" +
+            "🥉 ---";
+
+        return;
+    }
+
+    const medailles =
+        ["🥇", "🥈", "🥉"];
+
+    let html = "";
+
+    for (let i = 0; i < 3; i++) {
+
+        if (top3[i]) {
+
+            html +=
+                medailles[i] +
+                " " +
+                top3[i].pseudo +
+                " — " +
+                (top3[i].temps / 1000).toFixed(1) +
+                " s";
+
+        } else {
+
+            html +=
+                medailles[i] +
+                " ---";
+        }
+
+        if (i < 2) {
+            html += "<br>";
+        }
+    }
+
+    zone.innerHTML = html;
+}
 
 playTimeTrial.addEventListener(
     "click",
@@ -4369,6 +4480,11 @@ const nouveauRecord =
     resultatRecord
         ? resultatRecord.nouveauRecord
         : false;
+        const worldBest =
+    await recupererWorldBestCombat();
+
+const top10 =
+    await recupererTop10Combat();
 
     const secondesFinales =
         (tempsFinal / 1000).toFixed(1);
@@ -4396,12 +4512,32 @@ reglesCombat.style.display = "none";
     "🏆 PERSONAL BEST: " +
     (meilleurTemps / 1000).toFixed(1) +
     " s";
+if (worldBest) {
 
+    texteFin +=
+        "\n👑 WORLD BEST: " +
+        (worldBest.temps / 1000).toFixed(1) +
+        " s - " +
+        worldBest.pseudo;
+
+}
 if (
     nouveauRecord === true
 ) {
     texteFin +=
         " 🏆 NEW RECORD!";
+}
+if (
+    worldBest &&
+    worldBest.pseudo ===
+        profilConnecte.nickname &&
+    worldBest.temps ===
+        tempsFinal
+) {
+
+    texteFin +=
+        " 👑 WORLD RECORD!";
+
 }
 
 titre.textContent =
@@ -4428,6 +4564,58 @@ titre.textContent =
     );
 
     plateau.appendChild(titre);
+    const classementTitre =
+    document.createElement("h3");
+
+classementTitre.textContent =
+    "🏆 TOP 10 COMBAT";
+
+plateau.appendChild(
+    classementTitre
+);
+
+top10.forEach(
+    function (joueur, index) {
+
+        const ligne =
+            document.createElement("p");
+
+        let medaille = "";
+
+        if (index === 0) {
+            medaille = "🥇 ";
+        }
+
+        if (index === 1) {
+            medaille = "🥈 ";
+        }
+
+        if (index === 2) {
+            medaille = "🥉 ";
+        }
+
+        ligne.textContent =
+            medaille +
+            (index + 1) +
+            ". " +
+            joueur.pseudo +
+            " - " +
+            (joueur.temps / 1000).toFixed(1) +
+            " s";
+if (
+    profilConnecte &&
+    joueur.pseudo ===
+        profilConnecte.nickname
+) {
+    ligne.style.fontWeight =
+        "bold";
+}
+        plateau.appendChild(
+            ligne
+        );
+
+    }
+);
     plateau.appendChild(boutonRetour);
 }
 function jouerCarteCombat(indexCarte) {
