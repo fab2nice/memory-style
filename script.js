@@ -3523,7 +3523,63 @@ function verifierPaireSolo() {
 // ------------------------------
 // FIN DU SOLO
 // ------------------------------
+async function recupererWorldBestSolo() {
 
+    const profilsRef =
+        ref(
+            db,
+            "profils"
+        );
+
+    const snapshot =
+        await get(
+            profilsRef
+        );
+
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    const profils =
+        snapshot.val();
+
+    let meilleurTemps = null;
+    let meilleurPseudo = null;
+
+    for (let pseudo in profils) {
+
+        const temps =
+            profils[pseudo]
+                .soloTimeTrialBest;
+
+        if (
+            typeof temps !== "number"
+        ) {
+            continue;
+        }
+
+        if (
+            meilleurTemps === null ||
+            temps < meilleurTemps
+        ) {
+
+            meilleurTemps = temps;
+            meilleurPseudo = pseudo;
+
+        }
+
+    }
+
+    if (meilleurTemps === null) {
+        return null;
+    }
+
+    return {
+        pseudo: meilleurPseudo,
+        temps: meilleurTemps
+    };
+
+}
 async function verifierFinSolo() {
 
     const nombreTrouvees =
