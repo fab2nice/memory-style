@@ -3839,8 +3839,7 @@ if (chronoCombatInterval !== null) {
 
 combatHud.style.display = "none";
 reglesCombat.style.display = "none";
-nouvellePartie.style.display = "";
-document.getElementById("nouvellePartie").style.display = "";
+boutonNouvellePartie.style.display = "";
 
 }
 async function enregistrerMeilleurTempsSolo(
@@ -4525,10 +4524,13 @@ function demarrerChronoCombat() {
 async function verifierVictoireCombat() {
 
     const nombreCartesTrouvees =
-        Object.keys(
-            cartesTrouveesCombat
-        ).length;
-
+    Object.keys(cartesTrouveesCombat)
+        .filter(index => {
+            return !cartesPiegesCombat.includes(
+                cartesCombat[index]
+            );
+        })
+        .length;
     // 12 paires = 24 cartes normales trouvées
     if (nombreCartesTrouvees < 24) {
         return;
