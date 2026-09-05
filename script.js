@@ -1528,6 +1528,12 @@ if (
     accueil.style.display = "none";
     lobby.style.display = "none";
     finPartie.style.display = "none";
+    // Restaurer l'interface multijoueur
+affichageTour.style.display = "";
+affichageTimer.style.display = "";
+affichageScore.style.display = "";
+affichageScoresJoueurs.style.display = "";
+affichageCouleurs.style.display = ""
         // Réafficher les éléments multijoueur
     salonVideo.style.display = "";
     infoSalonVideo.style.display = "";
