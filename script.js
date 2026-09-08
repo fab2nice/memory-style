@@ -346,11 +346,14 @@ if (
                 ).length;
 
             const mode =
-                partie.mode || 4;
-                if (nbJoueurs >= mode) {
+    partie.mode || 4;
+
+const maxJoueurs =
+    getMaxJoueurs(mode);
+
+if (nbJoueurs >= maxJoueurs) {
     continue;
 }
-
             let nomMode;
 
 if (mode === 2) {
@@ -361,10 +364,13 @@ if (mode === 2) {
 
     nomMode = "👥 3 Players";
 
+} else if (mode === 33) {
+
+    nomMode = "🌶️ 3 Players";
+
 } else {
 
     nomMode = "👥 4 Players";
-
 }
 
 partiesPubliques.innerHTML +=
@@ -377,9 +383,9 @@ partiesPubliques.innerHTML +=
     partie.createur +
     "<br>" +
     nbJoueurs +
-    " / " +
-    mode +
-    " players" +
+" / " +
+maxJoueurs +
+" players"
     "</button><br>";
 
         }
@@ -930,11 +936,12 @@ function joueurEstNaked(
             continue;
         }
 
-        if (
-            cartes[index].includes(couleur)
-        ) {
-            cartesTrouveesCouleur++;
-        }
+       if (
+    cartes[index].includes(couleur) &&
+    !cartes[index].includes("aubergine")
+) {
+    cartesTrouveesCouleur++;
+}
 
     }
 
@@ -1088,6 +1095,13 @@ if (!snapshot.exists()) {
     const partie = snapshot.val();
     const cartes = partie.plateau;
     const game = partie.game;
+    console.log(
+    "DEBUG CLICK",
+    "monNumero =", monNumero,
+    "joueurActuel =", game.joueurActuel,
+    "mode =", partie.mode,
+    "verrouille =", game.verrouille
+);
     const cartesTrouvees =
     game.cartesTrouvees || {};
 
@@ -1460,22 +1474,27 @@ if (!partie) {
 
         if (partie.mode === 2) {
 
-            modeLobby.innerHTML =
-                "Mode : Duel";
+    modeLobby.innerHTML =
+        "Mode : Duel";
 
-        }
-        else if (partie.mode === 3) {
+}
+else if (partie.mode === 3) {
 
-            modeLobby.innerHTML =
-                "Mode : 3 Players";
+    modeLobby.innerHTML =
+        "Mode : 3 Players";
 
-        }
-        else {
+}
+else if (partie.mode === 33) {
 
-            modeLobby.innerHTML =
-                "Mode : 4 Players";
+    modeLobby.innerHTML =
+        "Mode : 🌶️ 3 Players";
 
-        }
+}
+else {
+
+    modeLobby.innerHTML =
+        "Mode : 4 Players";
+}
 
         partieActuelle = partie;
         if (
@@ -1631,8 +1650,15 @@ if (valeurMode === "solo") {
     return;
 }
 
-const modeChoisi =
+let modeChoisi =
     parseInt(valeurMode);
+
+if (
+    modeChoisi === 3 &&
+    document.getElementById("spicy3").checked
+) {
+    modeChoisi = 33;
+}
 
     if (pseudoActuel === "") {
         alert("Choose nickname");
@@ -1786,8 +1812,9 @@ const nbJoueurs =
 
 const mode =
     partie.mode || 4;
-
-if (nbJoueurs >= mode) {
+const maxJoueurs =
+    getMaxJoueurs(mode);
+if (nbJoueurs >= maxJoueurs) {
 
     alert(
         "the game is complete"
@@ -1946,16 +1973,18 @@ if (!tousReady) {
 const mode =
     partie.mode || 4;
 
-if (nbJoueurs < mode) {
+const maxJoueurs =
+    getMaxJoueurs(mode);
+
+if (nbJoueurs < maxJoueurs) {
 
     alert(
         "You need " +
-        mode +
+        maxJoueurs +
         " players to start"
     );
 
     return;
-
 }
 let cartes;
 
@@ -1971,6 +2000,22 @@ if (partie.mode === 2) {
 
     cartes = cartesDeBase;
 
+}
+if (partie.mode === 2) {
+
+    cartes = cartesDeBaseDuel;
+
+} else if (partie.mode === 3) {
+
+    cartes = cartesDeBase3Joueurs;
+
+} else if (partie.mode === 33) {
+
+    cartes = cartesDeBaseSpicy3;
+
+} else {
+
+    cartes = cartesDeBase;
 }
 
 const plateauMelange =
@@ -5229,4 +5274,48 @@ function melangerPlateauCombat() {
 
         }
     );
+}
+const cartesDeBaseSpicy3 = [
+
+    // 🔵 BLEU
+    "images/basbleu.png", "images/basbleu.png",
+    "images/pantbleu.png", "images/pantbleu.png",
+    "images/tshirtbleu.png", "images/tshirtbleu.png",
+
+    // 🟡 JAUNE
+    "images/basjaune.png", "images/basjaune.png",
+    "images/pantjaune.png", "images/pantjaune.png",
+    "images/tshirtjaune.png", "images/tshirtjaune.png",
+
+    // 🔴 ROUGE
+    "images/basrouge.png", "images/basrouge.png",
+    "images/pantrouge.png", "images/pantrouge.png",
+    "images/tshirtrouge.png", "images/tshirtrouge.png",
+
+    // 🍆 AUBERGINE — 3 paires
+    "images/auberginebleue.png", "images/auberginebleue.png",
+    "images/auberginerouge.png", "images/auberginerouge.png",
+    "images/auberginejaune.png", "images/auberginejaune.png",
+
+    // 📹 STREAMING
+    "images/streaming.png", "images/streaming.png",
+
+    // 🛡️ BOUCLIER
+    "images/bouclier.png", "images/bouclier.png",
+
+    // 🎁 CADEAU
+    "images/cadeau.png", "images/cadeau.png"
+
+];
+function getMaxJoueurs(mode) {
+
+    if (mode === 2) {
+        return 2;
+    }
+
+    if (mode === 3 || mode === 33) {
+        return 3;
+    }
+
+    return 4;
 }
