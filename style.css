@@ -1084,6 +1084,7 @@ transition: 0.2s;
     gap: 25px;
 
     margin-top: -10px;
+    flex-wrap: wrap;
 
 }
 #joueursEnLigne {
@@ -1349,4 +1350,15 @@ transition: 0.2s;
 .combat-update-message strong {
     color: #ffcc00;
     font-size: 18px;
+}
+#zonePrivateGame {
+    flex-basis: 100%;
+    text-align: center;
+    margin-top: 8px;
+    color: #cccccc;
+    font-size: 16px;
+}
+.publicGameOption {
+    font-size: 16px;
+    color: #cccccc;
 }

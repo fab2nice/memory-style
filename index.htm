@@ -82,16 +82,7 @@
         <br><br>
         <div id="zoneActions">
 
-    <label id="labelPublic">
-
-        <input
-            type="checkbox"
-            id="partiePublique"
-            checked>
-
-        Public Game
-
-    </label>
+   
 
            <div id="zoneCompte">
 
@@ -132,6 +123,10 @@
     <input type="radio" name="modeJoueurs" value="solo">
     Solo
 </label>
+ <label class="publicGameOption">
+    <input type="checkbox" id="publicGame" checked>
+    Public
+</label>
     <button id="creerPartie" class="boutonMenu">
         Create Game
     </button>
@@ -139,14 +134,28 @@
     Start Game
 </button>
 
-   <button id="boutonRejoindre" class="boutonMenu">
-    Join Private<br>Game
-</button>
-    
-    <input
-    type="text"
-    id="codePartie"
-    placeholder="Game code">
+   <details id="zonePrivateGame">
+
+    <summary>
+        🔒 Join a private game
+    </summary>
+
+    <div class="privateGameContent">
+
+        <input
+            type="text"
+            id="codePartie"
+            placeholder="Game code">
+
+        <button
+            id="boutonRejoindre"
+            class="boutonMenu">
+            Join
+        </button>
+
+    </div>
+
+</details>
 
 </div>
 
