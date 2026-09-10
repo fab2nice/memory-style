@@ -1379,3 +1379,22 @@ transition: 0.2s;
 #maintenance h1 {
     font-size: 36px;
 }
+#reglesSpicy3 {
+
+    position: absolute;
+
+    left: 20px;
+
+    top: 360px;
+
+    width: 180px;
+
+    text-align: left;
+
+    background-color: rgba(0,0,0,0.3);
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+}
