@@ -45,9 +45,7 @@ const finPartie = document.getElementById("finPartie");
 
 const champPseudo = document.getElementById("pseudo");
 const partiePublique =
-    document.getElementById(
-        "partiePublique"
-    );
+    document.getElementById("publicGame");
 const champCode = document.getElementById("codePartie");
 
 const boutonCreer = document.getElementById("creerPartie");
@@ -1697,23 +1695,7 @@ monNumero = 1;
 await incrementerStat(
     "partiesCreees"
 );
-if (partie.mode === 2) {
 
-    await incrementerStat("modes/duel");
-
-} else if (partie.mode === 3) {
-
-    await incrementerStat("modes/troisJoueurs");
-
-} else if (partie.mode === 33) {
-
-    await incrementerStat("modes/troisJoueursSpicy");
-
-} else if (partie.mode === 4) {
-
-    await incrementerStat("modes/quatreJoueurs");
-
-}
     codeLobby.innerHTML = codePartieActuelle;
 
     accueil.style.display = "none";
