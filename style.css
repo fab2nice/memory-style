@@ -1362,3 +1362,20 @@ transition: 0.2s;
     font-size: 16px;
     color: #cccccc;
 }
+#maintenance {
+    position: fixed;
+    inset: 0;
+    z-index: 999999;
+    background: #1f1f1f;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 20px;
+}
+
+#maintenance h1 {
+    font-size: 36px;
+}

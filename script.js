@@ -95,6 +95,8 @@ const sonJoueur =
     new Audio("sons/joueur.mp3");
 const reglesDuel =
     document.getElementById("reglesDuel");
+    const reglesSpicy3 =
+    document.getElementById("reglesSpicy3");
     const salonVideo =
     document.getElementById(
         "salonVideo"
@@ -1574,10 +1576,17 @@ affichageCouleurs.style.display = ""
             if (partie.mode === 2) {
 
     reglesDuel.style.display = "block";
+    reglesSpicy3.style.display = "none";
+
+} else if (partie.mode === 33) {
+
+    reglesDuel.style.display = "none";
+    reglesSpicy3.style.display = "block";
 
 } else {
 
     reglesDuel.style.display = "none";
+    reglesSpicy3.style.display = "none";
 
 }
             boutonNouvellePartie.style.display = "none";
@@ -3358,6 +3367,8 @@ function lancerSoloTimeTrial() {
 
     reglesDuel.style.display =
         "none";
+        reglesSpicy3.style.display =
+    "none";
 
     boutonNouvellePartie.style.display =
         "none";
