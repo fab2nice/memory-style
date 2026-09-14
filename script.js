@@ -926,45 +926,56 @@ function joueurEstNaked(
     const couleur =
         couleursJoueurs[numeroJoueur];
 
-    let cartesTrouveesCouleur = 0;
+    if (!couleur) {
+        return false;
+    }
 
-    for (let index in cartesTrouvees) {
+    // Les seules cartes qui comptent
+    // pour déterminer si un joueur est NAKED
+    const vetements = [
+        "bas",
+        "pant",
+        "tshirt",
+        "chaussettes"
+    ];
+
+    let totalVetements = 0;
+    let vetementsTrouves = 0;
+
+    for (let i = 0; i < cartes.length; i++) {
+
+        const carte = cartes[i];
+
+        const estDeLaBonneCouleur =
+            carte.includes(couleur);
+
+        const estUnVetement =
+            vetements.some(
+                vetement =>
+                    carte.includes(vetement)
+            );
 
         if (
-            cartesTrouvees[index] !== true
+            estDeLaBonneCouleur &&
+            estUnVetement
         ) {
-            continue;
-        }
 
-       if (
-    cartes[index].includes(couleur) &&
-    !cartes[index].includes("aubergine")
-) {
-    cartesTrouveesCouleur++;
-}
+            totalVetements++;
+
+            if (
+                cartesTrouvees[i] === true
+            ) {
+                vetementsTrouves++;
+            }
+
+        }
 
     }
 
-    let seuilNaked = 6;
-
-if (
-    partieActuelle &&
-    partieActuelle.mode === 2
-) {
-
-    seuilNaked = 12;
-
-} else if (
-    partieActuelle &&
-    partieActuelle.mode === 3
-) {
-
-    seuilNaked = 8;
-
-}
-
-return cartesTrouveesCouleur >= seuilNaked;
-
+    return (
+        totalVetements > 0 &&
+        vetementsTrouves >= totalVetements
+    );
 }
 
 function trouverProchainJoueur(
@@ -1019,7 +1030,7 @@ function trouverProchainJoueur(
 }
 
 
-async function verifierVictoireBattle(
+function verifierVictoireBattle(
     cartesTrouvees,
     cartes,
     joueurs
@@ -1608,46 +1619,7 @@ boutonCreer.addEventListener("click", async function () {
 const snapshot =
     await get(partiesRef);
 
-if (snapshot.exists()) {
 
-    const parties =
-        snapshot.val();
-
-    for (let code in parties) {
-
-        const partie =
-            parties[code];
-
-       if (
-
-    partie.createur === pseudoActuel &&
-
-    partie.etat === "lobby"
-
-) {
-    console.log("Lobby existant trouvé :", code);
-
-    codePartieActuelle = code;
-
-    accueil.style.display = "none";
-    lobby.style.display = "block";
-    jeu.style.display = "none";
-    finPartie.style.display = "none";
-
-    codeLobby.innerHTML =
-        code;
-
-    surveillerChat();
-    surveillerJoueurs(code);
-    surveillerNotifications(code);
-    surveillerPartie(code);
-
-    return;
-
-}
-    }
-
-}
     const valeurMode =
     document.querySelector(
         'input[name="modeJoueurs"]:checked'
