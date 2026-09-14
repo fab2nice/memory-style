@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        PlayBattle - News & Community
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <div id="newsPage">
+
+        <h1>
+            PLAYBATTLE
+        </h1>
+
+        <h2>
+            📰 News & Community
+        </h2>
+
+
+        <!-- LANGUAGES -->
+
+        <div class="languageSwitch">
+
+            <button id="langFR">
+                🇫🇷 FR
+            </button>
+
+            <button id="langEN">
+                🇬🇧 EN
+            </button>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- FRANÇAIS -->
+        <!-- ========================= -->
+
+        <div id="newsFR">
+
+            <p class="newsIntro">
+                Actualités, événements et nouvelles
+                de la communauté PlayBattle.
+            </p>
+
+
+            <article class="newsArticle">
+
+                <h3>
+                    🌶️ Le mode Spicy 3 joueurs est disponible !
+                </h3>
+
+                <p class="newsDate">
+                    Septembre 2026
+                </p>
+
+                <p>
+                    PlayBattle propose désormais un nouveau
+                    <strong>mode Spicy à 3 joueurs</strong>.
+                </p>
+
+                <p>
+                    Cette variante ajoute des cartes spéciales
+                    au mode classique à 3 joueurs :
+                    Webcam, Bouclier, Cadeau et Aubergine.
+                </p>
+
+                <p>
+                    Réunissez deux amis et essayez-le.
+                </p>
+
+            </article>
+
+
+            <article class="newsArticle">
+
+                <h3>
+                    ⚔️ Etes-vous déjà arrivé au bout du mode Combat ?
+                </h3>
+
+                <p class="newsDate">
+                    Septembre 2026
+                </p>
+
+                <p>
+                    Le mode Combat propose un défi différent
+                    dans l'expérience Solo de PlayBattle.
+                </p>
+
+                <p>
+                    Trouvez les paires, évitez les pièges
+                    et tentez d'atteindre la première place.
+                </p>
+
+            </article>
+
+
+            <article class="newsArticle">
+
+                <h3>
+                    🌍 News & Community est ouvert !
+                </h3>
+
+                <p class="newsDate">
+                    Septembre 2026
+                </p>
+
+                <p>
+                    Cette nouvelle rubrique permettra de partager
+                    les nouveautés de PlayBattle, les nouveaux modes
+                    de jeu, les événements communautaires
+                    et les futures collaborations.
+                </p>
+
+                <p>
+                    D'autres nouvelles arrivent bientôt.
+                </p>
+
+            </article>
+
+        </div>
+
+
+        <!-- ========================= -->
+        <!-- ENGLISH -->
+        <!-- ========================= -->
+
+        <div id="newsEN" style="display:none;">
+
+            <p class="newsIntro">
+                Updates, events and news
+                from the PlayBattle community.
+            </p>
+
+
+            <article class="newsArticle">
+
+                <h3>
+                    🌶️ 3 Player Spicy Mode is live!
+                </h3>
+
+                <p class="newsDate">
+                    September 2026
+                </p>
+
+                <p>
+                    PlayBattle now includes a new
+                    <strong>3 Player Spicy Mode</strong>.
+                </p>
+
+                <p>
+                    This version adds special cards and new actions
+                    to the classic 3 player game, including
+                    Webcam, Shield, Gift and Aubergine cards.
+                </p>
+
+                <p>
+                    Grab two friends and give it a try.
+                </p>
+
+            </article>
+
+
+            <article class="newsArticle">
+
+                <h3>
+                    ⚔️ Have you beaten Combat Mode yet?
+                </h3>
+
+                <p class="newsDate">
+                    September 2026
+                </p>
+
+                <p>
+                    Combat Mode brings a different challenge
+                    to PlayBattle's Solo experience.
+                </p>
+
+                <p>
+                    Find the pairs, survive the traps
+                    and try to reach the leaderboard.
+                </p>
+
+            </article>
+
+
+            <article class="newsArticle">
+
+                <h3>
+                    🌍 News & Community is now open!
+                </h3>
+
+                <p class="newsDate">
+                    September 2026
+                </p>
+
+                <p>
+                    This new section will be used to share
+                    PlayBattle updates, new game modes,
+                    community events and future collaborations.
+                </p>
+
+                <p>
+                    More news coming soon.
+                </p>
+
+            </article>
+
+        </div>
+
+
+        <!-- BACK -->
+
+        <a
+            href="index.html"
+            class="backNews"
+        >
+            ← Back to PlayBattle
+        </a>
+
+    </div>
+
+
+    <!-- LANGUAGE SWITCH -->
+
+    <script>
+
+        const langFR =
+            document.getElementById("langFR");
+
+        const langEN =
+            document.getElementById("langEN");
+
+        const newsFR =
+            document.getElementById("newsFR");
+
+        const newsEN =
+            document.getElementById("newsEN");
+
+
+        langFR.addEventListener(
+            "click",
+            function () {
+
+                newsFR.style.display = "block";
+                newsEN.style.display = "none";
+
+                document.documentElement.lang = "fr";
+
+            }
+        );
+
+
+        langEN.addEventListener(
+            "click",
+            function () {
+
+                newsFR.style.display = "none";
+                newsEN.style.display = "block";
+
+                document.documentElement.lang = "en";
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
