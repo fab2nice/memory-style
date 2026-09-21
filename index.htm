@@ -6,7 +6,273 @@
     <title>PlayBattle</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<!-- =====================================================
+     SOLO SPICY - WAITING ROOM
+===================================================== -->
 
+<div id="spicyWaitingRoom" style="display:none;">
+
+    <h2>🌶 SOLO SPICY</h2>
+
+    <p>
+        Play under the eyes of the community.
+    </p>
+
+    <div id="spicyWaitingInfo">
+
+        <p id="spicyPlayer">
+            🎮 Player: ---
+        </p>
+
+        <p id="spicyColor">
+            👕 Your color: ---
+        </p>
+
+        <p id="spicySpectators">
+            👁 Spectators: 0
+        </p>
+
+    </div>
+
+    <p id="spicyWaitingMessage">
+        Waiting for at least one spectator...
+    </p>
+
+    <button
+        id="spicyVideo"
+        class="boutonMenu">
+        🎥 VIDEO & CHAT
+    </button>
+
+    <button
+        id="spicyStart"
+        class="boutonMenu"
+        disabled>
+        WAITING FOR SPECTATOR
+    </button>
+
+    <br>
+
+    <button
+        id="spicyCancel"
+        class="boutonMenu">
+        BACK
+    </button>
+
+</div>
+<!-- =====================================================
+     SOLO SPICY - SPECTATOR ROOM
+===================================================== -->
+
+<div id="spicySpectatorRoom" style="display:none;">
+
+    <h2>🌶 SOLO SPICY</h2>
+
+    <p id="spicySpectatorPlayer">
+        🎮 Player: ---
+    </p>
+
+    <p>
+        👁 You are watching this game
+    </p>
+
+    <p id="spicySpectatorStatus">
+        Waiting for the player to start...
+    </p>
+
+    <button
+        id="spicySpectatorVideo"
+        class="boutonMenu">
+        🎥 VIDEO & CHAT
+    </button>
+    <div id="spicySpectatorGameInfo"></div>
+    <div
+    <div
+    id="spicySpectatorChallenge"
+    style="display:none;"
+>
+    <p id="spicySpectatorChallengeText"></p>
+
+    <div
+        id="spicyGiftChoice"
+        style="display:none;"
+    >
+        <input
+            id="spicyGiftInput"
+            type="text"
+            maxlength="120"
+            placeholder="What should the player do?"
+        >
+
+        <button
+            id="spicySendGift"
+            class="boutonMenu">
+            🎁 SEND
+        </button>
+    </div>
+
+    <button
+        id="spicyValidateChallenge"
+        class="boutonMenu">
+        ✓ VALIDATE
+    </button>
+</div>
+<div id="reglesSpicySpectateur">
+
+    <h3>👁 SPECTATOR</h3>
+
+    <p>
+        🍆<br>
+        Masturbate 30s
+    </p>
+
+    <p>
+        🍑<br>
+        10 spankings
+    </p>
+
+    <p>
+        🫳 Caresse<br>
+        At least 30s
+    </p>
+
+    <p>
+        🎁 Gift<br>
+        Choose a challenge<br>
+        with the player's consent.
+    </p>
+
+    <p>
+        <strong>
+            ✓ Validate each challenge<br>
+            after it is completed.
+        </strong>
+    </p>
+
+</div>
+<div id="spicySpectatorPlateau"></div>
+
+    <br>
+
+    <button
+        id="spicySpectatorBack"
+        class="boutonMenu">
+        BACK
+    </button>
+
+</div>
+<!-- =====================================================
+     SOLO SPICY - GAME
+===================================================== -->
+
+<div id="spicyGame" style="display:none;">
+
+    <h2>🌶 SOLO SPICY</h2>
+
+    <div id="spicyGameInfo">
+        👕 Your color: ---
+        &nbsp;&nbsp;
+        👁 Spectators: 0
+        &nbsp;&nbsp;
+        🃏 Cards flipped: 0
+    </div>
+
+    <br>
+
+    <button
+        id="spicyGameVideo"
+        class="boutonMenu">
+        🎥 VIDEO & CHAT
+    </button>
+    <div
+    id="spicyPlayerChallenge"
+    style="display:none;"
+>
+    <p id="spicyPlayerChallengeText"></p>
+</div>
+<div id="reglesSpicy">
+
+    <h3>🌶 SPICY CARDS</h3>
+
+    <p>
+        🍆<br>
+        Masturbate 30s
+    </p>
+
+    <p>
+        🍑<br>
+        10 spankings
+    </p>
+
+    <p>
+        🫳 Caresse<br>
+        At least 30s
+    </p>
+
+    <p>
+        🛡️ Shield<br>
+        Block the next challenge.
+    </p>
+
+    <p>
+        🎁 Gift<br>
+        Spectator chooses a challenge<br>
+        with your consent.
+    </p>
+
+    <p>
+        🌪️ Tornado<br>
+        Shuffle the cards.<br>
+        Works twice.
+    </p>
+
+    <p>
+        <strong>
+            👁 Every challenge must be
+            validated by a spectator.
+        </strong>
+    </p>
+
+</div>
+    <div id="spicyPlateau"></div>
+
+</div>
+<div id="spicyEndGame" style="display:none;">
+
+    <h2>🌶 SOLO SPICY COMPLETE</h2>
+
+    <div id="spicyEndResult">
+        <p id="spicyEndScore">🃏 Cards flipped: 0</p>
+        <p id="spicyEndClothes">👕 Clothes removed: 0 / 4</p>
+        <p id="spicyEndChallenges">🔥 Challenges completed: 0</p>
+        <div id="spicyEndRanking">
+
+    <h3>🏆 YOUR BEST</h3>
+
+    <p id="spicyPersonalBest">
+        ---
+    </p>
+
+    <h3>🌍 TOP 10</h3>
+
+    <div id="spicyTop10">
+        ---
+    </div>
+
+</div>
+    </div>
+
+    <br>
+
+   
+
+    <button
+        id="spicyEndBack"
+        class="boutonMenu">
+        BACK TO HOME
+    </button>
+
+</div>
 <body>
     
 </div>
@@ -414,26 +680,26 @@ Try another game mode below to find players faster.
 
         <div class="soloModeCard">
 
-            <h3>🧠 PERFECT</h3>
+    <h3>🌶 SOLO SPICY</h3>
 
-            <p>
-                Coming soon.
-            </p>
+    <p>
+        Play under the eyes<br>
+        of the community.
+    </p>
 
-            <div id="top3Perfect">
-                🥇 ---<br>
-                🥈 ---<br>
-                🥉 ---
-            </div>
+    <div id="top3Spicy">
+        🥇 ---<br>
+        🥈 ---<br>
+        🥉 ---
+    </div>
 
-            <button
-                id="playPerfect"
-                class="boutonMenu"
-                disabled>
-                SOON
-            </button>
+    <button
+        id="playSpicy"
+        class="boutonMenu">
+        PLAY
+    </button>
 
-        </div>
+</div>
 
     </div>
 

@@ -23,7 +23,36 @@ body {
     margin-top: 0;
     color: gold;
 }
+#reglesSpicy {
+    position: absolute;
+    left: 20px;
+    top: 360px;
+    width: 180px;
+    text-align: left;
+    background-color: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 10px;
+}
 
+#reglesSpicy h3 {
+    margin-top: 0;
+    color: gold;
+}
+#reglesSpicySpectateur {
+    position: absolute;
+    left: 20px;
+    top: 360px;
+    width: 180px;
+    text-align: left;
+    background-color: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 10px;
+}
+
+#reglesSpicySpectateur h3 {
+    margin-top: 0;
+    color: gold;
+}
 #plateau {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -1468,4 +1497,58 @@ transition: 0.2s;
 
 #messageCommunaute a:hover {
     text-decoration: underline;
+}
+/* =====================================================
+   SOLO SPICY - PLATEAU
+===================================================== */
+
+#spicyPlateau {
+    display: grid;
+    grid-template-columns: repeat(6, 100px);
+    gap: 10px;
+
+    justify-content: center;
+
+    margin: 25px auto;
+    max-width: 700px;
+}
+
+#spicyPlateau .spicyCarte {
+    width: 100px;
+    height: 140px;
+}
+#spicyPlateau .spicyCarte img {
+    width: 100px !important;
+    height: 140px !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+}
+/* =====================================================
+   SOLO SPICY - SPECTATOR PLATEAU
+===================================================== */
+
+#spicySpectatorPlateau {
+    display: grid;
+    grid-template-columns: repeat(6, 100px);
+    gap: 10px;
+
+    justify-content: center;
+
+    margin: 25px auto;
+    max-width: 700px;
+}
+
+#spicySpectatorPlateau .spicyCarte {
+    width: 100px;
+    height: 140px;
+    cursor: default;
+}
+
+#spicySpectatorPlateau .spicyCarte img {
+    width: 100px !important;
+    height: 140px !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
 }

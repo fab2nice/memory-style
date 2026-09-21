@@ -1619,7 +1619,20 @@ boutonCreer.addEventListener("click", async function () {
 const snapshot =
     await get(partiesRef);
 
+if (snapshot.exists()) {
 
+    const parties =
+        snapshot.val();
+
+    for (let code in parties) {
+
+        const partie =
+            parties[code];
+
+     
+    }
+
+}
     const valeurMode =
     document.querySelector(
         'input[name="modeJoueurs"]:checked'
@@ -4003,7 +4016,88 @@ async function enregistrerMeilleurTempsCombat(
     };
 
 }
+async function enregistrerMeilleurScoreSpicy(
+    cartes,
+    gages
+) {
 
+    if (!profilConnecte) {
+        return null;
+    }
+
+    const pseudo =
+        profilConnecte.nickname;
+
+    const profilRef =
+        ref(
+            db,
+            "profils/" + pseudo
+        );
+
+    const snapshot =
+        await get(profilRef);
+
+    if (!snapshot.exists()) {
+        return null;
+    }
+
+    const profil =
+        snapshot.val();
+
+    const ancienScore =
+        profil.soloSpicyBest || null;
+
+    let nouveauRecord = false;
+
+    // Aucun record précédent
+    if (ancienScore === null) {
+
+        nouveauRecord = true;
+
+    }
+
+    // Moins de cartes retournées
+    else if (
+        cartes <
+        ancienScore.cartes
+    ) {
+
+        nouveauRecord = true;
+
+    }
+
+    // Même nombre de cartes,
+    // mais moins de gages
+    else if (
+        cartes === ancienScore.cartes &&
+        gages < ancienScore.gages
+    ) {
+
+        nouveauRecord = true;
+
+    }
+
+    if (nouveauRecord) {
+
+        const nouveauScore = {
+            cartes: cartes,
+            gages: gages
+        };
+
+        await update(
+            profilRef,
+            {
+                soloSpicyBest:
+                    nouveauScore
+            }
+        );
+
+        profilConnecte.soloSpicyBest =
+            nouveauScore;
+    }
+
+    return nouveauRecord;
+}
 async function recupererWorldBestCombat() {
 
     const profilsRef =
@@ -4185,6 +4279,69 @@ async function recupererTop10Combat() {
     );
 
 }
+async function recupererTop10Spicy() {
+
+    const profilsRef =
+        ref(
+            db,
+            "profils"
+        );
+
+    const snapshot =
+        await get(
+            profilsRef
+        );
+
+    if (!snapshot.exists()) {
+        return [];
+    }
+
+    const profils =
+        snapshot.val();
+
+    const classement = [];
+
+    for (let pseudo in profils) {
+
+        const score =
+            profils[pseudo]
+                .soloSpicyBest;
+
+        if (
+            !score ||
+            typeof score.cartes !== "number" ||
+            typeof score.gages !== "number"
+        ) {
+            continue;
+        }
+
+        classement.push({
+            pseudo: pseudo,
+            cartes: score.cartes,
+            gages: score.gages
+        });
+    }
+
+    classement.sort(
+        function (a, b) {
+
+            // Critère 1 :
+            // moins de cartes retournées
+            if (a.cartes !== b.cartes) {
+                return a.cartes - b.cartes;
+            }
+
+            // Critère 2 :
+            // moins de gages effectués
+            return a.gages - b.gages;
+        }
+    );
+
+    return classement.slice(
+        0,
+        10
+    );
+}
 const togglePassword =
     document.getElementById("togglePassword");
 
@@ -4234,6 +4391,7 @@ function ouvrirSoloModes() {
         "block";
 afficherTop3TimeTrial();
 afficherTop3Combat();
+afficherTop3Spicy();
 }
 async function afficherTop3TimeTrial() {
 
@@ -4343,7 +4501,183 @@ async function afficherTop3Combat() {
 
     zone.innerHTML = html;
 }
+async function afficherTop3Spicy() {
 
+    const classement =
+        await recupererTop10Spicy();
+
+    const top3 =
+        classement.slice(0, 3);
+
+    const zone =
+        document.getElementById(
+            "top3Spicy"
+        );
+
+    if (top3.length === 0) {
+
+        zone.innerHTML =
+            "🥇 ---<br>" +
+            "🥈 ---<br>" +
+            "🥉 ---";
+
+        return;
+    }
+
+    let html = "";
+
+    let position = 1;
+
+    for (let i = 0; i < top3.length; i++) {
+
+        if (i > 0) {
+
+            const precedent =
+                top3[i - 1];
+
+            const actuel =
+                top3[i];
+
+            if (
+                actuel.cartes !== precedent.cartes ||
+                actuel.gages !== precedent.gages
+            ) {
+                position = i + 1;
+            }
+        }
+
+        const medaille =
+            position === 1
+                ? "🥇"
+                : position === 2
+                    ? "🥈"
+                    : "🥉";
+
+        html +=
+            medaille +
+            " " +
+            top3[i].pseudo +
+            " — " +
+            top3[i].cartes +
+            " cards / " +
+            top3[i].gages +
+            " challenges";
+
+        if (i < top3.length - 1) {
+            html += "<br>";
+        }
+    }
+
+    zone.innerHTML = html;
+}
+async function afficherClassementFinSpicy() {
+
+    const zoneBest =
+        document.getElementById(
+            "spicyPersonalBest"
+        );
+
+    const zoneTop10 =
+        document.getElementById(
+            "spicyTop10"
+        );
+
+    // ---------------------------------------------
+    // MEILLEUR SCORE PERSONNEL
+    // ---------------------------------------------
+
+    if (
+        profilConnecte &&
+        profilConnecte.soloSpicyBest
+    ) {
+
+        const best =
+            profilConnecte.soloSpicyBest;
+
+        zoneBest.textContent =
+            best.cartes +
+            " cards / " +
+            best.gages +
+            " challenges";
+
+    } else {
+
+        zoneBest.textContent =
+            "No personal record";
+
+    }
+
+    // ---------------------------------------------
+    // TOP 10
+    // ---------------------------------------------
+
+    const classement =
+        await recupererTop10Spicy();
+
+    if (classement.length === 0) {
+
+        zoneTop10.textContent =
+            "No score yet";
+
+        return;
+    }
+
+    let html = "";
+
+    let position = 1;
+
+    for (
+        let i = 0;
+        i < classement.length;
+        i++
+    ) {
+
+        if (i > 0) {
+
+            const precedent =
+                classement[i - 1];
+
+            const actuel =
+                classement[i];
+
+            if (
+                actuel.cartes !== precedent.cartes ||
+                actuel.gages !== precedent.gages
+            ) {
+                position = i + 1;
+            }
+        }
+
+        let rang = position + ".";
+
+        if (position === 1) {
+            rang = "🥇";
+        } else if (position === 2) {
+            rang = "🥈";
+        } else if (position === 3) {
+            rang = "🥉";
+        }
+
+        html +=
+            rang +
+            " " +
+            classement[i].pseudo +
+            " — " +
+            classement[i].cartes +
+            " cards / " +
+            classement[i].gages +
+            " challenges";
+
+        if (
+            i <
+            classement.length - 1
+        ) {
+            html += "<br>";
+        }
+    }
+
+    zoneTop10.innerHTML = html;
+}
 playTimeTrial.addEventListener(
     "click",
     async function () {
@@ -5308,3 +5642,1903 @@ function getMaxJoueurs(mode) {
 
     return 4;
 }
+// =====================================================
+// SOLO SPICY
+// =====================================================
+
+const playSpicy =
+    document.getElementById(
+        "playSpicy"
+    );
+
+const spicyWaitingRoom =
+    document.getElementById(
+        "spicyWaitingRoom"
+    );
+
+const spicyPlayer =
+    document.getElementById(
+        "spicyPlayer"
+    );
+
+const spicyColor =
+    document.getElementById(
+        "spicyColor"
+    );
+
+const spicySpectators =
+    document.getElementById(
+        "spicySpectators"
+    );
+
+const spicyWaitingMessage =
+    document.getElementById(
+        "spicyWaitingMessage"
+    );
+
+const spicyVideo =
+    document.getElementById(
+        "spicyVideo"
+    );
+
+const spicyStart =
+    document.getElementById(
+        "spicyStart"
+    );
+
+const spicyCancel =
+    document.getElementById(
+        "spicyCancel"
+    );
+    const spicyEndGame =
+    document.getElementById("spicyEndGame");
+
+const spicyEndScore =
+    document.getElementById("spicyEndScore");
+
+const spicyEndClothes =
+    document.getElementById("spicyEndClothes");
+
+const spicyEndChallenges =
+    document.getElementById("spicyEndChallenges");
+
+
+const spicyEndBack =
+    document.getElementById("spicyEndBack");
+    // -----------------------------------------------------
+// FIREBASE SOLO SPICY
+// -----------------------------------------------------
+
+let codeSpicyActuel = "";
+let spicyRef = null;
+
+
+playSpicy.addEventListener(
+    "click",
+    async function () {
+
+        await creerPartieSpicy();
+
+        soloModes.style.display =
+            "none";
+
+        spicyWaitingRoom.style.display =
+            "block";
+
+        spicyPlayer.textContent =
+            "🎮 Player: " +
+            (
+                profilConnecte
+                    ? profilConnecte.nickname
+                    : pseudoActuel || "Guest"
+            );
+
+        spicyColor.textContent =
+            "👕 Your color: ---";
+
+        spicySpectators.textContent =
+            "👁 Spectators: 0";
+
+        spicyWaitingMessage.textContent =
+            "Waiting for at least one spectator...";
+
+        spicyStart.disabled =
+            true;
+
+        spicyStart.textContent =
+            "WAITING FOR SPECTATOR";
+
+    }
+);
+
+
+spicyCancel.addEventListener(
+    "click",
+    async function () {
+
+        if (spicyRef !== null) {
+
+            await remove(
+                spicyRef
+            );
+
+            spicyRef = null;
+            codeSpicyActuel = "";
+
+        }
+
+        spicyWaitingRoom.style.display =
+            "none";
+
+        soloModes.style.display =
+            "block";
+
+    }
+);
+async function creerPartieSpicy() {
+
+    codeSpicyActuel =
+        genererCode();
+
+    spicyRef =
+        ref(
+            db,
+            "soloSpicy/" +
+            codeSpicyActuel
+        );
+
+    const pseudoSpicy =
+        profilConnecte
+            ? profilConnecte.nickname
+            : pseudoActuel || "Guest";
+
+    await set(
+        spicyRef,
+        {
+            code:
+                codeSpicyActuel,
+
+            joueur:
+                pseudoSpicy,
+
+            etat:
+                "waiting",
+
+            dateCreation:
+                Date.now(),
+
+            spectateurs: {},
+
+            score:
+                0
+        }
+    );
+
+    console.log(
+        "Solo Spicy created:",
+        codeSpicyActuel
+    );
+    surveillerSpectateursSpicy();
+surveillerGageSpicyJoueur();
+}
+// =====================================================
+// SOLO SPICY - PUBLIC GAMES
+// =====================================================
+
+function surveillerSoloSpicyPublic() {
+
+    const soloSpicyRef =
+        ref(db, "soloSpicy");
+
+    onValue(
+        soloSpicyRef,
+        function (snapshot) {
+
+            // Supprime uniquement les anciens boutons Solo Spicy
+            document
+                .querySelectorAll(".partieSpicyPublique")
+                .forEach(function (bouton) {
+                    bouton.remove();
+                });
+
+            const partiesSpicy =
+                snapshot.val();
+
+            if (!partiesSpicy) {
+                return;
+            }
+
+            for (let code in partiesSpicy) {
+
+                const partie =
+                    partiesSpicy[code];
+
+                if (
+    partie.etat !== "waiting" &&
+    partie.etat !== "playing"
+) {
+    continue;
+}
+
+                const age =
+                    Date.now() -
+                    (partie.dateCreation || 0);
+
+                if (
+                    age >
+                    15 * 60 * 1000
+                ) {
+                    continue;
+                }
+
+                const bouton =
+                    document.createElement(
+                        "button"
+                    );
+
+                bouton.className =
+                    "partiePublique partieSpicyPublique";
+
+                let statutSpicy;
+
+if (partie.etat === "playing") {
+
+    statutSpicy =
+        "🔥 IN PROGRESS";
+
+} else {
+
+    statutSpicy =
+        "⏳ WAITING FOR SPECTATOR";
+
+}
+
+const nombreSpectateurs =
+    partie.spectateurs
+        ? Object.keys(
+            partie.spectateurs
+        ).length
+        : 0;
+
+bouton.innerHTML =
+    "🌶 SOLO SPICY" +
+    "<br>" +
+    statutSpicy +
+    "<br>" +
+    "By " +
+    partie.joueur +
+    "<br>" +
+    "👁 " +
+    nombreSpectateurs +
+    (
+        nombreSpectateurs === 1
+            ? " spectator"
+            : " spectators"
+    ) +
+    " — WATCH";
+
+                bouton.dataset.code =
+                    code;
+bouton.addEventListener(
+    "click",
+    function () {
+
+        rejoindreSoloSpicySpectateur(
+            code
+        );
+
+    }
+);
+                partiesPubliques.appendChild(
+                    bouton
+                );
+
+                partiesPubliques.appendChild(
+                    document.createElement("br")
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+surveillerSoloSpicyPublic();
+// =====================================================
+// SOLO SPICY - SPECTATOR
+// =====================================================
+const spicySpectatorRoom =
+    document.getElementById(
+        "spicySpectatorRoom"
+    );
+
+const spicySpectatorPlayer =
+    document.getElementById(
+        "spicySpectatorPlayer"
+    );
+
+const spicySpectatorStatus =
+    document.getElementById(
+        "spicySpectatorStatus"
+    );
+
+const spicySpectatorVideo =
+    document.getElementById(
+        "spicySpectatorVideo"
+    );
+
+const spicySpectatorBack =
+    document.getElementById(
+        "spicySpectatorBack"
+    );
+    const spicySpectatorChallenge =
+    document.getElementById(
+        "spicySpectatorChallenge"
+    );
+
+const spicySpectatorChallengeText =
+    document.getElementById(
+        "spicySpectatorChallengeText"
+    );
+
+const spicyValidateChallenge =
+    document.getElementById(
+        "spicyValidateChallenge"
+    );
+const spicyGiftChoice =
+    document.getElementById(
+        "spicyGiftChoice"
+    );
+
+const spicyGiftInput =
+    document.getElementById(
+        "spicyGiftInput"
+    );
+
+const spicySendGift =
+    document.getElementById(
+        "spicySendGift"
+    );
+    const spicyPlayerChallenge =
+    document.getElementById(
+        "spicyPlayerChallenge"
+    );
+
+const spicyPlayerChallengeText =
+    document.getElementById(
+        "spicyPlayerChallengeText"
+    );
+let codeSpicySpectateur = "";
+
+let refSpicySpectateur = null;
+let partieDeckSpectateur = [];
+// =====================================================
+// SOLO SPICY - SPECTATOR
+// =====================================================
+
+async function rejoindreSoloSpicySpectateur(
+    code
+) {
+
+    const spectateurRef =
+        push(
+            ref(
+                db,
+                "soloSpicy/" +
+                code +
+                "/spectateurs"
+            )
+        );
+
+    await set(
+        spectateurRef,
+        {
+            pseudo:
+                profilConnecte
+                    ? profilConnecte.nickname
+                    : pseudoActuel || "Guest",
+
+            arrivee:
+                Date.now()
+        }
+    );
+
+    onDisconnect(
+        spectateurRef
+    ).remove();
+
+    codeSpicySpectateur =
+        code;
+
+    refSpicySpectateur =
+        spectateurRef;
+
+    const partieSnapshot =
+        await get(
+            ref(
+                db,
+                "soloSpicy/" + code
+            )
+        );
+
+    const partie =
+        partieSnapshot.val();
+
+    if (!partie) {
+        return;
+    }
+    
+
+    spicySpectatorPlayer.textContent =
+        "🎮 Player: " +
+        partie.joueur;
+
+        spicySpectatorStatus.textContent =
+        "Waiting for the player to start...";
+
+    accueil.style.display =
+        "none";
+
+    spicySpectatorRoom.style.display =
+        "block";
+
+    surveillerEtatSoloSpicySpectateur(
+    code
+);
+
+surveillerCartesSpicySpectateur(
+    code
+);
+surveillerGageSpicySpectateur(
+    code
+);
+
+}
+
+// =====================================================
+// SOLO SPICY - SPECTATOR VIDEO
+// =====================================================
+
+spicySpectatorVideo.addEventListener(
+    "click",
+    function () {
+
+        if (!codeSpicySpectateur) {
+            return;
+        }
+
+        window.open(
+            "https://kmeet.infomaniak.com/playbattle-" +
+            codeSpicySpectateur,
+            "_blank"
+        );
+
+    }
+);
+
+
+// =====================================================
+// SOLO SPICY - SPECTATOR BACK
+// =====================================================
+
+spicySpectatorBack.addEventListener(
+    "click",
+    async function () {
+
+        if (
+            refSpicySpectateur !== null
+        ) {
+
+            await remove(
+                refSpicySpectateur
+            );
+
+        }
+
+        refSpicySpectateur =
+            null;
+
+        codeSpicySpectateur =
+            "";
+
+        spicySpectatorRoom.style.display =
+            "none";
+
+        accueil.style.display =
+            "block";
+
+    }
+);
+function surveillerSpectateursSpicy() {
+
+    if (!codeSpicyActuel) {
+        return;
+    }
+
+    const spectateursRef =
+        ref(
+            db,
+            "soloSpicy/" +
+            codeSpicyActuel +
+            "/spectateurs"
+        );
+
+    onValue(
+        spectateursRef,
+        function (snapshot) {
+
+            const spectateurs =
+                snapshot.val();
+
+            const nombre =
+                spectateurs
+                    ? Object.keys(
+                        spectateurs
+                    ).length
+                    : 0;
+                    spicyNombreSpectateurs =
+    nombre;
+                    // ---------------------------------------------
+// PARTIE EN COURS
+// ---------------------------------------------
+
+if (
+    spicyGame.style.display === "block"
+) {
+
+    if (nombre === 0) {
+
+        spicySansSpectateur = true;
+
+        spicyGameInfo.innerHTML =
+            "⏸ GAME PAUSED — Waiting for a spectator...";
+
+    } else {
+
+        spicySansSpectateur = false;
+
+        mettreAJourCompteurSpicy();
+
+    }
+}
+
+            spicySpectators.textContent =
+                "👁 Spectators: " +
+                nombre;
+
+            if (nombre >= 1) {
+
+                spicyWaitingMessage.textContent =
+                    "Spectator ready!";
+
+                spicyStart.disabled =
+                    false;
+
+                spicyStart.textContent =
+                    "START";
+
+            } else {
+
+                spicyWaitingMessage.textContent =
+                    "Waiting for at least one spectator...";
+
+                spicyStart.disabled =
+                    true;
+
+                spicyStart.textContent =
+                    "WAITING FOR SPECTATOR";
+
+            }
+
+        }
+    );
+
+}
+spicyVideo.addEventListener(
+    "click",
+    function () {
+
+        if (!codeSpicyActuel) {
+            return;
+        }
+
+        window.open(
+            "https://kmeet.infomaniak.com/playbattle-" +
+            codeSpicyActuel,
+            "_blank"
+        );
+
+    }
+);
+// =====================================================
+// SOLO SPICY - START
+// =====================================================
+
+spicyStart.addEventListener(
+    "click",
+    async function () {
+console.log("CLICK START SPICY");
+
+        if (!codeSpicyActuel) {
+            return;
+        }
+
+        await update(
+            ref(
+                db,
+                "soloSpicy/" +
+                codeSpicyActuel
+            ),
+            {
+                etat: "playing"
+            }
+        );
+
+        spicyWaitingRoom.style.display =
+            "none";
+spicyGame.style.display =
+    "block";
+    creerDeckSpicy();
+        console.log(
+            "Solo Spicy started:",
+            codeSpicyActuel
+        );
+
+    }
+);
+// =====================================================
+// SOLO SPICY - SPECTATOR GAME STATUS
+// =====================================================
+
+function surveillerEtatSoloSpicySpectateur(
+    code
+) {
+
+    const partieRef =
+        ref(
+            db,
+            "soloSpicy/" + code
+        );
+
+    onValue(
+        partieRef,
+        function (snapshot) {
+
+            const partie =
+                snapshot.val();
+
+            if (!partie) {
+                return;
+            }
+
+            if (
+                partie.etat === "playing"
+            ) {
+
+                spicySpectatorStatus.textContent =
+                    "🌶 The game has started!";
+
+                afficherDeckSpicySpectateur(
+                    partie
+                );
+
+            } 
+            else {
+
+                spicySpectatorStatus.textContent =
+                    "Waiting for the player to start...";
+
+            }
+
+        }
+    );
+
+}
+// =====================================================
+// SOLO SPICY - GAME SCREEN
+// =====================================================
+
+const spicyGame =
+    document.getElementById(
+        "spicyGame"
+    );
+
+const spicyGameInfo =
+    document.getElementById(
+        "spicyGameInfo"
+    );
+
+const spicyGameVideo =
+    document.getElementById(
+        "spicyGameVideo"
+    );
+
+const spicyPlateau =
+    document.getElementById(
+        "spicyPlateau"
+    );
+
+
+spicyGameVideo.addEventListener(
+    "click",
+    function () {
+
+        if (!codeSpicyActuel) {
+            return;
+        }
+
+        window.open(
+            "https://kmeet.infomaniak.com/playbattle-" +
+            codeSpicyActuel,
+            "_blank"
+        );
+
+    }
+);
+// =====================================================
+// SOLO SPICY - DECK
+// =====================================================
+
+let couleurSpicy = "";
+
+let cartesSpicy = [];
+
+
+function creerDeckSpicy() {
+
+    // ---------------------------------------------
+    // COULEUR DU JOUEUR
+    // ---------------------------------------------
+spicyCardsFlipped = 0;
+spicyPremiereCarte = null;
+spicyDeuxiemeCarte = null;
+spicyBloque = false;
+spicyTornadeUtilisations = 0;
+spicyPairesTrouvees = 0;
+spicyGageEnCours = false;
+spicyGagesEffectues = 0;
+spicyBouclierActif = false;
+spicyVetementsRetires = 0;
+    couleurSpicy = "bleu";
+
+
+    // ---------------------------------------------
+    // 24 CARTES VÊTEMENTS
+    // ---------------------------------------------
+
+    cartesSpicy = [
+
+    // BLEU = JOUEUR
+    // Une seule carte de chaque vêtement
+    "images/basbleu.png",
+    "images/pantbleu.png",
+    "images/tshirtbleu.png",
+    "images/chaussettesbleues.png",
+
+    // ROUGE = PAIRES
+    "images/basrouge.png",
+    "images/basrouge.png",
+    "images/pantrouge.png",
+    "images/pantrouge.png",
+    "images/tshirtrouge.png",
+    "images/tshirtrouge.png",
+
+    // JAUNE = PAIRES
+    "images/basjaune.png",
+    "images/basjaune.png",
+    "images/pantjaune.png",
+    "images/pantjaune.png",
+    "images/tshirtjaune.png",
+    "images/tshirtjaune.png",
+
+    // VERT = PAIRES
+    "images/basvert.png",
+    "images/basvert.png",
+    "images/pantvert.png",
+    "images/pantvert.png",
+    "images/tshirtvert.png",
+    "images/tshirtvert.png"
+
+];
+
+    // ---------------------------------------------
+    // 6 CARTES SPÉCIALES
+    // ---------------------------------------------
+
+    
+
+
+    cartesSpicy.push(
+    "images/auberginedore.png",
+    "images/abricotdore.png",
+    "images/caresse.png",
+    "images/cadeau.png",
+    "images/bouclier.png",
+    "images/tornade.png"
+);
+
+    // ---------------------------------------------
+    // MÉLANGE
+    // ---------------------------------------------
+
+    cartesSpicy =
+        melangerCartes(
+            cartesSpicy
+        );
+
+// ---------------------------------------------
+// ENREGISTRE LE DECK DANS FIREBASE
+// ---------------------------------------------
+
+update(
+    ref(
+        db,
+        "soloSpicy/" +
+        codeSpicyActuel
+    ),
+    {
+        deck: cartesSpicy,
+        couleur: couleurSpicy
+    }
+);
+    // ---------------------------------------------
+    // AFFICHAGE
+    // ---------------------------------------------
+
+    spicyPlateau.innerHTML =
+        "";
+
+    cartesSpicy.forEach(
+        function (image, index) {
+
+            const carte =
+                document.createElement(
+                    "div"
+                );
+
+            carte.className =
+                "carte spicyCarte";
+
+            carte.dataset.index =
+                index;
+
+            carte.dataset.image =
+                image;
+                carte.addEventListener(
+    "click",
+    function () {
+
+        retournerCarteSpicy(
+            carte
+        );
+
+    }
+);
+
+            const dos =
+                document.createElement(
+                    "img"
+                );
+
+           dos.src =
+    "images/dos.png";
+
+            carte.appendChild(
+                dos
+            );
+
+            spicyPlateau.appendChild(
+                carte
+            );
+
+        }
+    );
+
+
+    // ---------------------------------------------
+    // INFORMATIONS
+    // ---------------------------------------------
+
+   let couleurAffichee = "";
+
+if (couleurSpicy === "bleu") {
+    couleurAffichee = "🔵";
+} else if (couleurSpicy === "rouge") {
+    couleurAffichee = "🔴";
+} else {
+    couleurAffichee = "🟡";
+}
+
+spicyGameInfo.innerHTML =
+    "Your color: " +
+    couleurAffichee +
+    "&nbsp;&nbsp; " +
+    "👁 Spectators: " +
+spicyNombreSpectateurs +
+    "&nbsp;&nbsp; " +
+    "🃏 Cards flipped: 0";
+}
+// =====================================================
+// SOLO SPICY - CARD CLICKS
+// =====================================================
+
+let spicyPremiereCarte = null;
+let spicyDeuxiemeCarte = null;
+
+let spicyBloque = false;
+
+let spicyCardsFlipped = 0;
+let spicyPairesTrouvees = 0;
+let spicyTornadeUtilisations = 0;
+let spicySansSpectateur = false;
+let spicyNombreSpectateurs = 0;
+let spicyGageEnCours = false;
+let spicyGagesEffectues = 0;
+let spicyBouclierActif = false;
+let spicyVetementsRetires = 0;
+
+function estCarteSpecialeSpicy(image) {
+
+    return (
+        image.includes("aubergine") ||
+        image.includes("abricot") ||
+        image.includes("caresse") ||
+        image.includes("cadeau") ||
+        image.includes("bouclier") ||
+        image.includes("tornade")
+    );
+
+}
+
+
+function mettreAJourCompteurSpicy() {
+
+    const couleurAffichee = "🔵";
+
+    const bouclierAffiche =
+        spicyBouclierActif
+            ? "&nbsp;&nbsp; 🛡️ Shield active"
+            : "";
+
+    spicyGameInfo.innerHTML =
+        "Your color: " + couleurAffichee +
+        "&nbsp;&nbsp; " +
+        "👁 Spectators: " + spicyNombreSpectateurs +
+        "&nbsp;&nbsp; " +
+        "🃏 Cards flipped: " + spicyCardsFlipped +
+        bouclierAffiche;
+}
+
+
+function retournerCarteSpicy(
+    carte
+) {
+
+   if (
+    spicyBloque ||
+    spicySansSpectateur ||
+    spicyGageEnCours
+) {
+    return;
+}
+
+    if (
+        carte.classList.contains(
+            "spicyVisible"
+        )
+    ) {
+        return;
+    }
+
+    const image =
+        carte.dataset.image;
+
+    const speciale =
+        estCarteSpecialeSpicy(
+            image
+        );
+
+    // Affiche la carte
+    carte.querySelector("img").src =
+        image;
+
+    carte.classList.add(
+        "spicyVisible"
+    );
+    
+synchroniserCarteSpicy(
+    carte.dataset.index,
+    true
+);
+// Chaque carte retournée compte dans le score
+spicyCardsFlipped++;
+
+mettreAJourCompteurSpicy();
+// ---------------------------------------------
+// VÊTEMENT DU JOUEUR = BLEU
+// ---------------------------------------------
+
+if (image.includes("bleu")) {
+
+    carte.classList.add(
+        "spicyTrouvee"
+    );
+
+    spicyVetementsRetires++;
+
+    return;
+}
+// ---------------------------------------------
+// TORNADE
+// ---------------------------------------------
+
+if (image.includes("tornade")) {
+
+    spicyTornadeUtilisations++;
+    spicyBloque = true;
+
+    spicyPremiereCarte = null;
+    spicyDeuxiemeCarte = null;
+
+    spicyPlateau.classList.add(
+        "effetTornade"
+    );
+
+    setTimeout(
+        async function () {
+
+            spicyPlateau.classList.remove(
+                "effetTornade"
+            );
+
+            await melangerPlateauSpicy();
+
+            spicyBloque = false;
+
+        },
+        800
+    );
+
+    return;
+}
+    // ---------------------------------------------
+// CARTE SPÉCIALE
+// ---------------------------------------------
+
+if (speciale) {
+
+    carte.classList.add("spicySpeciale");
+
+    // BOUCLIER
+    if (image.includes("bouclier")) {
+
+        spicyBouclierActif = true;
+
+        mettreAJourCompteurSpicy();
+
+        console.log(
+            "Solo Spicy: shield activated"
+        );
+
+        return;
+    }
+
+    // GAGES
+    if (image.includes("aubergine")) {
+
+        lancerGageSpicy("aubergine");
+
+    } else if (image.includes("abricot")) {
+
+        lancerGageSpicy("abricot");
+
+    } else if (image.includes("caresse")) {
+
+        lancerGageSpicy("caresse");
+
+    } else if (image.includes("cadeau")) {
+
+        lancerGageSpicy("cadeau");
+
+    }
+
+    return;
+}
+
+
+    // ---------------------------------------------
+    // PREMIÈRE CARTE
+    // ---------------------------------------------
+
+    if (
+        spicyPremiereCarte === null
+    ) {
+
+        spicyPremiereCarte =
+            carte;
+
+        return;
+    }
+
+
+    // ---------------------------------------------
+    // DEUXIÈME CARTE
+    // ---------------------------------------------
+
+    spicyDeuxiemeCarte =
+        carte;
+
+    spicyBloque =
+        true;
+
+
+    const image1 =
+        spicyPremiereCarte.dataset.image;
+
+    const image2 =
+        spicyDeuxiemeCarte.dataset.image;
+
+
+    // ---------------------------------------------
+    // PAIRE TROUVÉE
+    // ---------------------------------------------
+
+    if (image1 === image2) {
+
+    spicyPremiereCarte.classList.add(
+        "spicyTrouvee"
+    );
+
+    spicyDeuxiemeCarte.classList.add(
+        "spicyTrouvee"
+    );
+
+    spicyPairesTrouvees++;
+
+    console.log(
+        "Solo Spicy pairs:",
+        spicyPairesTrouvees,
+        "/ 9"
+    );
+
+    // FIN DE PARTIE
+    if (spicyPairesTrouvees === 9) {
+
+        spicyPremiereCarte = null;
+        spicyDeuxiemeCarte = null;
+
+        terminerSoloSpicy();
+
+        return;
+    }
+
+    // La partie continue
+    spicyPremiereCarte = null;
+    spicyDeuxiemeCarte = null;
+
+    spicyBloque = false;
+
+    return;
+}
+
+
+// ---------------------------------------------
+// MAUVAISE PAIRE
+// -----------------------------------------------------------------
+
+    setTimeout(
+        function () {
+synchroniserCarteSpicy(
+    spicyPremiereCarte.dataset.index,
+    false
+);
+
+synchroniserCarteSpicy(
+    spicyDeuxiemeCarte.dataset.index,
+    false
+);
+            spicyPremiereCarte
+                .querySelector("img")
+                .src =
+                "images/dos.png";
+
+            spicyDeuxiemeCarte
+                .querySelector("img")
+                .src =
+                "images/dos.png";
+
+            spicyPremiereCarte
+                .classList.remove(
+                    "spicyVisible"
+                );
+
+            spicyDeuxiemeCarte
+                .classList.remove(
+                    "spicyVisible"
+                );
+synchroniserCarteSpicy(
+    spicyPremiereCarte.dataset.index,
+    false
+);
+
+synchroniserCarteSpicy(
+    spicyDeuxiemeCarte.dataset.index,
+    false
+);
+            spicyPremiereCarte =
+                null;
+
+            spicyDeuxiemeCarte =
+                null;
+
+            spicyBloque =
+                false;
+
+        },
+        900
+    );
+
+}
+// =====================================================
+// SOLO SPICY - SPECTATOR DECK
+// =====================================================
+
+function afficherDeckSpicySpectateur(
+    partie
+) {
+
+    if (!partie.deck) {
+        return;
+    }
+partieDeckSpectateur =
+    partie.deck;
+    spicySpectatorPlateau.innerHTML =
+        "";
+
+    partie.deck.forEach(
+        function (image, index) {
+
+            const carte =
+                document.createElement(
+                    "div"
+                );
+
+            carte.className =
+                "carte spicyCarte";
+
+            carte.dataset.index =
+                index;
+
+            const dos =
+                document.createElement(
+                    "img"
+                );
+
+           const etat =
+    partie.cartesEtat
+        ? partie.cartesEtat[index]
+        : null;
+
+dos.src =
+    etat &&
+    etat.visible === true
+        ? image
+        : "images/dos.png";
+
+            carte.appendChild(
+                dos
+            );
+
+            spicySpectatorPlateau.appendChild(
+                carte
+            );
+
+        }
+    );
+
+    spicySpectatorGameInfo.innerHTML =
+        "👁 LIVE GAME";
+
+}
+// =====================================================
+// SOLO SPICY - SYNC CARD STATE
+// =====================================================
+
+function synchroniserCarteSpicy(
+    index,
+    visible
+) {
+
+    if (!codeSpicyActuel) {
+        return;
+    }
+
+    update(
+        ref(
+            db,
+            "soloSpicy/" +
+            codeSpicyActuel +
+            "/cartesEtat/" +
+            index
+        ),
+        {
+            visible: visible
+        }
+    );
+
+}
+// =====================================================
+// SOLO SPICY - SPECTATOR LIVE CARDS
+// =====================================================
+
+function surveillerCartesSpicySpectateur(
+    code
+) {
+
+    const cartesEtatRef =
+        ref(
+            db,
+            "soloSpicy/" +
+            code +
+            "/cartesEtat"
+        );
+
+    onValue(
+        cartesEtatRef,
+        function (snapshot) {
+
+            const etats =
+                snapshot.val() || {};
+
+            const cartes =
+                spicySpectatorPlateau
+                    .querySelectorAll(
+                        ".spicyCarte"
+                    );
+
+            cartes.forEach(
+                function (
+                    carte,
+                    index
+                ) {
+
+                    const etat =
+                        etats[index];
+
+                    if (
+                        etat &&
+                        etat.visible === true
+                    ) {
+
+                        carte
+                            .querySelector("img")
+                            .src =
+                            partieDeckSpectateur[
+                                index
+                            ];
+
+                    } else {
+
+                        carte
+                            .querySelector("img")
+                            .src =
+                            "images/dos.png";
+
+                    }
+
+                }
+            );
+
+        }
+    );
+
+}
+// =====================================================
+// SOLO SPICY - TORNADE
+// =====================================================
+
+async function melangerPlateauSpicy() {
+
+    const cartesActuelles =
+        Array.from(
+            spicyPlateau.querySelectorAll(
+                ".spicyCarte"
+            )
+        );
+
+    const plateauMelange =
+        cartesSpicy.map(
+            function (image, index) {
+
+                const element =
+                    cartesActuelles[index];
+
+                const permanente =
+                    element &&
+                    (
+                        element.classList.contains(
+                            "spicyTrouvee"
+                        ) ||
+                        element.classList.contains(
+                            "spicySpeciale"
+                        )
+                    );
+
+                return {
+                    image: image,
+                    permanente: permanente,
+                    tornade:
+                        image.includes(
+                            "tornade"
+                        )
+                };
+            }
+        );
+
+    // Au premier passage,
+    // Tornade repart face cachée.
+    // Au deuxième, elle reste visible.
+
+    plateauMelange.forEach(
+        function (element) {
+
+            if (element.tornade) {
+
+                element.permanente =
+                    spicyTornadeUtilisations >= 2;
+            }
+        }
+    );
+
+    // Mélange carte + état ensemble
+
+    for (
+        let i =
+            plateauMelange.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+        const temp =
+            plateauMelange[i];
+
+        plateauMelange[i] =
+            plateauMelange[j];
+
+        plateauMelange[j] =
+            temp;
+    }
+
+    cartesSpicy =
+        plateauMelange.map(
+            function (element) {
+                return element.image;
+            }
+        );
+
+    // Reconstruit le plateau joueur
+
+    spicyPlateau.innerHTML = "";
+
+    plateauMelange.forEach(
+        function (element, index) {
+
+            const carte =
+                document.createElement(
+                    "div"
+                );
+
+            carte.className =
+                "carte spicyCarte";
+
+            carte.dataset.index =
+                index;
+
+            carte.dataset.image =
+                element.image;
+
+            const img =
+                document.createElement(
+                    "img"
+                );
+
+            if (element.permanente) {
+
+                img.src =
+                    element.image;
+
+                carte.classList.add(
+                    "spicyVisible"
+                );
+
+                if (
+                    element.image.includes("bleu")
+                ) {
+
+                    carte.classList.add(
+                        "spicyTrouvee"
+                    );
+
+                } else {
+
+                    carte.classList.add(
+                        "spicySpeciale"
+                    );
+                }
+
+            } else {
+
+                img.src =
+                    "images/dos.png";
+            }
+
+            carte.appendChild(
+                img
+            );
+
+            carte.addEventListener(
+                "click",
+                function () {
+
+                    retournerCarteSpicy(
+                        carte
+                    );
+                }
+            );
+
+            spicyPlateau.appendChild(
+                carte
+            );
+        }
+    );
+
+    // Nouvel état complet pour Firebase
+
+    const cartesEtat = {};
+
+    plateauMelange.forEach(
+        function (element, index) {
+
+            cartesEtat[index] = {
+                visible:
+                    element.permanente
+            };
+        }
+    );
+
+    await update(
+        ref(
+            db,
+            "soloSpicy/" +
+            codeSpicyActuel
+        ),
+        {
+            deck: cartesSpicy,
+            cartesEtat: cartesEtat
+        }
+    );
+}
+async function lancerGageSpicy(type) {
+
+    // Un bouclier protège contre le prochain gage,
+    // quel qu'il soit.
+    if (spicyBouclierActif) {
+
+    spicyBouclierActif = false;
+
+    mettreAJourCompteurSpicy();
+
+    console.log(
+        "Solo Spicy: challenge cancelled by shield:",
+        type
+    );
+
+    return;
+}
+
+    spicyGageEnCours = true;
+
+    await update(
+        ref(
+            db,
+            "soloSpicy/" +
+            codeSpicyActuel
+        ),
+        {
+            gage: {
+                actif: true,
+                type: type,
+                valide: false
+            }
+        }
+    );
+
+    console.log(
+        "Solo Spicy challenge:",
+        type
+    );
+}
+function surveillerGageSpicySpectateur(
+    code
+) {
+
+    const gageRef =
+        ref(
+            db,
+            "soloSpicy/" +
+            code +
+            "/gage"
+        );
+
+    onValue(
+        gageRef,
+        function (snapshot) {
+
+            const gage =
+                snapshot.val();
+                spicyGiftChoice.style.display =
+    "none";
+
+            if (
+                !gage ||
+                gage.actif !== true
+            ) {
+
+                spicySpectatorChallenge.style.display =
+                    "none";
+
+                return;
+            }
+
+            let texte = "";
+
+            if (gage.type === "aubergine") {
+
+                texte =
+                    "🍆 WANK 30S — Challenge in progress";
+
+            } else if (
+                gage.type === "abricot"
+            ) {
+
+                texte =
+                    "🍑 10 SPANKING — Challenge in progress";
+
+            } else if (
+                gage.type === "caresse"
+            ) {
+
+                texte =
+                    "🫳 CARESS — At least 30 seconds";
+
+            } else if (
+    gage.type === "cadeau"
+) {
+
+    texte =
+      texte = "🎁 GIFT — Choose a challenge with the player's consent";
+
+    spicyGiftChoice.style.display =
+        "block";
+
+}
+
+            spicySpectatorChallengeText.textContent =
+                texte;
+
+            spicySpectatorChallenge.style.display =
+                "block";
+        }
+    );
+}
+spicyValidateChallenge.addEventListener(
+    "click",
+    async function () {
+
+        if (!codeSpicySpectateur) {
+            return;
+        }
+
+        await update(
+            ref(
+                db,
+                "soloSpicy/" +
+                codeSpicySpectateur +
+                "/gage"
+            ),
+            {
+                actif: false,
+                valide: true
+            }
+        );
+
+    }
+);
+function surveillerGageSpicyJoueur() {
+
+    const gageRef =
+        ref(
+            db,
+            "soloSpicy/" +
+            codeSpicyActuel +
+            "/gage"
+        );
+
+    onValue(
+        gageRef,
+        function (snapshot) {
+
+            const gage =
+                snapshot.val();
+
+            if (!gage) {
+                spicyPlayerChallenge.style.display =
+                    "none";
+                return;
+            }
+
+            // Cadeau envoyé par le spectateur
+            if (
+                gage.actif === true &&
+                gage.type === "cadeau"
+            ) {
+
+                spicyPlayerChallenge.style.display =
+                    "block";
+
+                if (gage.cadeau) {
+
+                    spicyPlayerChallengeText.textContent =
+                        "🎁 GIFT: " +
+                        gage.cadeau;
+
+                } else {
+
+                    spicyPlayerChallengeText.textContent =
+                        "🎁 Waiting for the spectator to choose your challenge...";
+
+                }
+            }
+
+            // Validation du gage
+            if (
+                gage.valide === true &&
+                spicyGageEnCours
+            ) {
+
+                spicyGageEnCours = false;
+                spicyGagesEffectues++;
+
+                spicyPlayerChallenge.style.display =
+                    "none";
+
+                console.log(
+                    "Challenge validated:",
+                    spicyGagesEffectues
+                );
+            }
+        }
+    );
+}
+spicySendGift.addEventListener(
+    "click",
+    async function () {
+
+        if (!codeSpicySpectateur) {
+            return;
+        }
+
+        const texte =
+            spicyGiftInput.value.trim();
+
+        if (!texte) {
+            return;
+        }
+
+        await update(
+            ref(
+                db,
+                "soloSpicy/" +
+                codeSpicySpectateur +
+                "/gage"
+            ),
+            {
+                cadeau: texte
+            }
+        );
+
+        spicyGiftInput.value = "";
+
+        spicyGiftChoice.style.display =
+            "none";
+    }
+);
+async function terminerSoloSpicy() {
+
+    spicyBloque = true;
+    await enregistrerMeilleurScoreSpicy(
+    spicyCardsFlipped,
+    spicyGagesEffectues
+);
+
+    await update(
+        ref(
+            db,
+            "soloSpicy/" + codeSpicyActuel
+        ),
+        {
+            etat: "finished",
+            score: spicyCardsFlipped,
+            gagesEffectues: spicyGagesEffectues,
+            vetementsRetires: spicyVetementsRetires
+        }
+    );
+
+    spicyEndScore.textContent =
+        "🃏 Cards flipped: " +
+        spicyCardsFlipped;
+
+    spicyEndClothes.textContent =
+        "👕 Clothes removed: " +
+        spicyVetementsRetires +
+        " / 4";
+
+    spicyEndChallenges.textContent =
+        "🔥 Challenges completed: " +
+        spicyGagesEffectues;
+        await afficherClassementFinSpicy();
+
+    spicyGame.style.display =
+        "none";
+
+    spicyEndGame.style.display =
+        "block";
+
+    console.log(
+        "Solo Spicy finished:",
+        spicyCardsFlipped,
+        "cards flipped"
+    );
+}
+spicyEndBack.addEventListener(
+    "click",
+    async function () {
+
+        if (codeSpicyActuel) {
+
+            await remove(
+                ref(
+                    db,
+                    "soloSpicy/" +
+                    codeSpicyActuel
+                )
+            );
+        }
+
+        codeSpicyActuel = "";
+        spicyRef = null;
+
+        spicyEndGame.style.display =
+            "none";
+
+        accueil.style.display =
+            "block";
+    }
+);
+// =====================================================
+// SOLO SPICY - SYNC CARD STATE
+// =====================================================
+
+
+// =====================================================
+// SOLO SPICY - SPECTATOR LIVE CARDS
+// =====================================================
+
