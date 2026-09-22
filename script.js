@@ -1785,15 +1785,67 @@ boutonRejoindre.addEventListener("click", async function () {
         return;
     }
 
-    const partieRef = ref(db, "parties/" + codePartieActuelle);
-    const snapshot = await get(partieRef);
+    const partieRef =
+    ref(
+        db,
+        "parties/" +
+        codePartieActuelle
+    );
 
-    if (!snapshot.exists()) {
-        alert("part not found");
-        return;
+const snapshot =
+    await get(partieRef);
+
+
+// ---------------------------------------------
+// PARTIE MULTIJOUEUR INTROUVABLE
+// → ON CHERCHE UN SOLO SPICY
+// ---------------------------------------------
+
+if (!snapshot.exists()) {
+
+    const spicySnapshot =
+        await get(
+            ref(
+                db,
+                "soloSpicy/" +
+                codePartieActuelle
+            )
+        );
+
+    if (spicySnapshot.exists()) {
+
+        const partieSpicy =
+            spicySnapshot.val();
+
+        if (
+            partieSpicy.etat === "waiting" ||
+            partieSpicy.etat === "playing"
+        ) {
+
+            const codeSpicy =
+                codePartieActuelle;
+
+            codePartieActuelle = "";
+
+            rejoindreSoloSpicySpectateur(
+                codeSpicy
+            );
+
+            return;
+        }
     }
 
-    const partie = snapshot.val();
+    alert("Game not found");
+    return;
+}
+
+
+// ---------------------------------------------
+// PARTIE MULTIJOUEUR CLASSIQUE
+// ---------------------------------------------
+
+const partie =
+    snapshot.val();
     if (partie.etat === "enCours") {
     alert("The game has already begun");
     return;
@@ -5889,7 +5941,7 @@ if (partie.etat === "playing") {
 } else {
 
     statutSpicy =
-        "⏳ WAITING FOR SPECTATOR";
+    '<span class="statutSpicyWaiting">⏳ WAITING FOR SPECTATOR</span>';
 
 }
 
@@ -5909,13 +5961,12 @@ bouton.innerHTML =
     partie.joueur +
     "<br>" +
     "👁 " +
-    nombreSpectateurs +
-    (
-        nombreSpectateurs === 1
-            ? " spectator"
-            : " spectators"
-    ) +
-    " — WATCH";
+nombreSpectateurs +
+(
+    nombreSpectateurs === 1
+        ? " spectator"
+        : " spectators"
+);
 
                 bouton.dataset.code =
                     code;
@@ -6010,6 +6061,20 @@ const spicyPlayerChallengeText =
     document.getElementById(
         "spicyPlayerChallengeText"
     );
+    const spicySpectatorEnd =
+    document.getElementById("spicySpectatorEnd");
+
+const spicySpectatorEndPlayer =
+    document.getElementById("spicySpectatorEndPlayer");
+
+const spicySpectatorEndScore =
+    document.getElementById("spicySpectatorEndScore");
+
+const spicySpectatorEndChallenges =
+    document.getElementById("spicySpectatorEndChallenges");
+
+const spicySpectatorEndBack =
+    document.getElementById("spicySpectatorEndBack");
 let codeSpicySpectateur = "";
 
 let refSpicySpectateur = null;
@@ -6304,34 +6369,109 @@ function surveillerEtatSoloSpicySpectateur(
 
     onValue(
         partieRef,
-        function (snapshot) {
+        async function (snapshot) {
 
             const partie =
                 snapshot.val();
 
-            if (!partie) {
+           if (!partie) {
+
+    if (refSpicySpectateur) {
+
+        await remove(
+            refSpicySpectateur
+        );
+
+        refSpicySpectateur = null;
+    }
+
+    codeSpicySpectateur = "";
+
+    spicySpectatorRoom.style.display =
+        "none";
+
+    accueil.style.display =
+        "block";
+
+    alert(
+        "The player left the game."
+    );
+
+    return;
+}
+
+            // PARTIE TERMINÉE
+            if (
+                partie.etat === "finished"
+            ) {
+
+                spicySpectatorStatus.style.display =
+                    "none";
+
+                spicySpectatorGameInfo.style.display =
+                    "none";
+
+                spicySpectatorPlateau.style.display =
+                    "none";
+
+                document.getElementById(
+                    "reglesSpicySpectateur"
+                ).style.display =
+                    "none";
+
+                spicySpectatorChallenge.style.display =
+                    "none";
+
+                spicySpectatorEndPlayer.textContent =
+                    "🎮 " +
+                    partie.joueur +
+                    " completed the challenge";
+
+                spicySpectatorEndScore.textContent =
+                    "🃏 Cards flipped: " +
+                    (partie.score || 0);
+
+                spicySpectatorEndChallenges.textContent =
+                    "🔥 Challenges completed: " +
+                    (partie.gagesEffectues || 0);
+
+                spicySpectatorEnd.style.display =
+                    "block";
+spicySpectatorVideo.style.display =
+    "none";
+
+spicySpectatorBack.style.display =
+    "none";
                 return;
             }
 
-            if (
-                partie.etat === "playing"
-            ) {
+            // PARTIE EN COURS
+           if (
+    partie.etat === "playing"
+) {
 
-                spicySpectatorStatus.textContent =
-                    "🌶 The game has started!";
+    document.getElementById(
+        "reglesSpicySpectateur"
+    ).style.display = "block";
 
-                afficherDeckSpicySpectateur(
-                    partie
-                );
+    spicySpectatorStatus.textContent =
+        "🌶 The game has started!";
 
-            } 
-            else {
+    afficherDeckSpicySpectateur(
+        partie
+    );
 
-                spicySpectatorStatus.textContent =
-                    "Waiting for the player to start...";
+}
+else {
 
-            }
+    document.getElementById(
+        "reglesSpicySpectateur"
+    ).style.display = "none";
 
+    spicySpectatorStatus.textContent =
+        "Waiting for the player to start...";
+
+}
         }
     );
 
@@ -6354,6 +6494,10 @@ const spicyGameVideo =
     document.getElementById(
         "spicyGameVideo"
     );
+    const spicyGameQuit =
+    document.getElementById(
+        "spicyGameQuit"
+    );
 
 const spicyPlateau =
     document.getElementById(
@@ -6363,6 +6507,7 @@ const spicyPlateau =
 
 spicyGameVideo.addEventListener(
     "click",
+    
     function () {
 
         if (!codeSpicyActuel) {
@@ -6375,6 +6520,31 @@ spicyGameVideo.addEventListener(
             "_blank"
         );
 
+    }
+);
+spicyGameQuit.addEventListener(
+    "click",
+    async function () {
+
+        if (codeSpicyActuel) {
+
+            await remove(
+                ref(
+                    db,
+                    "soloSpicy/" +
+                    codeSpicyActuel
+                )
+            );
+        }
+
+        codeSpicyActuel = "";
+        spicyRef = null;
+
+        spicyGame.style.display =
+            "none";
+
+        accueil.style.display =
+            "block";
     }
 );
 // =====================================================
@@ -7323,7 +7493,7 @@ function surveillerGageSpicySpectateur(
     gage.type === "cadeau"
 ) {
 
-    texte =
+    
       texte = "🎁 GIFT — Choose a challenge with the player's consent";
 
     spicyGiftChoice.style.display =
@@ -7521,12 +7691,38 @@ spicyEndBack.addEventListener(
                     codeSpicyActuel
                 )
             );
+
         }
 
         codeSpicyActuel = "";
         spicyRef = null;
 
         spicyEndGame.style.display =
+            "none";
+
+        accueil.style.display =
+            "block";
+    }
+);
+spicySpectatorEndBack.addEventListener(
+    "click",
+    async function () {
+
+        if (refSpicySpectateur) {
+
+            await remove(
+                refSpicySpectateur
+            );
+
+            refSpicySpectateur = null;
+        }
+
+        codeSpicySpectateur = "";
+
+        spicySpectatorEnd.style.display =
+            "none";
+
+        spicySpectatorRoom.style.display =
             "none";
 
         accueil.style.display =

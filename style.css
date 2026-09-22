@@ -1552,3 +1552,13 @@ transition: 0.2s;
     max-height: 100% !important;
     object-fit: contain !important;
 }
+.partieSpicyPublique {
+    width: 230px;
+    min-height: 120px;
+    font-size: 18px;
+    line-height: 1.2;
+    padding: 10px;
+}
+.statutSpicyWaiting {
+    font-size: 14px;
+}
