@@ -1566,3 +1566,42 @@ transition: 0.2s;
 .statutSpicyWaiting {
     font-size: 14px;
 }
+#spicyValidateChallenge {
+    background: #ff3fa4;
+    color: white;
+    border: 2px solid #ff8dcc;
+    box-shadow: 0 0 15px rgba(255, 63, 164, 0.7);
+    font-weight: bold;
+    animation: spicyValidatePulse 1.4s infinite;
+}
+
+@keyframes spicyValidatePulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 12px rgba(255, 63, 164, 0.6);
+    }
+
+    50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 25px rgba(255, 63, 164, 1);
+    }
+}
+#spicyPlayerChallenge {
+    width: fit-content;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 14px 25px;
+
+    background: rgba(255, 63, 164, 0.12);
+    border: 2px solid #ff3fa4;
+    border-radius: 12px;
+
+    box-shadow: 0 0 18px rgba(255, 63, 164, 0.45);
+
+    font-size: 20px;
+    text-align: center;
+}
+
+#spicyPlayerChallengeText {
+    margin: 0;
+}

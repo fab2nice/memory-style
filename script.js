@@ -7415,6 +7415,12 @@ async function lancerGageSpicy(type) {
 }
 
     spicyGageEnCours = true;
+    spicyPlayerChallengeText.innerHTML =
+    "🔥 <strong>CHALLENGE IN PROGRESS</strong><br>" +
+    "Complete the challenge on video.<br>" +
+    "⏳ <strong>Waiting for spectator validation...</strong>";
+
+spicyPlayerChallenge.style.display = "block";
 
     await update(
         ref(
@@ -7436,6 +7442,7 @@ async function lancerGageSpicy(type) {
         type
     );
 }
+
 function surveillerGageSpicySpectateur(
     code
 ) {
@@ -7457,16 +7464,11 @@ function surveillerGageSpicySpectateur(
                 spicyGiftChoice.style.display =
     "none";
 
-            if (
-                !gage ||
-                gage.actif !== true
-            ) {
-
-                spicySpectatorChallenge.style.display =
-                    "none";
-
-                return;
-            }
+           if (!gage || gage.actif !== true) {
+    
+    spicySpectatorChallenge.style.display = "none";
+    return;
+}
 
             let texte = "";
 
