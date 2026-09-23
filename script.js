@@ -6087,6 +6087,17 @@ async function rejoindreSoloSpicySpectateur(
     code
 ) {
 
+    // ---------------------------------------------
+    // PROFIL OBLIGATOIRE
+    // ---------------------------------------------
+
+    if (!profilConnecte) {
+        alert(
+            "You must be logged in to spectate a Solo Spicy game."
+        );
+        return;
+    }
+
     const spectateurRef =
         push(
             ref(
@@ -6101,9 +6112,7 @@ async function rejoindreSoloSpicySpectateur(
         spectateurRef,
         {
             pseudo:
-                profilConnecte
-                    ? profilConnecte.nickname
-                    : pseudoActuel || "Guest",
+                profilConnecte.nickname,
 
             arrivee:
                 Date.now()
@@ -6134,13 +6143,12 @@ async function rejoindreSoloSpicySpectateur(
     if (!partie) {
         return;
     }
-    
 
     spicySpectatorPlayer.textContent =
         "🎮 Player: " +
         partie.joueur;
 
-        spicySpectatorStatus.textContent =
+    spicySpectatorStatus.textContent =
         "Waiting for the player to start...";
 
     accueil.style.display =
@@ -6150,16 +6158,16 @@ async function rejoindreSoloSpicySpectateur(
         "block";
 
     surveillerEtatSoloSpicySpectateur(
-    code
-);
+        code
+    );
 
-surveillerCartesSpicySpectateur(
-    code
-);
-surveillerGageSpicySpectateur(
-    code
-);
+    surveillerCartesSpicySpectateur(
+        code
+    );
 
+    surveillerGageSpicySpectateur(
+        code
+    );
 }
 
 // =====================================================
