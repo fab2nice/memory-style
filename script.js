@@ -6846,11 +6846,14 @@ if (image.includes("bleu")) {
 
 if (image.includes("tornade")) {
 
-    spicyTornadeUtilisations++;
+    spicyTornadeUtilisations = 1;
     spicyBloque = true;
 
     spicyPremiereCarte = null;
     spicyDeuxiemeCarte = null;
+
+    // La Tornade est définitivement jouée
+    carte.classList.add("spicyTrouvee");
 
     spicyPlateau.classList.add(
         "effetTornade"
