@@ -1066,10 +1066,13 @@ function verifierVictoireBattle(
             joueursEncoreHabilles[0] +
             " !<br><br>" +
             "Les autres joueurs sont NAKED 🙈";
+            classement.innerHTML +=
+    "<br><br>👕 <strong>FINAL ACTION</strong><br>" +
+    "Losing player: don't forget to remove your last item of clothing before leaving the game. 😉";
 
         jeu.style.display = "none";
-        finPartie.style.display = "block";
-        boutonNouvellePartie.style.display = "block";
+finPartie.style.display = "block";
+boutonNouvellePartie.style.display = "block";
  incrementerStatProfil(
     joueursEncoreHabilles[0],
     "victories"
