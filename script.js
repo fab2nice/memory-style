@@ -7334,16 +7334,19 @@ async function melangerPlateauSpicy() {
     // Tornade repart face cachée.
     // Au deuxième, elle reste visible.
 
-    plateauMelange.forEach(
-        function (element) {
+    // La Tornade ne fonctionne qu'une seule fois.
+// Après son activation, elle reste définitivement visible.
 
-            if (element.tornade) {
+plateauMelange.forEach(
+    function (element) {
 
-                element.permanente =
-                    spicyTornadeUtilisations >= 2;
-            }
+        if (element.tornade) {
+
+            element.permanente =
+                spicyTornadeUtilisations >= 1;
         }
-    );
+    }
+);
 
     // Mélange carte + état ensemble
 
