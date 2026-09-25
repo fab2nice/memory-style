@@ -195,6 +195,7 @@ let premiereLectureNotifications = true;
 let joueursEnLigne = 0;
 let nombrePartiesPubliques = 0;
 let profilConnecte = null;
+let editionProfil = false;
 let chronoSoloDepart = 0;
 let chronoSoloInterval = null;
 
@@ -3004,14 +3005,59 @@ saveProfile.addEventListener("click", async function () {
 const snapshot =
     await get(profilRef);
 
-if (snapshot.exists()) {
+if (snapshot.exists() && editionProfil === false) {
 
     alert("Nickname already exists.");
 
     return;
 
 }
+if (editionProfil === true) {
 
+    const ancienProfil = snapshot.val();
+
+    await set(profilRef, {
+        ...ancienProfil,
+
+        gender: document.querySelector(
+            'input[name="gender"]:checked'
+        ).value,
+
+        playWith: {
+            men: playMen.checked,
+            women: playWomen.checked,
+            couples: playCouples.checked,
+            martians: playMartians.checked
+        },
+
+        country: profileCountry.value.trim()
+    });
+
+    profilConnecte = {
+        ...ancienProfil,
+
+        gender: document.querySelector(
+            'input[name="gender"]:checked'
+        ).value,
+
+        playWith: {
+            men: playMen.checked,
+            women: playWomen.checked,
+            couples: playCouples.checked,
+            martians: playMartians.checked
+        },
+
+        country: profileCountry.value.trim()
+    };
+
+    editionProfil = false;
+
+    profileModal.style.display = "none";
+
+    alert("Profile updated successfully!");
+
+    return;
+}
     await set(profilRef, {
 
     nickname: profileNickname.value,
@@ -3264,11 +3310,34 @@ profil.gender +
 (profil.playWith.martians
     ? "✔ Martians<br>"
     : "");
-
+editProfile.style.display =
+    profilConnecte &&
+    profilConnecte.nickname === nom
+        ? "inline-block"
+        : "none";
 viewProfileModal.style.display =
     "block";
 
 }
+editProfile.addEventListener("click", function () {
+    editionProfil = true;
+saveProfile.textContent = "Save Changes";
+    if (!profilConnecte) {
+        return;
+    }
+
+    viewProfileModal.style.display = "none";
+
+    profileNickname.value =
+        profilConnecte.nickname;
+
+    profileCountry.value =
+        profilConnecte.country || "";
+
+    profileModal.style.display =
+        "block";
+
+});
 window.voirProfil = voirProfil;
 const boutonsModeJoueurs = document.querySelectorAll(
     'input[name="modeJoueurs"]'

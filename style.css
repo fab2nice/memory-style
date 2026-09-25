@@ -1605,3 +1605,8 @@ transition: 0.2s;
 #spicyPlayerChallengeText {
     margin: 0;
 }
+.viewProfileButtons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
