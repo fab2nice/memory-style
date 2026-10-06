@@ -3402,9 +3402,22 @@ boutonStartSolo.addEventListener(
     }
 );
 
+// ---------------------------------
+// ANTI-TRICHE TIME TRIAL
+// ---------------------------------
 
+let dernierClicSolo = 0;
+const DELAI_MIN_CLIC_SOLO = 200;
+let nombreClicsSolo = 0;
+let intervallesClicsSolo = [];
+let nombreErreursSolo = 0;
+let scoreSuspicionSolo = 0;
 function lancerSoloTimeTrial() {
-
+    dernierClicSolo = 0;
+nombreClicsSolo = 0;
+nombreErreursSolo = 0;
+scoreSuspicionSolo = 0;
+intervallesClicsSolo = [];
     cartesSolo =
         melangerCartes(cartesDeBase);
 
@@ -3560,6 +3573,27 @@ function jouerCarteSolo(
     indexCarte,
     bouton
 ) {
+   const maintenant = Date.now();
+
+if (dernierClicSolo !== 0) {
+
+    const intervalle =
+        maintenant - dernierClicSolo;
+
+    if (
+        intervalle <
+        DELAI_MIN_CLIC_SOLO
+    ) {
+        return;
+    }
+
+    intervallesClicsSolo.push(
+        intervalle
+    );
+}
+
+dernierClicSolo = maintenant;
+nombreClicsSolo++;
 
     if (soloVerrouille === true) {
         return;
@@ -3671,7 +3705,7 @@ function verifierPaireSolo() {
 
 
     // MAUVAISE PAIRE
-
+nombreErreursSolo++;
     setTimeout(
         function () {
 
@@ -3771,8 +3805,10 @@ async function verifierFinSolo() {
         );
 
         chronoSoloInterval = null;
-affichageTimer.style.display =
-    "none";
+
+        affichageTimer.style.display =
+            "none";
+
         const tempsFinal =
             Date.now() -
             chronoSoloDepart;
@@ -3786,24 +3822,201 @@ affichageTimer.style.display =
                 secondesFinales
             );
 
-        const resultatRecord =
-            await enregistrerMeilleurTempsSolo(
-                tempsFinalNombre
+
+        // ---------------------------------
+        // ANALYSE ANTI-TRICHE TIME TRIAL
+        // ---------------------------------
+
+        let intervalleMinimum = null;
+        let intervalleMoyen = null;
+
+        if (
+            intervallesClicsSolo.length > 0
+        ) {
+
+            intervalleMinimum =
+                Math.min(
+                    ...intervallesClicsSolo
+                );
+
+            intervalleMoyen =
+                Math.round(
+                    intervallesClicsSolo.reduce(
+                        (total, valeur) =>
+                            total + valeur,
+                        0
+                    ) /
+                    intervallesClicsSolo.length
+                );
+        }
+
+
+        // ---------------------------------
+        // SCORE DE SUSPICION
+        // ---------------------------------
+
+        scoreSuspicionSolo = 0;
+
+        if (tempsFinalNombre < 25) {
+
+            scoreSuspicionSolo += 5;
+
+        } else if (
+            tempsFinalNombre < 30
+        ) {
+
+            scoreSuspicionSolo += 3;
+
+        } else if (
+            tempsFinalNombre < 35
+        ) {
+
+            scoreSuspicionSolo += 1;
+        }
+
+
+        if (
+            nombreErreursSolo === 0
+        ) {
+
+            scoreSuspicionSolo += 3;
+
+        } else if (
+            nombreErreursSolo <= 2
+        ) {
+
+            scoreSuspicionSolo += 1;
+        }
+
+
+        if (
+            intervalleMoyen !== null &&
+            intervalleMoyen < 350
+        ) {
+
+            scoreSuspicionSolo += 3;
+        }
+
+
+        if (
+            intervalleMinimum !== null &&
+            intervalleMinimum <= 220
+        ) {
+
+            scoreSuspicionSolo += 2;
+        }
+
+
+        // ---------------------------------
+        // AFFICHAGE ANALYSE
+        // ---------------------------------
+
+        console.log(
+            "=== TIME TRIAL ANALYSIS ==="
+        );
+
+        console.log(
+            "Time:",
+            tempsFinalNombre,
+            "s"
+        );
+
+        console.log(
+            "Clicks:",
+            nombreClicsSolo
+        );
+
+        console.log(
+            "Mismatches:",
+            nombreErreursSolo
+        );
+
+        console.log(
+            "Minimum interval:",
+            intervalleMinimum,
+            "ms"
+        );
+
+        console.log(
+            "Average interval:",
+            intervalleMoyen,
+            "ms"
+        );
+
+        console.log(
+            "Suspicion score:",
+            scoreSuspicionSolo
+        );
+
+        console.log(
+            "==========================="
+        );
+
+
+        // ---------------------------------
+        // ENREGISTREMENT DU RECORD
+        // ---------------------------------
+
+        let resultatRecord = null;
+
+        if (
+            scoreSuspicionSolo >= 4
+        ) {
+
+            console.warn(
+                "⚠️ TIME TRIAL SUSPECT - résultat non enregistré",
+                {
+                    temps:
+                        tempsFinalNombre,
+
+                    clics:
+                        nombreClicsSolo,
+
+                    erreurs:
+                        nombreErreursSolo,
+
+                    intervalleMinimum:
+                        intervalleMinimum,
+
+                    intervalleMoyen:
+                        intervalleMoyen,
+
+                    scoreSuspicion:
+                        scoreSuspicionSolo
+                }
             );
+
+        } else {
+
+            resultatRecord =
+                await enregistrerMeilleurTempsSolo(
+                    tempsFinalNombre
+                );
+        }
+
 
         const meilleurTemps =
             resultatRecord
                 ? resultatRecord.meilleurTemps
-                : tempsFinalNombre;
+                : (
+                    profilConnecte &&
+                    profilConnecte.soloTimeTrialBest
+                        ? profilConnecte.soloTimeTrialBest
+                        : tempsFinalNombre
+                );
 
         const nouveauRecord =
             resultatRecord
                 ? resultatRecord.nouveauRecord
                 : false;
-                const worldBest =
-    await recupererWorldBestSolo();
-    const top10 =
-    await recupererTop10Solo();
+
+
+        const worldBest =
+            await recupererWorldBestSolo();
+
+        const top10 =
+            await recupererTop10Solo();
+
 
         setTimeout(
             function () {
@@ -3819,158 +4032,184 @@ affichageTimer.style.display =
                         "h2"
                     );
 
-          let texteFin =
-    "Solo complete!\n\n" +
-    "⏱ TIME: " +
-    secondesFinales +
-    " s\n" +
-    "🏆 PERSONAL BEST: " +
-    meilleurTemps +
-    " s";
 
-if (worldBest) {
-
-    texteFin +=
-        "\n👑 WORLD BEST: " +
-        worldBest.temps +
-        " s - " +
-        worldBest.pseudo;
-
-}
-if (
-    nouveauRecord === true
-) {
-
-    texteFin +=
-        " 🏆 NEW RECORD!";
-
-}
-
-if (
-    worldBest &&
-    worldBest.pseudo ===
-        profilConnecte.nickname &&
-    worldBest.temps ===
-        tempsFinalNombre
-) {
-
-    texteFin +=
-        " 👑 WORLD RECORD!";
-
-}
-
-messageFin.textContent =
-    texteFin;
+                let texteFin =
+                    "Solo complete!\n\n" +
+                    "⏱ TIME: " +
+                    secondesFinales +
+                    " s\n" +
+                    "🏆 PERSONAL BEST: " +
+                    meilleurTemps +
+                    " s";
 
 
-// À PARTIR D'ICI, ton code existant continue :
-const classementTitre =
-    document.createElement("h3");
+                if (worldBest) {
 
-classementTitre.textContent =
-    "🏆 TOP 10 TIME TRIAL";
-
-
-const classementListe =
-    document.createElement("div");
-
-classementListe.className =
-    "classementSolo";
+                    texteFin +=
+                        "\n👑 WORLD BEST: " +
+                        worldBest.temps +
+                        " s - " +
+                        worldBest.pseudo;
+                }
 
 
-top10.forEach(
-    function (joueur, index) {
+                if (
+                    nouveauRecord === true
+                ) {
 
-        const ligne =
-            document.createElement("div");
+                    texteFin +=
+                        " 🏆 NEW RECORD!";
+                }
 
-        let position =
-            (index + 1) + ".";
 
-        if (index === 0) {
-            position = "🥇";
-        }
+                if (
+                    worldBest &&
+                    profilConnecte &&
+                    worldBest.pseudo ===
+                        profilConnecte.nickname &&
+                    worldBest.temps ===
+                        tempsFinalNombre
+                ) {
 
-        if (index === 1) {
-            position = "🥈";
-        }
+                    texteFin +=
+                        " 👑 WORLD RECORD!";
+                }
 
-        if (index === 2) {
-            position = "🥉";
-        }
 
-        ligne.textContent =
-            position +
-            " " +
-            joueur.pseudo +
-            " — " +
-            joueur.temps +
-            " s";
+                messageFin.textContent =
+                    texteFin;
 
-        if (
-            profilConnecte &&
-            joueur.pseudo ===
-                profilConnecte.nickname
-        ) {
 
-            ligne.classList.add(
-                "classementMoi"
-            );
+                const classementTitre =
+                    document.createElement(
+                        "h3"
+                    );
 
-        }
+                classementTitre.textContent =
+                    "🏆 TOP 10 TIME TRIAL";
 
-        classementListe.appendChild(
-            ligne
-        );
 
-    }
-);
+                const classementListe =
+                    document.createElement(
+                        "div"
+                    );
 
-const boutonRetour =
-    document.createElement(
-        "button"
-    );
+                classementListe.className =
+                    "classementSolo";
 
-boutonRetour.textContent =
-    "Back to Home";
+
+                top10.forEach(
+                    function (
+                        joueur,
+                        index
+                    ) {
+
+                        const ligne =
+                            document.createElement(
+                                "div"
+                            );
+
+                        let position =
+                            (index + 1) +
+                            ".";
+
+                        if (
+                            index === 0
+                        ) {
+                            position =
+                                "🥇";
+                        }
+
+                        if (
+                            index === 1
+                        ) {
+                            position =
+                                "🥈";
+                        }
+
+                        if (
+                            index === 2
+                        ) {
+                            position =
+                                "🥉";
+                        }
+
+
+                        ligne.textContent =
+                            position +
+                            " " +
+                            joueur.pseudo +
+                            " — " +
+                            joueur.temps +
+                            " s";
+
+
+                        if (
+                            profilConnecte &&
+                            joueur.pseudo ===
+                                profilConnecte.nickname
+                        ) {
+
+                            ligne.classList.add(
+                                "classementMoi"
+                            );
+                        }
+
+
+                        classementListe.appendChild(
+                            ligne
+                        );
+                    }
+                );
+
+
+                const boutonRetour =
+                    document.createElement(
+                        "button"
+                    );
+
+                boutonRetour.textContent =
+                    "Back to Home";
 
                 boutonRetour.className =
                     "boutonMenu";
+
 
                 boutonRetour.addEventListener(
                     "click",
                     function () {
 
                         retourAccueilSolo();
-                        infoSalonVideo.style.display = "";
-                        affichageTimer.style.display = ""; 
 
+                        infoSalonVideo.style.display =
+                            "";
+
+                        affichageTimer.style.display =
+                            "";
                     }
-                    
+                );
+
+
+                plateau.appendChild(
+                    messageFin
                 );
 
                 plateau.appendChild(
-    messageFin
-);
+                    classementTitre
+                );
 
-plateau.appendChild(
-    classementTitre
-);
+                plateau.appendChild(
+                    classementListe
+                );
 
-plateau.appendChild(
-    classementListe
-);
-
-plateau.appendChild(
-    boutonRetour
-);
+                plateau.appendChild(
+                    boutonRetour
+                );
 
             },
             300
         );
-
     }
-
 }
 function retourAccueilSolo() {
 
@@ -4888,8 +5127,23 @@ let chronoCombatInterval = null;
 
 let viesCombat = 3;
 let utilisationsTornade = 0;
+// ---------------------------------
+// ANTI-TRICHE COMBAT
+// ---------------------------------
 
+let dernierClicCombat = 0;
+const DELAI_MIN_CLIC_COMBAT = 200;
+
+let nombreClicsCombat = 0;
+let intervallesClicsCombat = [];
+let nombreErreursCombat = 0;
+let scoreSuspicionCombat = 0;
 function lancerSoloCombat() {
+    dernierClicCombat = 0;
+nombreClicsCombat = 0;
+intervallesClicsCombat = [];
+nombreErreursCombat = 0;
+scoreSuspicionCombat = 0;
 if (chronoCombatInterval !== null) {
     clearInterval(chronoCombatInterval);
     chronoCombatInterval = null;
@@ -5038,10 +5292,127 @@ async function verifierVictoireCombat() {
     const tempsFinal =
         Date.now() -
         chronoCombatDepart;
-        const resultatRecord =
-    await enregistrerMeilleurTempsCombat(
-        tempsFinal
+        // ---------------------------------
+// ANALYSE ANTI-TRICHE COMBAT
+// ---------------------------------
+
+let intervalleMinimumCombat = null;
+let intervalleMoyenCombat = null;
+
+if (intervallesClicsCombat.length > 0) {
+
+    intervalleMinimumCombat =
+        Math.min(...intervallesClicsCombat);
+
+    intervalleMoyenCombat =
+        Math.round(
+            intervallesClicsCombat.reduce(
+                (total, valeur) =>
+                    total + valeur,
+                0
+            ) /
+            intervallesClicsCombat.length
+        );
+}
+// ---------------------------------
+// SCORE DE SUSPICION COMBAT
+// ---------------------------------
+
+scoreSuspicionCombat = 0;
+
+// Temps extrêmement rapide
+if (tempsFinal < 30000) {
+    scoreSuspicionCombat += 5;
+} else if (tempsFinal < 35000) {
+    scoreSuspicionCombat += 3;
+} else if (tempsFinal < 40000) {
+    scoreSuspicionCombat += 1;
+}
+
+// Très peu d'erreurs
+if (nombreErreursCombat === 0) {
+    scoreSuspicionCombat += 3;
+} else if (nombreErreursCombat <= 2) {
+    scoreSuspicionCombat += 1;
+}
+
+// Cadence extrêmement rapide
+if (
+    intervalleMoyenCombat !== null &&
+    intervalleMoyenCombat < 350
+) {
+    scoreSuspicionCombat += 3;
+}
+
+// Cadence collée à la limite
+if (
+    intervalleMinimumCombat !== null &&
+    intervalleMinimumCombat <= 220
+) {
+    scoreSuspicionCombat += 2;
+}
+
+console.log(
+    "=== COMBAT ANALYSIS ==="
+);
+
+console.log(
+    "Time:",
+    (tempsFinal / 1000).toFixed(1),
+    "s"
+);
+
+console.log(
+    "Clicks:",
+    nombreClicsCombat
+);
+
+console.log(
+    "Mismatches:",
+    nombreErreursCombat
+);
+
+console.log(
+    "Minimum interval:",
+    intervalleMinimumCombat,
+    "ms"
+);
+
+console.log(
+    "Average interval:",
+    intervalleMoyenCombat,
+    "ms"
+);
+console.log(
+    "Suspicion score:",
+    scoreSuspicionCombat
+);
+console.log(
+    "======================="
+);
+        let resultatRecord = null;
+
+if (scoreSuspicionCombat >= 4) {
+
+    console.warn(
+        "⚠️ COMBAT SUSPECT - résultat non enregistré",
+        {
+            temps: tempsFinal,
+            clics: nombreClicsCombat,
+            erreurs: nombreErreursCombat,
+            intervalleMinimum: intervalleMinimumCombat,
+            intervalleMoyen: intervalleMoyenCombat,
+            scoreSuspicion: scoreSuspicionCombat
+        }
     );
+
+} else {
+
+    resultatRecord =
+        await enregistrerMeilleurTempsCombat(
+            tempsFinal
+        );
+}
     const meilleurTemps =
     resultatRecord
         ? resultatRecord.meilleurTemps
@@ -5202,7 +5573,27 @@ function jouerCarteCombat(indexCarte) {
     if (selectionCombat.includes(indexCarte)) {
         return;
     }
+const maintenant = Date.now();
 
+if (dernierClicCombat !== 0) {
+
+    const intervalle =
+        maintenant - dernierClicCombat;
+
+    if (
+        intervalle <
+        DELAI_MIN_CLIC_COMBAT
+    ) {
+        return;
+    }
+
+    intervallesClicsCombat.push(
+        intervalle
+    );
+}
+
+dernierClicCombat = maintenant;
+nombreClicsCombat++;
     const cheminCarte =
         cartesCombat[indexCarte];
 
@@ -5534,7 +5925,7 @@ verifierVictoireCombat();
 
 
     // MAUVAISE PAIRE
-
+nombreErreursCombat++;
     setTimeout(
         function () {
 
