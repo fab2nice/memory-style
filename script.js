@@ -4134,14 +4134,18 @@ async function verifierFinSolo() {
                                 "🥉";
                         }
 
-
+const badgeMartian =
+    joueur.temps < 32
+        ? " 👽"
+        : "";
                         ligne.textContent =
-                            position +
-                            " " +
-                            joueur.pseudo +
-                            " — " +
-                            joueur.temps +
-                            " s";
+    position +
+    " " +
+    joueur.pseudo +
+    badgeMartian +
+    " — " +
+    joueur.temps +
+    " s";
 
 
                         if (
@@ -4788,13 +4792,19 @@ async function afficherTop3TimeTrial() {
 
         if (top3[i]) {
 
-            html +=
-                medailles[i] +
-                " " +
-                top3[i].pseudo +
-                " — " +
-                top3[i].temps.toFixed(1) +
-                " s";
+            const badgeMartian =
+    top3[i].temps < 32
+        ? " 👽"
+        : "";
+
+html +=
+    medailles[i] +
+    " " +
+    top3[i].pseudo +
+    badgeMartian +
+    " — " +
+    top3[i].temps.toFixed(1) +
+    " s";
 
         } else {
 
@@ -4842,13 +4852,19 @@ async function afficherTop3Combat() {
 
         if (top3[i]) {
 
-            html +=
-                medailles[i] +
-                " " +
-                top3[i].pseudo +
-                " — " +
-                (top3[i].temps / 1000).toFixed(1) +
-                " s";
+           const badgeMartian =
+    top3[i].temps < 45000
+        ? " 👽"
+        : "";
+
+html +=
+    medailles[i] +
+    " " +
+    top3[i].pseudo +
+    badgeMartian +
+    " — " +
+    (top3[i].temps / 1000).toFixed(1) +
+    " s";
 
         } else {
 
@@ -5535,15 +5551,19 @@ top10.forEach(
         if (index === 2) {
             medaille = "🥉 ";
         }
-
+const badgeMartian =
+    joueur.temps < 45000
+        ? " 👽"
+        : "";
         ligne.textContent =
-            medaille +
-            (index + 1) +
-            ". " +
-            joueur.pseudo +
-            " - " +
-            (joueur.temps / 1000).toFixed(1) +
-            " s";
+    medaille +
+    (index + 1) +
+    ". " +
+    joueur.pseudo +
+    badgeMartian +
+    " - " +
+    (joueur.temps / 1000).toFixed(1) +
+    " s";
 if (
     profilConnecte &&
     joueur.pseudo ===
